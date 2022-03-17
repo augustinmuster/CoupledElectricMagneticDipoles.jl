@@ -87,6 +87,9 @@ function solve_DDA(knorm,r,alpha,input_field::Function;output="polarisations",so
         LAPACK.gesv!(A, E)
     end
 
+    if output=="matrix"
+        return A
+    end
     if verbose
         println("equations solved")
         println()
@@ -127,7 +130,7 @@ end
 #INPUTS: norm of the k vector, positions of the dipoles times k, polarisabilities tensor of each dipoles times k³, function to generate the input field (with dimensionless inputs), which output to take, which solver to take, verbose
 #OUTPUT: array with the polarisations vectors or inverse of the equations matrix.
 #*************************************************
-function solve_DDA_dl(knorm,kr,k3alpha,input_field::Function;solver="LU",verbose=true)
+function solve_DDA_dl(knorm,kr,k3alpha,input_field::Function;output="polarisations",solver="LU",verbose=true)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
@@ -186,6 +189,10 @@ function solve_DDA_dl(knorm,kr,k3alpha,input_field::Function;solver="LU",verbose
             println()
         end
         LAPACK.gesv!(A, E)
+    end
+
+    if output=="matrix"
+        return A
     end
 
     if verbose
