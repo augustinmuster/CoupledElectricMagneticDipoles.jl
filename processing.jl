@@ -11,7 +11,7 @@ using LinearAlgebra
 #INPUTS:  norm of the wave vector, polarisations, incident fields, quasistatic polarisabilities,e0,whether to compute explicitely csca, verbose
 #OUTPUT: array with lambda, Cabs, Csca, Cext
 #*************************************************
-function compute_cross_sections(knorm,p,e_inc,alpha0,e0=[1,0,0],explicit_scattering=true,verbose=true)
+function compute_cross_sections(knorm,p,e_inc,alpha0,r;e0=[1,0,0],explicit_scattering=true,verbose=true)
 
     #**********saving results*******
     if verbose
@@ -33,7 +33,7 @@ function compute_cross_sections(knorm,p,e_inc,alpha0,e0=[1,0,0],explicit_scatter
         if explicit_scattering
             for k=1:n
                 if k!=j
-                    sumsca=sumsca+dot(p[j,:],imag(green([latt[j,1],latt[j,2],latt[j,3]],[latt[k,1],latt[k,2],latt[k,3]],knorm))*p[k,:])
+                    sumsca=sumsca+dot(p[j,:],imag(green(r[j,:],r[k,:],knorm))*p[k,:])
                 else
                     sumsca=sumsca+dot(p[j,:],(knorm/6/pi)*p[k,:])
                 end
