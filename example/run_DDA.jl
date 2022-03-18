@@ -42,7 +42,7 @@ for i=1:length(ref_id[:,1])
     #println(real_eps,imag_eps)
     p,e_inc=solve_DDA_dl(knorm,knorm*latt[:,1:3],knorm^3*alpha,plane_wave_dl,solver="LU")
     #compute cross section
-    res[i,:]=compute_cross_sections(knorm,p,e_inc,alpha0)
+    res[i,:]=compute_cross_sections(knorm,p,e_inc,alpha0,latt)
 end
 
 #write results to file

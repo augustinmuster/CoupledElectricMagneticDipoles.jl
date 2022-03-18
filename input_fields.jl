@@ -19,6 +19,6 @@ end
 #INPUTS:  norm of the wave vector, position vector,direction of the wave vector,polaristaion,
 #OUTPUT: plane wave vector
 #*************************************************
-function plane_wave_dl(r,khat=[0,0,1],e0=[1,0,0])
-    return exp(im*dot(khat,r))*e0
+function plane_wave_dl(kr,khat=[0,0,1],e0=[1,0,0])
+    return exp(im*dot(khat,kr))*e0
 end
