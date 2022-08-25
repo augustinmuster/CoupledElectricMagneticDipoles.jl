@@ -8,10 +8,9 @@ yext=[]
 ysca=[]
 are=[]
 aim=[]
-
+cst=1
 a=230e-9
-cst=np.pi*a*a
-with open('../example/results.dat','r') as csvfile:
+with open('../example/example_silicon_sphere/results.dat','r') as csvfile:
     plots = csv.reader(csvfile, delimiter = '\t')
     for row in plots:
         x.append(float(row[0]))
@@ -20,18 +19,16 @@ with open('../example/results.dat','r') as csvfile:
         yabs.append(float(row[2])/cst)
         ysca.append(float(row[3])/cst)
 
-plt.scatter(x,yabs,marker='x',label="abs DDA")
-plt.scatter(x,yext,marker='o',label="ext DDA")
-plt.scatter(x,np.array(ysca),marker='^',label="sca DDA")
-#plt.scatter(x,np.array(ysca)/np.array(yext))
-'''
-plt.scatter(x,are,label="real")
-plt.scatter(x,aim,label="imaginary")
-'''
-plt.xlabel("wavelength")
-plt.ylabel("normalized cross section")
-plt.ylabel("polarisbilities")
-plt.title("Silicon sphere, radius="+str(a))
-plt.legend()
+fig, ax=plt.subplots(2, sharex=True)
+ax[0].scatter(x,yabs,marker='x',label="abs DDA")
+ax[0].scatter(x,yext,marker='o',label="ext DDA")
+ax[0].scatter(x,np.array(ysca),marker='^',label="sca DDA")
+
+ax[1].set_xlabel("wavelength")
+ax[0].set_ylabel("normalized cross section")
+
+ax[1].plot(x,np.array(yext)-np.array(yabs)-np.array(ysca))
+fig.suptitle("Silicon sphere, radius="+str(a))
+fig.legend()
 plt.savefig("Silicon_cross_section")
 plt.show()

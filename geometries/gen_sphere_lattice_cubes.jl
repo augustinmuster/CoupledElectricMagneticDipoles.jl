@@ -8,7 +8,7 @@ using LinearAlgebra
 # RUN PARAMETERS
 ###########################
 #radius in term of lattice parameter
-s=6
+s=4
 #radius of the sphere
 R=230e-9
 #verbose

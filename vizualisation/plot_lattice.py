@@ -6,7 +6,7 @@ x=[]
 y=[]
 z=[]
 
-with open('../example/sphere_lattice.dat','r') as csvfile:
+with open('../example/example_silicon_sphere/sphere_lattice.dat','r') as csvfile:
     plots = csv.reader(csvfile, delimiter = '\t')
     i=0
     for row in plots:

@@ -10,8 +10,6 @@ include("../alpha.jl")
 include("../input_fields.jl")
 include("../processing.jl")
 
-
-
 #------Consevation of energy--------
 #ŦEST: test if energy is conserved by the DDA process by comparing the cross sections
 print("Testing conservation of energy: ")
