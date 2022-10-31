@@ -1,3 +1,4 @@
+module DDACore
 ###########################
 # IMPORTS
 ###########################
@@ -5,7 +6,9 @@ using Base
 using DelimitedFiles
 using LinearAlgebra
 using IterativeSolvers
+using LinearSolveCUDA
 using Plots
+using LinearSolve
 include("green_tensors_e_m.jl")
 ###########################
 # FUNCTIONS
@@ -15,7 +18,7 @@ include("green_tensors_e_m.jl")
 #INPUTS: norm of the k, positions of the dipoles, polarisabilities tensor of each dipoles, function to generate the input field, which output to take, which solver to take, verbose
 #OUTPUT: array with the polarisations vectors or inverse of the equations matrix.
 #*************************************************
-function solve_DDA(knorm,r,alpha,input_field::Function;output="polarisations",solver="LU",verbose=true)
+function solve_DDA(knorm,r,alpha,input_field::Function;output="polarisations",solver="AUTO",verbose=true)
     #number of point dipoles
     n=length(r[:,1])
     #logging
@@ -67,13 +70,48 @@ function solve_DDA(knorm,r,alpha,input_field::Function;output="polarisations",so
     E2=copy(E)
 
     #**********solving equation using lapack LU decomposition********
-    if solver=="LU"
+    if solver=="LAPACK"
         if verbose
-            println("solving with lapack LU ...")
+            println("solving with LAPACK solver ...")
             println()
         end
         LAPACK.gesv!(A, E)
+    elseif solver=="AUTO"
+        if verbose
+            println("solving with AUTO (LinearSolve) solver ...")
+            println()
+        end
+        prob = LinearProblem(A, E)
+        sol = solve(prob)
+        E=sol.u
+    elseif solver=="TEST"
+        if verbose
+            println("testing the solvers...")
+            println()
+        end
+        prob = LinearProblem(A, E)
+        times=zeros(Float64,8)
+        times[1]=n
+        println("solver1")
+        times[2]= @elapsed solve(prob)
+        println("solver2")
+        times[3]= @elapsed solve(prob,FastLUFactorization())
+        println("solver3")
+        #times[4]= @elapsed solve(prob, FastQRFactorization())
+        println("solver4")
+        #times[5]= @elapsed solve(prob, LUFactorization())
+        println("solver5")
+        #times[6]= @elapsed solve(prob, QRFactorization())
+        println("solver6")
+        #times[7]= @elapsed solve(prob, IterativeSolversJL_CG())
+        println("solver7")
+        times[8]= @elapsed solve(prob, CudaOffloadFactorization())
+        if verbose
+            println(times)
+        end
+        return times
     end
+
 
     if output=="matrix"
         #LAPACK.getri!(A)
@@ -196,7 +234,7 @@ end
 #INPUTS: norm of the k, positions of the dipoles, polarisabilities tensor of each dipoles electric,polarisabilities tensor of each dipoles magnetic, function to generate the input field, which output to take, which solver to take, verbose
 #OUTPUT: array with the polarisations vectors or inverse of the equations matrix.
 #*************************************************
-function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="polarisations",solver="LU",verbose=true)
+function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="polarisations",solver="AUTO",verbose=true)
     #number of point dipoles
     n=length(r[:,1])
     #logging
@@ -226,8 +264,8 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
             else
                 a_dda[1:3,1:3]=-G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
                 a_dda[4:6,4:6]=-G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
-                a_dda[1:3,4:6]=im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
-                a_dda[4:6,1:3]=-im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
+                a_dda[1:3,4:6]=-im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
+                a_dda[4:6,1:3]=+im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
                 A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
             end
         end
@@ -252,12 +290,20 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
     end
     #copy of the incident fields
     #**********solving equation using lapack LU decomposition********
-    if solver=="LU"
+    if solver=="LAPACK"
         if verbose
-            println("solving with lapack LU ...")
+            println("solving with LAPACK solver ...")
             println()
         end
         LAPACK.gesv!(A, phi)
+    elseif solver=="AUTO"
+        if verbose
+            println("solving with AUTO (LinearSolve) solver ...")
+            println()
+        end
+        prob = LinearProblem(A, phi)
+        sol = solve(prob)
+        phi=sol.u
     end
 
     if output=="matrix"
@@ -294,4 +340,5 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
     end
     #return polarisations and incident fields
     return p,m,e_inc,h_inc,e_inp,h_inp
+end
 end

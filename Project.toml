@@ -1,0 +1,4 @@
+name = "CoupledElectricMagneticDipoles"
+uuid = "f3c9a48b-9994-415a-a861-0bea7d656b27"
+authors = ["augustinmuster <augustin@must-r.com>"]
+version = "0.1.0"

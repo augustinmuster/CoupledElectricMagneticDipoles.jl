@@ -1,3 +1,4 @@
+module Alphas
 ###########################
 # IMPORTS
 ###########################
@@ -62,4 +63,5 @@ function alpha_e_m_mie_renorm(vac_knorm,a,n,n_m)
     alpha_e=im*1.5*a1
     alpha_m=im*1.5*b1
     return alpha_e,alpha_m
+end
 end

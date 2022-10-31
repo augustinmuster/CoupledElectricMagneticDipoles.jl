@@ -1,0 +1,7 @@
+1 automatic choise CPU/GPU
+2 FastLUFactorization()  LAPACK CPU
+3 FastQRFactorization(pivot=NoPivot(),blocksize=32) LAPACK CPU
+4 LUFactorization(pivot=LinearAlgebra.RowMaximum()) Julia CPU
+5 QRFactorization(pivot=LinearAlgebra.NoPivot(),blocksize=16) Julia CPU
+6 IterativeSolversJL_CG(args...;kwargs...) IterativeSolvers CPU
+7 CudaOffloadFactorization() CUDA GPU

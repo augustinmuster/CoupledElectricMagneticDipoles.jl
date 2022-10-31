@@ -1,26 +1,32 @@
+module MieCoeff
 #code to compute the mie coefficients author Augustin Muster (translate from python code of Diego Romero Abujetas)
 #imports
 using Base
 using LinearAlgebra
 using SpecialFunctions
-using PyCall
-@pyimport scipy.special as sps
 
+function spherical_jn(n,x,deriv)
+    if deriv==0
+        return sphericalbesselj(n, x)
+    else
+        return sphericalbesselj(n-1, x)-(n+1)/x*sphericalbesselj(n, x)
+    end
+end
 # utlilities functions
 function psi(n, x)
-    return x * sps.spherical_jn(n, x, 0)
+    return x * spherical_jn(n, x, 0)
 end
 
 function diff_psi(n, x)
-    return sps.spherical_jn(n, x, 0) + x * sps.spherical_jn(n, x, 1)
+    return spherical_jn(n, x, 0) + x * spherical_jn(n, x, 1)
 end
 
 function xi(n, x)
-    return x * (sps.spherical_jn(n, x, 0) + 1*im * sps.spherical_yn(n, x, 0))
+    return x * (spherical_jn(n, x, 0) + 1*im * spherical_yn(n, x, 0))
 end
 
 function diff_xi(n, x)
-    return (sps.spherical_jn(n, x, 0) + 1*im * sps.spherical_yn(n, x, 0)) + x * (sps.spherical_jn(n, x, 1) + 1*im * sps.spherical_yn(n, x, 1))
+    return (spherical_jn(n, x, 0) + 1*im * spherical_yn(n, x, 0)) + x * (spherical_jn(n, x, 1) + 1*im * spherical_yn(n, x, 1))
 end
 
 #*************************************************
@@ -57,4 +63,5 @@ function Mie_bn(k0, R, m_p, m_bg, order)
     mt = m_p / m_bg
 
     return (mt * psi(order, alpha) * diff_psi(order, beta) - diff_psi(order, alpha) * psi(order,beta)) / (mt * xi(order, alpha) * diff_psi(order, beta) - diff_xi(order, alpha) * psi(order, beta))
+end
 end

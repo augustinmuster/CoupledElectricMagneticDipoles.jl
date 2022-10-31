@@ -1,3 +1,4 @@
+module PostProcessing
 ###########################
 # IMPORTS
 ###########################
@@ -84,16 +85,17 @@ function compute_cross_sections_e_m(knorm,r,p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,
             sum_sca=sum_sca+1/3*dot(p[i,:],p[i,:])+1/3*dot(m[i,:],m[i,:])
             for j=(i+1):n
                 sum_sca=sum_sca+real(transpose(p[j,:])*(imag(G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(p[i,:])) + transpose(m[j,:])*(imag(G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(m[i,:])))
-                sum_sca=sum_sca+imag(transpose(conj(p[i,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[j,:]    -   transpose(conj(p[j,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[i,:])
+                sum_sca=sum_sca+imag(-transpose(conj(p[i,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[j,:]    +   transpose(conj(p[j,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[i,:])
             end
         end
 
     end
-    cst=2*pi/knorm^2*sqrt(3.5)
+    cst=2*pi/knorm^2*2/dot(e0,e0)
     if (explicit_scattering)
         return [2*pi/knorm cst*sum_ext cst*sum_abs 2*cst*sum_sca]
     else
         return [2*pi/knorm cst*real(sum_ext) cst*real(sum_abs) real(sum_ext-sum_abs)]
     end
 
+end
 end

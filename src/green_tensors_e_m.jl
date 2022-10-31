@@ -1,4 +1,4 @@
-module green_tensor_e_m
+module GreenTensors
 #""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 #code to compute the magnetic green tensor and it's derivative
 #author: Augustin Muster
@@ -15,12 +15,9 @@ testing=false
 
 @doc raw"""
     G_m(r1,r2,knorm)
-
 Compute the magnetic green tensor between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix.
-
 The magnetic green tensor is defined as:
-
 ```math
 \tilde{G}_m\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}k\left(\frac{ikr-1}{ikr}\right)\vec{u_r}
 ```
@@ -44,7 +41,6 @@ function G_m(r1,r2,knorm)
 end
 @doc raw"""
     dxG_m(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the x component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -103,7 +99,6 @@ end
 
 @doc raw"""
     dyG_m(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the y component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -162,7 +157,6 @@ end
 
 @doc raw"""
     dzG_m(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the z component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -221,12 +215,9 @@ end
 
 @doc raw"""
     G_e(r1,r2,knorm)
-
 Compute the electric green tensor between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix.
-
 The electric green tensor is defined as:
-
 ```math
 \tilde{G}_e\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}k\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\vec{u_r}\right)
 ```
@@ -248,7 +239,6 @@ end
 
 @doc raw"""
     dxG_e(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the x component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -276,7 +266,6 @@ end
 
 @doc raw"""
     dyG_e(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the y component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -304,7 +293,6 @@ end
 
 @doc raw"""
     dzG_e(r1,r2,knorm)
-
 Compute the derivative magnetic green tensor regarding the z component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output isd a 3x3 complex matrix
 """
@@ -332,17 +320,13 @@ end
 
 @doc raw"""
     G_m_renorm(kr1,kr2)
-
 Compute the magnetic green tensor in renormalized units (see Home page) between two position multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
 The output isd a 3x3 complex matrix.
-
 The renormalized magnetic green tensor is defined as:
-
 ```math
 G_m=\frac{4*\pi}{k}\tilde{G}_m
 ```
 """
-#***********************
 function G_m_renorm(kr1,kr2)
     #difference vector
     R_vec=kr1-kr2
@@ -359,19 +343,16 @@ end
 
 @doc raw"""
     G_e_renorm(kr1,kr2)
-
 Compute the electric green tensor in renormalized units (see Home page) between two position multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
 The output is a 3x3 complex matrix.
-
 The renormalized electric green tensor is defined as:
-
 ```math
 G_e=\frac{4*\pi}{k^2}\tilde{G}_e
 ```
 """
 function G_e_renorm(kr1,kr2)
     #difference vector
-    R_vec=r1-r2
+    R_vec=kr1-kr2
     R=norm(R_vec)
     Ur=R_vec/R
 
@@ -384,11 +365,18 @@ function G_e_renorm(kr1,kr2)
     return term1*(term2*id3+term3*matrix)
 end
 
-#***********************
-#function to compute the electric AND amgnetic green tensor
-#INPUTS: position1, position2, norm of the k vector
-#OUTPUT: the (6x6) electric and magnetic green tensor
-#***********************
+@doc raw"""
+    G_e_m(r1,r2,knorm)
+Compute the big electric and magnetic green tensor between two position  `r1` and `r2` with wavenumber `knorm`.
+The output is a 6x6 complex matrix.
+The big electric and magnetic green tensor is defined as:
+```math
+ \tilde{G}_{em}=\left(\begin{matrix}
+ \tilde{G}_e &  \tilde{G}_m\\
+ \tilde{G}_m &  \tilde{G}_e
+\end{matrix}\right)
+```
+"""
 function G_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=G_e(r1,r2,knorm)
@@ -398,11 +386,19 @@ function G_e_m(r1,r2,knorm)
     return Gem
 end
 
-#***********************
-#function to compute the electric AND amgnetic green tensor, renormalized version
-#INPUTS: position1, position2, norm of the k vector
-#OUTPUT: the (6x6) electric and magnetic green tensor
-#***********************
+
+@doc raw"""
+    G_e_m_renorm(r1,r2,knorm)
+Compute the big electric and magnetic green tensor in renormalized units (see Home page) between two position  `r1` and `r2` with wavenumber `knorm`.
+The output is a 6x6 complex matrix.
+The big electric and magnetic green tensor in renormalized units is defined as:
+```math
+ G_{em}=\left(\begin{matrix}
+ G_e &  G_m\\
+ G_m &  G_e
+\end{matrix}\right)
+```
+"""
 function G_e_m_renorm(r1,r2)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=G_e_renorm(r1,r2)
@@ -413,11 +409,11 @@ function G_e_m_renorm(r1,r2)
 end
 
 
-#***********************
-#function to compute the x-derivative of electric AND amgnetic green tensor
-#INPUTS: position1, position2, norm of the k vector
-#OUTPUT: the (6x6) x-derivative of the electric and magnetic green tensor
-#***********************
+@doc raw"""
+    dxG_e_m(r1,r2,knorm)
+Compute the derivative of the big electric and magnetic green tensor regarding the x component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
+The output isd a 6x6 complex matrix
+"""
 function dxG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dxG_e(r1,r2,knorm)
@@ -427,11 +423,11 @@ function dxG_e_m(r1,r2,knorm)
     return Gem
 end
 
-#***********************
-#function to compute the y-derivative of electric AND amgnetic green tensor
-#INPUTS: position1, position2, norm of the k vector
-#OUTPUT: the (6x6) x-derivative of the electric and magnetic green tensor
-#***********************
+@doc raw"""
+    dyG_e_m(r1,r2,knorm)
+Compute the derivative of the big electric and magnetic green tensor regarding the y component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
+The output isd a 6x6 complex matrix
+"""
 function dyG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dyG_e(r1,r2,knorm)
@@ -441,11 +437,11 @@ function dyG_e_m(r1,r2,knorm)
     return Gem
 end
 
-#***********************
-#function to compute the y-derivative of electric AND amgnetic green tensor
-#INPUTS: position1, position2, norm of the k vector
-#OUTPUT: the (6x6) x-derivative of the electric and magnetic green tensor
-#***********************
+@doc raw"""
+    dzG_e_m(r1,r2,knorm)
+Compute the derivative of the big electric and magnetic green tensor regarding the z component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
+The output isd a 6x6 complex matrix
+"""
 function dzG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dzG_e(r1,r2,knorm)
@@ -696,5 +692,4 @@ if testing
     println("test passed ;) ")
     println("")
 end
-
 end

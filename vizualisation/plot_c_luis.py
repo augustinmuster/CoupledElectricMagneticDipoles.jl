@@ -6,20 +6,24 @@ x=[]
 yabs=[]
 yext=[]
 ysca=[]
-
 are=[]
 aim=[]
-a=230e-9
-cst=np.pi*a*a
-with open('../example/example_silicon_sphere/results.dat','r') as csvfile:
+cst=1
+a=1
+with open('../example/test/refractive_index.dat','r') as csvfile:
     plots = csv.reader(csvfile, delimiter = '\t')
     for row in plots:
         x.append(float(row[0]))
-        #x.append(a*2*np.pi/float(row[0]))
 
+
+with open('../example/test/results_luis.csv','r') as csvfile:
+    plots = csv.reader(csvfile, delimiter = '\t')
+    for row in plots:
+        #x.append(a*2*np.pi/float(row[0]))
         yext.append(float(row[1])/cst)
         yabs.append(float(row[2])/cst)
-        ysca.append(float(row[3])/cst)
+        ysca.append(float(row[0])/cst)
+
 
 fig, ax=plt.subplots(2, sharex=True)
 ax[0].scatter(x,yabs,marker='x',label="abs DDA")

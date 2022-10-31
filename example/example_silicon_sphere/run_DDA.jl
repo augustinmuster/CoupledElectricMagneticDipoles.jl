@@ -1,9 +1,9 @@
 #imports
 using DelimitedFiles
-include("../../DDA.jl")
-include("../../alpha.jl")
-include("../../input_fields.jl")
-include("../../processing.jl")
+include("../../src/DDA.jl")
+include("../../src/alpha.jl")
+include("../../src/input_fields.jl")
+include("../../src/processing.jl")
 ##################### INPUT FILES HERE ###################################
 refractive_index="silicon_refractive_index.dat" #file that contain all the refractive index for each frequency (wavelength(nm) |tab| real part of n |tab| imaginary part of N)
 lattice="sphere_lattice.dat" #file that contain the lattice (x coordinate |tab| y coordinate |tab| z coordinate |tab| distance from the origine |tab| polarisability a0 tensor (without radiative correction))
@@ -44,7 +44,7 @@ for i=1:length(ref_id[:,1])
     end
 
     #println(real_eps,imag_eps)
-    p,e_inc=solve_DDA(knorm,latt[:,1:3],alpha,plane_wave,solver="LU")
+    p,e_inc=solve_DDA(knorm,latt[:,1:3],alpha,plane_wave,solver="TEST")
     #compute cross section
     res[i,:]=compute_cross_sections(knorm,latt[:,1:3],p,e_inc,alpha0)
 end
