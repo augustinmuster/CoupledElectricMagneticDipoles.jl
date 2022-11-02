@@ -10,5 +10,5 @@ This module is aimed to compute the electric and magnetic green tensors for the 
 - Compute the derivatives of the electric/magnetic/big green tensor.
 ## Function Documentation
 ```@docs
-input_fields.plane_wave
+InputFields.plane_wave
 ```

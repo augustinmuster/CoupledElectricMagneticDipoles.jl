@@ -1,9 +1,6 @@
 #imports
 using DelimitedFiles
-include("../../src/DDA.jl")
-include("../../src/alpha.jl")
-include("../../src/input_fields.jl")
-include("../../src/processing.jl")
+include("../../src/CoupledElectricMagneticDipoles.jl")
 ##################### INPUT FILES HERE ###################################
 refractive_index="silicon_refractive_index.dat" #file that contain all the refractive index for each frequency (wavelength(nm) |tab| real part of n |tab| imaginary part of N)
 lattice="sphere_lattice.dat" #file that contain the lattice (x coordinate |tab| y coordinate |tab| z coordinate |tab| distance from the origine |tab| polarisability a0 tensor (without radiative correction))
@@ -48,14 +45,14 @@ for s=1:length(ss)
         alpha=zeros(ComplexF64,n,3,3)
         alpha0=zeros(ComplexF64,n,3,3)
         for j=1:n
-            L=depolarisation_tensor(latt[j,6],latt[j,6],latt[j,6],latt[j,7])
+            L=CoupledElectricMagneticDipoles.Alphas.depolarisation_tensor(latt[j,6],latt[j,6],latt[j,6],latt[j,7])
             epsilon=(real_eps[Int(latt[j,5])]+im*imag_eps[Int(latt[j,5])])^2
-            alpha0[j,:,:]=alpha_0(epsilon,1,L,latt[j,7])
-            alpha[j,:,:]=alpha_radiative(alpha0[j,:,:],knorm)
+            alpha0[j,:,:]=CoupledElectricMagneticDipoles.Alphas.alpha_0(epsilon,1,L,latt[j,7])
+            alpha[j,:,:]=CoupledElectricMagneticDipoles.Alphas.alpha_radiative(alpha0[j,:,:],knorm)
         end
 
         #println(real_eps,imag_eps)
-        ts=solve_DDA(knorm,latt[:,1:3],alpha,plane_wave,solver="TEST")
+        ts=CoupledElectricMagneticDipoles.DDACore.solve_DDA(knorm,latt[:,1:3],alpha,CoupledElectricMagneticDipoles.InputFields.plane_wave,solver="TEST")
         res[s,1]=ts[1]
         res[s,2:8]=res[s,2:8]+ts[2:8]
     end

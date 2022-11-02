@@ -2,21 +2,29 @@
 
 push!(LOAD_PATH,"../src/")
 
-include("../src/green_tensors_e_m.jl")
-include("../src/input_fields.jl")
+include("../src/CoupledElectricMagneticDipoles.jl")
 
 using Documenter
 using Base
 
+mathengine = Documenter.MathJax3()
 makedocs(
          sitename = "CoupledElectricMagneticDipoles.jl",
-         modules  = [green_tensor_e_m,input_fields],
+         modules  = [CoupledElectricMagneticDipoles],
          pages=[
                 "Home" => "index.md"
-                "Green tensors" => "green.md"
-                "Input fields" => "input_fields.md"
+                "Theory" => "theory.md"
+                "Modules" => [
+                "GreenTensors" => "green.md"
+                "DDACore" =>"ddacore.md"
+                "Alphas" => "alphas.md"
+                "PostProcessing" => "postprocessing.md"
+                "InputFields" => "input_fields.md"
+                "MieCoeff" =>"miecoeff.md"
+                ]
+                "Examples"=> "examples.md"
                ])
 
-deploydocs(;
-    repo="https://github.com/augustinmuster/DDAjulia.wiki.git",
+deploydocs(
+    repo="https://github.com/augustinmuster/CoupledElectricMagneticDipoles.wiki.git",
 )

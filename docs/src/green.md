@@ -2,55 +2,49 @@
 
 This module is aimed to compute the electric and magnetic green tensors for the two system of units.
 
-## Module Features
-- Computes the electric/magnetic green tensor.
-- Computes the electric/magnetic green tensor for renormalized units.
-- Compute the big electric and magnetic green tensor.
-- Compute the big electric and magnetic for renormalized units.
-- Compute the derivatives of the electric/magnetic/big green tensor.
-## Function Documentation
+## Functions Documentation
 ```@docs
-green_tensor_e_m.G_e
+CoupledElectricMagneticDipoles.GreenTensors.G_e
 ```
 ```@docs
-green_tensor_e_m.dxG_e
+CoupledElectricMagneticDipoles.GreenTensors.dxG_e
 ```
 ```@docs
-green_tensor_e_m.dyG_e
+CoupledElectricMagneticDipoles.GreenTensors.dyG_e
 ```
 ```@docs
-green_tensor_e_m.dzG_e
+CoupledElectricMagneticDipoles.GreenTensors.dzG_e
 ```
 ```@docs
-green_tensor_e_m.G_m
+CoupledElectricMagneticDipoles.GreenTensors.G_m
 ```
 ```@docs
-green_tensor_e_m.dxG_m
+CoupledElectricMagneticDipoles.GreenTensors.dxG_m
 ```
 ```@docs
-green_tensor_e_m.dyG_m
+CoupledElectricMagneticDipoles.GreenTensors.dyG_m
 ```
 ```@docs
-green_tensor_e_m.dzG_m
+CoupledElectricMagneticDipoles.GreenTensors.dzG_m
 ```
 ```@docs
-green_tensor_e_m.G_e_renorm
+CoupledElectricMagneticDipoles.GreenTensors.G_e_renorm
 ```
 ```@docs
-green_tensor_e_m.G_m_renorm
+CoupledElectricMagneticDipoles.GreenTensors.G_m_renorm
 ```
 ```@docs
-green_tensor_e_m.G_e_m
+CoupledElectricMagneticDipoles.GreenTensors.G_e_m
 ```
 ```@docs
-green_tensor_e_m.G_e_m_renorm
+CoupledElectricMagneticDipoles.GreenTensors.G_e_m_renorm
 ```
 ```@docs
-green_tensor_e_m.dxG_e_m
+CoupledElectricMagneticDipoles.GreenTensors.dxG_e_m
 ```
 ```@docs
-green_tensor_e_m.dyG_e_m
+CoupledElectricMagneticDipoles.GreenTensors.dyG_e_m
 ```
 ```@docs
-green_tensor_e_m.dzG_e_m
+CoupledElectricMagneticDipoles.GreenTensors.dzG_e_m
 ```
