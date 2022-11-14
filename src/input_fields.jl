@@ -3,6 +3,7 @@ module InputFields
 # IMPORTS
 #######m####################
 using Base
+using LinearAlgebra
 ###########################
 # FUNCTIONS
 #######m####################
