@@ -11,7 +11,6 @@ module Alphas
 using Base
 using LinearAlgebra
 using PyCall
-include("mie_coeff.jl")
 ###########################
 # FUNCTIONS
 ###########################
