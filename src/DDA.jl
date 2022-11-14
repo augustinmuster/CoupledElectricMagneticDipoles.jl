@@ -15,7 +15,7 @@ using IterativeSolvers
 using LinearSolveCUDA
 using Plots
 using LinearSolve
-using include("green_tensors_e_m.jl")
+include("green_tensors_e_m.jl")
 ###########################
 # FUNCTIONS
 #######m####################
