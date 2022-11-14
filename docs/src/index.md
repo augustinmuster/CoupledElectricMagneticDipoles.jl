@@ -23,6 +23,13 @@ Since the library is not yet in the big registery of the julia package manager, 
 using Pkg
 Pkg.activate("path to the library")
 ```
+
+or
+
+```julia
+julia
+]add "path to the library"
+```
 With this, the package will be precompiled and the dependancies are going to be installed. Then, you will be able to import the library, by using
 
 ```julia

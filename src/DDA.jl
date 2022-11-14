@@ -15,6 +15,7 @@ using IterativeSolvers
 using LinearSolveCUDA
 using Plots
 using LinearSolve
+using GreenTensors
 ###########################
 # FUNCTIONS
 #######m####################
@@ -46,7 +47,7 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
     for j in 1:n
         for k=1:n
             if k!=j
-                G=GreenTensors.G_e(r[j,:],r[k,:],knorm)
+                G=G_e(r[j,:],r[k,:],knorm)
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-knorm^2*G*alpha[k,:,:])
             else
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(id)

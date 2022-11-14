@@ -1,9 +1,6 @@
 #imports
 using DelimitedFiles
-include("../../src/DDA.jl")
-include("../../src/alpha.jl")
-include("../../src/input_fields.jl")
-include("../../src/processing.jl")
+import CoupledElectricMagneticDipoles as CEMD
 ##################### INPUT FILES HERE ###################################
 refractive_index="silicon_refractive_index.dat" #file that contain all the refractive index for each frequency (wavelength(nm) |tab| real part of n |tab| imaginary part of N)
 lattice="sphere_lattice.dat" #file that contain the lattice (x coordinate |tab| y coordinate |tab| z coordinate |tab| distance from the origine |tab| polarisability a0 tensor (without radiative correction))
@@ -37,16 +34,16 @@ for i=1:length(ref_id[:,1])
     alpha=zeros(ComplexF64,n,3,3)
     alpha0=zeros(ComplexF64,n,3,3)
     for j=1:n
-        L=depolarisation_tensor(latt[j,6],latt[j,6],latt[j,6],latt[j,7])
+        L=CEMD.Alphas.depolarisation_tensor(latt[j,6],latt[j,6],latt[j,6],latt[j,7])
         epsilon=(real_eps[Int(latt[j,5])]+im*imag_eps[Int(latt[j,5])])^2
-        alpha0[j,:,:]=alpha_0(epsilon,1,L,latt[j,7])
-        alpha[j,:,:]=alpha_radiative(alpha0[j,:,:],knorm)
+        alpha0[j,:,:]=CEMD.Alphas.alpha_0(epsilon,1,L,latt[j,7])
+        alpha[j,:,:]=CEMD.Alphas.alpha_radiative(alpha0[j,:,:],knorm)
     end
 
     #println(real_eps,imag_eps)
-    p,e_inc=solve_DDA(knorm,latt[:,1:3],alpha,plane_wave,solver="TEST")
+    p,e_inc=CEMD.DDACore.solve_DDA_e(knorm,latt[:,1:3],alpha,CEMD.InputFields.plane_wave,solver="TEST")
     #compute cross section
-    res[i,:]=compute_cross_sections(knorm,latt[:,1:3],p,e_inc,alpha0)
+    res[i,:]=CEMD.PostProcessing.compute_cross_sections(knorm,latt[:,1:3],p,e_inc,alpha0)
 end
 
 #write results to file
