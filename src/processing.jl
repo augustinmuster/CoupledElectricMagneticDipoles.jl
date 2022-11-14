@@ -5,7 +5,6 @@ module PostProcessing
 using Base
 using LinearAlgebra
 include("green_tensors_e_m.jl")
-include("input_fields.jl")
 ###########################
 # FUNCTIONS
 ###########################
@@ -36,7 +35,7 @@ function compute_cross_sections(knorm,r,p,e_inc,alpha0;e0=[1,0,0],explicit_scatt
         if explicit_scattering
             for k=1:n
                 if k!=j
-                    sumsca=sumsca+dot(p[j,:],imag(G_e(r[j,:],r[k,:],knorm))*p[k,:])
+                    sumsca=sumsca+dot(p[j,:],imag(GreenTensors.G_e(r[j,:],r[k,:],knorm))*p[k,:])
                 else
                     sumsca=sumsca+dot(p[j,:],(knorm/6/pi)*p[k,:])
                 end
@@ -84,8 +83,8 @@ function compute_cross_sections_e_m(knorm,r,p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,
         if (explicit_scattering)
             sum_sca=sum_sca+1/3*dot(p[i,:],p[i,:])+1/3*dot(m[i,:],m[i,:])
             for j=(i+1):n
-                sum_sca=sum_sca+real(transpose(p[j,:])*(imag(G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(p[i,:])) + transpose(m[j,:])*(imag(G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(m[i,:])))
-                sum_sca=sum_sca+imag(-transpose(conj(p[i,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[j,:]    +   transpose(conj(p[j,:]))*imag(G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[i,:])
+                sum_sca=sum_sca+real(transpose(p[j,:])*(imag(GreenTensors.G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(p[i,:])) + transpose(m[j,:])*(imag(GreenTensors.G_e_renorm(knorm*r[j,:],knorm*r[i,:]))*conj(m[i,:])))
+                sum_sca=sum_sca+imag(-transpose(conj(p[i,:]))*imag(GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[j,:]    +   transpose(conj(p[j,:]))*imag(GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:]))*m[i,:])
             end
         end
 

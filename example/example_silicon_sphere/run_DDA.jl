@@ -41,7 +41,7 @@ for i=1:length(ref_id[:,1])
     end
 
     #println(real_eps,imag_eps)
-    p,e_inc=CEMD.DDACore.solve_DDA_e(knorm,latt[:,1:3],alpha,CEMD.InputFields.plane_wave,solver="TEST")
+    p,e_inc=CEMD.DDACore.solve_DDA_e(knorm,latt[:,1:3],alpha,CEMD.InputFields.plane_wave,solver="AUTO")
     #compute cross section
     res[i,:]=CEMD.PostProcessing.compute_cross_sections(knorm,latt[:,1:3],p,e_inc,alpha0)
 end
