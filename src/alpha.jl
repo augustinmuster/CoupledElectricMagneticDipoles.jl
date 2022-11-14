@@ -10,7 +10,6 @@ module Alphas
 ###########################
 using Base
 using LinearAlgebra
-using PyCall
 ###########################
 # FUNCTIONS
 ###########################

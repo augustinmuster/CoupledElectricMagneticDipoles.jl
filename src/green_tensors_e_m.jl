@@ -9,7 +9,6 @@ module GreenTensors
 using Base
 using LinearAlgebra
 using Test
-using Documenter
 #if you want to test the funcitons
 testing=false
 

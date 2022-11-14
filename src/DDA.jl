@@ -13,7 +13,6 @@ using DelimitedFiles
 using LinearAlgebra
 using IterativeSolvers
 using LinearSolveCUDA
-using Plots
 using LinearSolve
 include("green_tensors_e_m.jl")
 ###########################
