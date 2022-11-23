@@ -42,12 +42,19 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
     end
     #computing the big matrix
     A=zeros(ComplexF64,3*n,3*n)
+    #big green tensor
+    if output=="full_matrix"
+        Gbig=zeros(ComplexF64,3*n,3*n)
+    end
 
     for j in 1:n
         for k=1:n
             if k!=j
                 G=GreenTensors.G_e(r[j,:],r[k,:],knorm)
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-knorm^2*G*alpha[k,:,:])
+                if output=="full_matrix"
+                    Gbig[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3] = copy(G)
+                end
             else
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(id)
             end
@@ -70,6 +77,8 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
     if output=="matrix"
         #LAPACK.getri!(A)
         return inv(A)
+    else if output=="full_matrix"
+        return Gbig,inv(A)
     end
     #
     if verbose
@@ -174,7 +183,10 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
     end
 
     A=zeros(ComplexF64,6*n,6*n)
-
+    #big green
+    if output=="full_matrix"
+        Gbig=zeros(ComplexF64,6*n,6*n)
+    end
     id=Matrix{ComplexF64}(I,6,6)
     a_dda=zeros(ComplexF64,6,6)
     for i=1:n
@@ -187,14 +199,24 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
                 a_dda[4:6,4:6]=-G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
                 a_dda[1:3,4:6]=-im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
                 a_dda[4:6,1:3]=+im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
+
+                if output=="full_matrix"
+                    a_dda[1:3,1:3]=G_e_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[4:6,4:6]=G_e_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[1:3,4:6]=G_m_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[4:6,1:3]=G_m_renorm(knorm*r[i,:],knorm*r[j,:])
+                    Gbig[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6] = copy(a_dda)
+                end
                 A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
             end
         end
     end
-    #outputiing the output matrix if needed.
+    #return inverse of the matrix if required
     if output=="matrix"
         #LAPACK.getri!(A)
         return inv(A)
+    else if output=="full_matrix"
+        return Gbig,inv(A)
     end
 
     #computing incident fields
