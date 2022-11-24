@@ -5,4 +5,5 @@ module CoupledElectricMagneticDipoles
     include("input_fields.jl")
     include("mie_coeff.jl")
     include("processing.jl")
+    include("geometries.jl")    
 end
