@@ -54,7 +54,7 @@ function gen_sphere_lattice_cubes(s,R;ref_id=1,verbose=true)
                 dis=sqrt(px^2+py^2+pz^2)
                 if dis<s
                     #write if in the sphere
-                    global m=m+1
+                    m=m+1
                 end
             end
         end
