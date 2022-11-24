@@ -25,7 +25,7 @@ Returns 2D array with first dimension is the `N` units that compose the sphere a
 6) lattice parameter
 7) volume of the cubic unit
 """
-function gen_sphere_lattice_cubes(s,r;ref_id=1,verbose=true)
+function gen_sphere_lattice_cubes(s,R;ref_id=1,verbose=true)
     #logging
     if verbose
         println()
