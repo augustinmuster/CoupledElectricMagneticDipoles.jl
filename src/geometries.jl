@@ -8,7 +8,6 @@ module Geometries
 # imports
 ###########################
 using Base
-using DelimitedFiles
 using LinearAlgebra
 ###########################
 # FUNCTIONS
