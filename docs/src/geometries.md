@@ -8,7 +8,6 @@ This module provides two functions to discretize spheres on a cubic lattice.
 CoupledElectricMagneticDipoles.Geometries.gen_sphere_lattice_cubes
 ```
 
-## Functions Documentation
 ```@docs
 CoupledElectricMagneticDipoles.Geometries.gen_sphere_lattice_spheres
 ```
