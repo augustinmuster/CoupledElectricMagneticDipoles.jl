@@ -1,14 +1,14 @@
 #imports
 using DelimitedFiles
 import CoupledElectricMagneticDipoles as CEMD
-##################### INPUT FILES HERE ###################################
-refractive_index="silicon_refractive_index.dat" #file that contain all the refractive index for each frequency (wavelength(nm) |tab| real part of n |tab| imaginary part of N)
-lattice="sphere_lattice.dat" #file that contain the lattice (x coordinate |tab| y coordinate |tab| z coordinate |tab| distance from the origine |tab| polarisability a0 tensor (without radiative correction))
-##########################################################################
-#read lattice file
 
-latt_file=open(lattice,"r")
-latt=readdlm(latt_file,'\t',Float64,'\n')
+##################### INPUT FILE HERE ###################################
+#file that contain all the refractive index for each frequency (wavelength(nm)/real part of n/imaginary part of n)
+refractive_index="silicon_refractive_index.dat"
+##########################################################################
+
+#read lattice file
+latt=CEMD.Geometries.gen_sphere_lattice_cubes(6,230e-9)
 
 #run the DDA for all line of the refractive index files
 n_file=open(refractive_index,"r")

@@ -21,8 +21,11 @@ makedocs(
                 "PostProcessing" => "postprocessing.md"
                 "InputFields" => "input_fields.md"
                 "MieCoeff" =>"miecoeff.md"
+                "Geometries" =>"geometries.md"
                 ]
-                "Examples"=> "examples.md"
+                "Examples"=> [
+                    "Silicon Sphere" => "examples.md"
+                ]
                ])
 
 deploydocs(

@@ -87,7 +87,7 @@ function gen_sphere_lattice_cubes(s,r;ref_id=1,verbose=true)
     end
 
     if verbose
-        println("lattice gegenerated with ", m, " dipoles")
+        println("lattice gegenerated with ", m-1, " dipoles")
     end
     return latt
 end
@@ -105,7 +105,7 @@ Returns 2D array with first dimension is the `N` units that compose the sphere a
 6) lattice parameter
 7) volume of the spherical unit
 """
-function gen_sphere_lattice_cubes(s,R;ref_id=1,verbose=true)
+function gen_sphere_lattice_spheres(s,R;ref_id=1,verbose=true)
     #logging
     if verbose
         println()
@@ -167,7 +167,7 @@ function gen_sphere_lattice_cubes(s,R;ref_id=1,verbose=true)
     end
 
     if verbose
-        println("lattice gegenerated with ", m, " dipoles")
+        println("lattice gegenerated with ", m-1, " dipoles")
     end
     return latt
 end
