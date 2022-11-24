@@ -77,7 +77,7 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
     if output=="matrix"
         #LAPACK.getri!(A)
         return inv(A)
-    else if output=="full_matrix"
+    elseif output=="full_matrix"
         return Gbig,inv(A)
     end
     #
@@ -215,7 +215,7 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
     if output=="matrix"
         #LAPACK.getri!(A)
         return inv(A)
-    else if output=="full_matrix"
+    elseif output=="full_matrix"
         return Gbig,inv(A)
     end
 
