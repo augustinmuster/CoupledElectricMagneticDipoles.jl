@@ -64,8 +64,8 @@ It outputs two scalars which are computed as
 ```
 """
 function alpha_e_m_mie(knorm,vac_knorm,a,n,n_m)
-    a1=Mie_an(vac_knorm, a, n, n_m, 1)
-    b1=Mie_bn(vac_knorm, a, n, n_m, 1)
+    a1=MieCoeff.Mie_an(vac_knorm, a, n, n_m, 1)
+    b1=MieCoeff.Mie_bn(vac_knorm, a, n, n_m, 1)
     alpha_e=im*(6*pi)/(knorm^3)*a1
     alpha_m=im*(6*pi)/(knorm^3)*b1
     return alpha_e,alpha_m
@@ -81,8 +81,8 @@ It outputs two scalars which are computed as
 ```
 """
 function alpha_e_m_mie_renorm(vac_knorm,a,n,n_m)
-    a1=Mie_an(vac_knorm, a, n, n_m, 1)
-    b1=Mie_bn(vac_knorm, a, n, n_m, 1)
+    a1=MieCoeff.Mie_an(vac_knorm, a, n, n_m, 1)
+    b1=MIeCoeff.Mie_bn(vac_knorm, a, n, n_m, 1)
     alpha_e=im*1.5*a1
     alpha_m=im*1.5*b1
     return alpha_e,alpha_m

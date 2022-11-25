@@ -195,16 +195,16 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;output="pol
                 A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=id
 
             else
-                a_dda[1:3,1:3]=-G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
-                a_dda[4:6,4:6]=-G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
-                a_dda[1:3,4:6]=-im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
-                a_dda[4:6,1:3]=+im*G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
+                a_dda[1:3,1:3]=-GreenTensors.G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
+                a_dda[4:6,4:6]=-GreenTensors.G_e_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
+                a_dda[1:3,4:6]=-im*GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_m[j,:,:]
+                a_dda[4:6,1:3]=+im*GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:])*alpha_e[j,:,:]
 
                 if output=="full_matrix"
-                    a_dda[1:3,1:3]=G_e_renorm(knorm*r[i,:],knorm*r[j,:])
-                    a_dda[4:6,4:6]=G_e_renorm(knorm*r[i,:],knorm*r[j,:])
-                    a_dda[1:3,4:6]=G_m_renorm(knorm*r[i,:],knorm*r[j,:])
-                    a_dda[4:6,1:3]=G_m_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[1:3,1:3]=GreenTensors.G_e_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[4:6,4:6]=GreenTensors.G_e_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[1:3,4:6]=GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:])
+                    a_dda[4:6,1:3]=GreenTensors.G_m_renorm(knorm*r[i,:],knorm*r[j,:])
                     Gbig[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6] = copy(a_dda)
                 end
                 A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
