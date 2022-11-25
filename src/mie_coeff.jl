@@ -12,6 +12,14 @@ function spherical_jn(n,x,deriv)
         return sphericalbesselj(n-1, x)-(n+1)/x*sphericalbesselj(n, x)
     end
 end
+
+function spherical_yn(n,x,deriv)
+    if deriv==0
+        return sphericalbessely(n, x)
+    else
+        return sphericalbessely(n-1, x)-(n+1)/x*sphericalbessely(n, x)
+    end
+end
 # utlilities functions
 function psi(n, x)
     return x * spherical_jn(n, x, 0)
