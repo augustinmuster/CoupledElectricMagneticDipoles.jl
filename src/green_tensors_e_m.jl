@@ -371,8 +371,8 @@ The output is a 6x6 complex matrix.
 The big electric and magnetic green tensor is defined as:
 ```math
  \tilde{G}_{em}=\left(\begin{matrix}
- \tilde{G}_e &  \tilde{G}_m\\
- \tilde{G}_m &  \tilde{G}_e
+ \tilde{G}_e &  \tilde{G}_m/k\\
+ \tilde{G}_m/k &  \tilde{G}_e
 \end{matrix}\right)
 ```
 """
@@ -380,8 +380,8 @@ function G_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=G_e(r1,r2,knorm)
     Gem[4:6,4:6]=G_e(r1,r2,knorm)
-    Gem[1:3,4:6]=G_m(r1,r2,knorm)
-    Gem[4:6,1:3]=G_m(r1,r2,knorm)
+    Gem[1:3,4:6]=G_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=G_m(r1,r2,knorm)/knorm
     return Gem
 end
 
