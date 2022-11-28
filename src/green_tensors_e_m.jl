@@ -380,8 +380,8 @@ function G_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=G_e(r1,r2,knorm)
     Gem[4:6,4:6]=G_e(r1,r2,knorm)
-    Gem[1:3,4:6]=G_m(r1,r2,knorm)/knorm
-    Gem[4:6,1:3]=G_m(r1,r2,knorm)/knorm
+    Gem[1:3,4:6]=im*G_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*G_m(r1,r2,knorm)/knorm
     return Gem
 end
 
@@ -417,8 +417,8 @@ function dxG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dxG_e(r1,r2,knorm)
     Gem[4:6,4:6]=dxG_e(r1,r2,knorm)
-    Gem[1:3,4:6]=dxG_m(r1,r2,knorm)/knorm
-    Gem[4:6,1:3]=dxG_m(r1,r2,knorm)/knorm
+    Gem[1:3,4:6]=im*dxG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dxG_m(r1,r2,knorm)/knorm
     return Gem
 end
 
@@ -431,8 +431,8 @@ function dyG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dyG_e(r1,r2,knorm)
     Gem[4:6,4:6]=dyG_e(r1,r2,knorm)
-    Gem[1:3,4:6]=dyG_m(r1,r2,knorm)/knorm
-    Gem[4:6,1:3]=dyG_m(r1,r2,knorm)/knorm
+    Gem[1:3,4:6]=im*dyG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dyG_m(r1,r2,knorm)/knorm
     return Gem
 end
 
@@ -445,8 +445,8 @@ function dzG_e_m(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
     Gem[1:3,1:3]=dzG_e(r1,r2,knorm)
     Gem[4:6,4:6]=dzG_e(r1,r2,knorm)
-    Gem[1:3,4:6]=dzG_m(r1,r2,knorm)/knorm
-    Gem[4:6,1:3]=dzG_m(r1,r2,knorm)/knorm
+    Gem[1:3,4:6]=im*dzG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dzG_m(r1,r2,knorm)/knorm
     return Gem
 end
 
