@@ -11,9 +11,9 @@ module DDACore
 using Base
 using DelimitedFiles
 using LinearAlgebra
-using IterativeSolvers
-using LinearSolveCUDA
-using LinearSolve
+#using IterativeSolvers
+#using LinearSolveCUDA
+#using LinearSolve
 include("green_tensors_e_m.jl")
 ###########################
 # FUNCTIONS
@@ -23,7 +23,7 @@ include("green_tensors_e_m.jl")
 #INPUTS: norm of the k, positions of the dipoles, polarisabilities tensor of each dipoles, function to generate the input field, which output to take, which solver to take, verbose
 #OUTPUT: array with the polarisations vectors or inverse of the equations matrix.
 #*************************************************
-function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",solver="AUTO",verbose=true)
+function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",solver="LAPACK",verbose=true)
     #number of point dipoles
     n=length(r[:,1])
     #logging
@@ -95,6 +95,8 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
             println()
         end
         LAPACK.gesv!(A, E)
+    end
+    #=
     elseif solver=="AUTO"
         if verbose
             println("solving with AUTO (LinearSolve) solver ...")
@@ -137,6 +139,7 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
             println(times)
         end
         return times
+    =#
     end
 
     if verbose
