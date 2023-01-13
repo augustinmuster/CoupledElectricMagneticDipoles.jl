@@ -89,7 +89,7 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
     E2=copy(E)
 
     #**********solving equations using LinearSolve********
-    if solver=="LAPACK"
+    if true
         if verbose
             println("solving with LAPACK solver ...")
             println()
@@ -140,7 +140,6 @@ function solve_DDA_e(knorm,r,alpha,input_field::Function;output="polarisations",
         end
         return times
     =#
-    end
 
     if verbose
         println("equations solved")
