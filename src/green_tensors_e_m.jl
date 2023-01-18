@@ -33,10 +33,10 @@ function G_m(r1,r2,knorm)
     #cross product matrix
     mat=[0 -Ur[3] Ur[2];Ur[3] 0 -Ur[1];-Ur[2] Ur[1] 0]
     #terms
-    term1=knorm*exp(im*knorm*R)/4/pi/R
+    term1=exp(im*knorm*R)/4/pi/R
     term2=(im*knorm*R-1)/knorm/R
     #return green tensor
-    return term1*term2*mat
+    return term1*term2*mat*knorm
 end
 @doc raw"""
     dxG_m(r1,r2,knorm)
@@ -50,51 +50,17 @@ function dxG_m(r1,r2,knorm)
     Ur=R_vec/R
     #create empty 3x3 matirx to store the green tensor
     mat=zeros(ComplexF64,3,3)
-    #compute all the off diagonal terms (the diagonal terms are equal to zero)
-    #common terms
-    t1=3*exp(im*knorm*R)*(-1+im*knorm*R)/R^5
-    t2=im*exp(im*knorm*R)*knorm/R^4
-    t3=im*exp(im*knorm*R)*knorm*(-1+im*knorm*R)/R^4
-    t4=exp(im*knorm*R)*(-1+im*knorm*R)/R^3
-    #component 12
-    com=Ur[1]*Ur[3]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[1,2]=(m1+m2+m3)/4/pi
-    #component 13
-    com=Ur[1]*Ur[2]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[1,3]=(m1+m2+m3)/4/pi
-    #component 21
-    com=Ur[1]*Ur[3]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[2,1]=(m1+m2+m3)/4/pi
-    #component 31
-    com=Ur[1]*Ur[2]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[3,1]=(m1+m2+m3)/4/pi
-    #component 23
-    com=Ur[1]*Ur[1]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[2,3]=(m1+m2+m3-t4)/4/pi
-    #component 32
-    com=Ur[1]*Ur[1]*R*R
-    m1=-t1*com
-    m2=+t2*com
-    m3=+t3*com
-    mat[3,2]=(m1+m2+m3+t4)/4/pi
-    #return the magnetic green tensor
-    return mat
+    #cross product matrix
+    mat=[0 -Ur[3] Ur[2];Ur[3] 0 -Ur[1];-Ur[2] Ur[1] 0]
+    mat3=[0 0 0;0 0 -1;0 1 0]
+    #terms
+    term1=exp(im*knorm*R)/4/pi/(knorm^2*R^3)
+    term2=(im*knorm*R-1)
+    term3=(im*knorm*R)^2 - 3*im*knorm*R + 3
+    #return green tensor
+    return term1*(term3*mat*Ur[1] + term2*mat3)*knorm^2
 end
+
 
 @doc raw"""
     dyG_m(r1,r2,knorm)
@@ -108,51 +74,17 @@ function dyG_m(r1,r2,knorm)
     Ur=R_vec/R
     #create empty 3x3 matirx to store the green tensor
     mat=zeros(ComplexF64,3,3)
-    #compute all the off diagonal terms (the diagonal terms are equal to zero)
-    #common terms
-    t1=3*exp(im*knorm*R)*(-1+im*knorm*R)/R^5
-    t2=im*exp(im*knorm*R)*knorm/R^4
-    t3=im*exp(im*knorm*R)*knorm*(-1+im*knorm*R)/R^4
-    t4=exp(im*knorm*R)*(-1+im*knorm*R)/R^3
-    #component 12
-    com=Ur[2]*Ur[3]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[1,2]=(m1+m2+m3)/4/pi
-    #component 13
-    com=Ur[2]*Ur[2]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[1,3]=(m1+m2+m3+t4)/4/pi
-    #component 21
-    com=Ur[2]*Ur[3]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[2,1]=(m1+m2+m3)/4/pi
-    #component 31
-    com=Ur[2]*Ur[2]*R*R
-    m1=+t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[3,1]=(m1+m2+m3-t4)/4/pi
-    #component 23
-    com=Ur[1]*Ur[2]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[2,3]=(m1+m2+m3)/4/pi
-    #component 32
-    com=Ur[1]*Ur[2]*R*R
-    m1=-t1*com
-    m2=+t2*com
-    m3=+t3*com
-    mat[3,2]=(m1+m2+m3)/4/pi
-    #return the magnetic green tensor
-    return mat
+    #cross product matrix
+    mat=[0 -Ur[3] Ur[2];Ur[3] 0 -Ur[1];-Ur[2] Ur[1] 0]
+    mat3=[0 0 1;0 0 0;-1 0 0]
+    #terms
+    term1=exp(im*knorm*R)/4/pi/(knorm^2*R^3)
+    term2=(im*knorm*R-1)
+    term3=(im*knorm*R)^2 - 3*im*knorm*R + 3
+    #return green tensor
+    return term1*(term3*mat*Ur[2] + term2*mat3)*knorm^2
 end
+
 
 @doc raw"""
     dzG_m(r1,r2,knorm)
@@ -166,50 +98,15 @@ function dzG_m(r1,r2,knorm)
     Ur=R_vec/R
     #create empty 3x3 matirx to store the green tensor
     mat=zeros(ComplexF64,3,3)
-    #compute all the off diagonal terms (the diagonal terms are equal to zero)
-    #common terms
-    t1=3*exp(im*knorm*R)*(-1+im*knorm*R)/R^5
-    t2=im*exp(im*knorm*R)*knorm/R^4
-    t3=im*exp(im*knorm*R)*knorm*(-1+im*knorm*R)/R^4
-    t4=exp(im*knorm*R)*(-1+im*knorm*R)/R^3
-    #component 12
-    com=Ur[3]*Ur[3]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[1,2]=(m1+m2+m3-t4)/4/pi
-    #component 13
-    com=Ur[2]*Ur[3]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[1,3]=(m1+m2+m3)/4/pi
-    #component 21
-    com=Ur[3]*Ur[3]*R*R
-    m1=-t1*com
-    m2=t2*com
-    m3=t3*com
-    mat[2,1]=(m1+m2+m3+t4)/4/pi
-    #component 31
-    com=Ur[2]*Ur[3]*R*R
-    m1=+t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[3,1]=(m1+m2+m3)/4/pi
-    #component 23
-    com=Ur[1]*Ur[3]*R*R
-    m1=t1*com
-    m2=-t2*com
-    m3=-t3*com
-    mat[2,3]=(m1+m2+m3)/4/pi
-    #component 32
-    com=Ur[1]*Ur[3]*R*R
-    m1=-t1*com
-    m2=+t2*com
-    m3=+t3*com
-    mat[3,2]=(m1+m2+m3)/4/pi
-    #return the magnetic green tensor
-    return mat
+    #cross product matrix
+    mat=[0 -Ur[3] Ur[2];Ur[3] 0 -Ur[1];-Ur[2] Ur[1] 0]
+    mat3=[0 -1 0;1 0 0;0 0 0]
+    #terms
+    term1=exp(im*knorm*R)/4/pi/(knorm^2*R^3)
+    term2=(im*knorm*R-1)
+    term3=(im*knorm*R)^2 - 3*im*knorm*R + 3
+    #return green tensor
+    return term1*(term3*mat*Ur[2] + term2*mat3)*knorm^2
 end
 
 @doc raw"""
@@ -218,7 +115,7 @@ Compute the electric green tensor between two position  `r1` and `r2` with waven
 The output isd a 3x3 complex matrix.
 The electric green tensor is defined as:
 ```math
-\tilde{G}_e\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}k\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\vec{u_r}\right)
+\tilde{G}_e\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\vec{u_r}\right)
 ```
 with
 ```math
@@ -226,13 +123,14 @@ r=|r_1-r_2|, \vec{u_r}=\left(r_1-r_2\right)/r
 ```
 """
 function G_e(r1,r2,knorm)
-    R=r1-r2
-    term1=exp(im*knorm*norm(R))/(4*pi*norm(R))
-    term2=1+(im/(knorm*norm(R)))-(1/(knorm^2*norm(R)^2))
-    term3=1+(3*im/(knorm*norm(R)))-(3/(knorm^2*norm(R)^2))
-    matrix=R*transpose(R)
+    R_vec=r1-r2
+    R=norm(R_vec)
+    term1=exp(im*knorm*R)/(4*pi*R)
+    term2=1+(im/(knorm*R))-(1/(knorm^2*R^2))
+    term3=1+(3*im/(knorm*R))-(3/(knorm^2*R^2))
+    matrix=R_vec*transpose(R_vec)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
-    return term1*(term2*id3-term3*matrix/norm(R)^2)
+    return term1*(term2*id3-term3*matrix)
 end
 
 
@@ -256,10 +154,10 @@ function dxG_e(r1,r2,knorm)
     term3 = - knorm*(im - 6/(knorm*r) - 15*im/(knorm*r)^2 + 15/(knorm*r)^3)*x/r
     term4 = - (1 + 3*im/(knorm*r) - 3/(knorm*r)^2)/r^2
     Rmx = [2*x y z;y 0 0;z 0 0]
-    matrix=R*transpose(R)
+    matrix=R*transpose(R)/r^2
     id3=[1 0 0;0 1 0;0 0 1]
 
-    return term1*(term2*id3 + term3*matrix/r^2 + term4*Rmx)
+    return term1*(term2*id3 + term3*matrix + term4*Rmx)
 
 end
 
@@ -385,9 +283,29 @@ function G_e_m(r1,r2,knorm)
     return Gem
 end
 
+@doc raw"""
+    G_em_s(r1,r2,knorm)
+Compute the big electric and magnetic green tensor between two position  `r1` and `r2` with wavenumber `knorm` and including the phase flip in the magnetic Green tensor.
+The output is a 6x6 complex matrix.
+The big electric and magnetic green tensor is defined as:
+```math
+ \tilde{G}_{em}=\left(\begin{matrix}
+ \tilde{G}_e &  i\tilde{G}_m/k\\
+ - \tilde{G}_m/k &  \tilde{G}_e
+\end{matrix}\right)
+```
+"""
+function G_em_s(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=G_e(r1,r2,knorm)
+    Gem[4:6,4:6]=G_e(r1,r2,knorm)
+    Gem[1:3,4:6]=im*G_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*G_m(r1,r2,knorm)/knorm
+    return Gem
+end
 
 @doc raw"""
-    G_e_m_renorm(r1,r2,knorm)
+    G_e_m_renorm(r1,r2)
 Compute the big electric and magnetic green tensor in renormalized units (see Home page) between two position  `r1` and `r2` with wavenumber `knorm`.
 The output is a 6x6 complex matrix.
 The big electric and magnetic green tensor in renormalized units is defined as:
@@ -406,6 +324,30 @@ function G_e_m_renorm(r1,r2)
     Gem[4:6,1:3]=G_m_renorm(r1,r2)
     return Gem
 end
+
+@doc raw"""
+    G_e_m_renorm(r1,r2)
+Compute the big electric and magnetic green tensor in renormalized units (see Home page) between two position  `r1` and `r2` with wavenumber `knorm`.
+The output is a 6x6 complex matrix.
+The big electric and magnetic green tensor in renormalized units is defined as:
+```math
+ G_{em}=\left(\begin{matrix}
+ G_e &  iG_m\\
+ -i G_m &  G_e
+\end{matrix}\right)
+```
+"""
+
+function G_em_s_renorm(r1,r2)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=G_e_renorm(r1,r2)
+    Gem[4:6,4:6]=G_e_renorm(r1,r2)
+    Gem[1:3,4:6]=im*G_m_renorm(r1,r2)
+    Gem[4:6,1:3]=-im*G_m_renorm(r1,r2)
+    return Gem
+end
+
+# The derivaties should go in following releases?
 
 function dxG_e_m_renorm(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
