@@ -437,4 +437,4 @@ function LDOS_EP2(knorm, alpha, Ainv, pos, rd, dip_o)
     return LDOS
 
 end
-
+end
