@@ -97,7 +97,6 @@ function compute_cross_sections_e_m(knorm,r,p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,
     end
 
 end
-end
 
 #=
 Function that calculated the electromagnetic field emitted by a point dipole with dipole moment "\dfrac{1}{\epsilon_0\epsilon} \bm \mu = "dip_o"" (see equation below)
