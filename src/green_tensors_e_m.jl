@@ -305,6 +305,25 @@ function G_em_s(r1,r2,knorm)
 end
 
 @doc raw"""
+Sigma represent the base-change-matrix from G_e_m to G_em_s
+"""
+function Sigma(n)
+    
+    Sigma = zeros(ComplexF64,6*n,6*n)
+    Sigma_i = zeros(ComplexF64,6*n,6)
+    id = [1 0 0;0 1 0;0 0 1]
+    
+    for i = 1:n    
+        Sigma_i[(i-1)*6+1:(i-1)*6+6,:] = [id id*0; id*0 im*id]
+    end
+    for i = 1:n    
+        Sigma[:,(i-1)*6+1:(i-1)*6+6] = copy(Sigma_i)
+    end    
+    return Sigma
+    
+end
+
+@doc raw"""
     G_e_m_renorm(r1,r2)
 Compute the big electric and magnetic green tensor in renormalized units (see Home page) between two position  `r1` and `r2` with wavenumber `knorm`.
 The output is a 6x6 complex matrix.
@@ -347,7 +366,6 @@ function G_em_s_renorm(r1,r2)
     return Gem
 end
 
-# The derivaties should go in following releases?
 
 function dxG_e_m_renorm(r1,r2,knorm)
     Gem=zeros(ComplexF64,6,6)
@@ -373,6 +391,33 @@ function dzG_e_m_renorm(r1,r2,knorm)
     Gem[4:6,4:6]=dzG_e(r1,r2,knorm)*4*pi/knorm
     Gem[1:3,4:6]=dzG_m(r1,r2,knorm)*4*pi/knorm^2
     Gem[4:6,1:3]=dzG_m(r1,r2,knorm)*4*pi/knorm^2
+    return Gem
+end
+
+function dxG_em_s_renorm(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dxG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[4:6,4:6]=dxG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[1:3,4:6]=im*dxG_m(r1,r2,knorm)*4*pi/knorm^2
+    Gem[4:6,1:3]=-im*dxG_m(r1,r2,knorm)*4*pi/knorm^2
+    return Gem
+end
+
+function dyG_em_s_renorm(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dyG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[4:6,4:6]=dyG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[1:3,4:6]=im*dyG_m(r1,r2,knorm)*4*pi/knorm^2
+    Gem[4:6,1:3]=-im*dyG_m(r1,r2,knorm)*4*pi/knorm^2
+    return Gem
+end
+
+function dzG_em_s_renorm(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dzG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[4:6,4:6]=dzG_e(r1,r2,knorm)*4*pi/knorm
+    Gem[1:3,4:6]=im*dzG_m(r1,r2,knorm)*4*pi/knorm^2
+    Gem[4:6,1:3]=-im*dzG_m(r1,r2,knorm)*4*pi/knorm^2
     return Gem
 end
 @doc raw"""
@@ -417,7 +462,34 @@ function dzG_e_m(r1,r2,knorm)
     return Gem
 end
 
+function dxG_em_s(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dxG_e(r1,r2,knorm)
+    Gem[4:6,4:6]=dxG_e(r1,r2,knorm)
+    Gem[1:3,4:6]=im*dxG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dxG_m(r1,r2,knorm)/knorm
+    return Gem
+end
 
+
+function dyG_em_s(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dyG_e(r1,r2,knorm)
+    Gem[4:6,4:6]=dyG_e(r1,r2,knorm)
+    Gem[1:3,4:6]=im*dyG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dyG_m(r1,r2,knorm)/knorm
+    return Gem
+end
+
+
+function dzG_em_s(r1,r2,knorm)
+    Gem=zeros(ComplexF64,6,6)
+    Gem[1:3,1:3]=dzG_e(r1,r2,knorm)
+    Gem[4:6,4:6]=dzG_e(r1,r2,knorm)
+    Gem[1:3,4:6]=im*dzG_m(r1,r2,knorm)/knorm
+    Gem[4:6,1:3]=-im*dzG_m(r1,r2,knorm)/knorm
+    return Gem
+end
 
 if testing
     ###########################
