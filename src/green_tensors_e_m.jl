@@ -14,18 +14,17 @@ testing=false
 
 @doc raw"""
     G_em(r1,r2,k)
-Compute the electric and magnetic green tensor between two position `r1` and `r2` (r2 the origin and r1 the observation) .
+Compute the electric and magnetic green tensor between two position `r1` and `r2` (`r2` the origin and `r1` the observation) .
 The output are two 3x3 complex matrix.
 The electric green tensor (with unit of [1/m]) is defined as:
 ```math
-\tilde{G}_e=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\vec{u_r}\right)
+\tilde{G}_e=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\otimes\vec{u_r}\right)
 ```
 The magnetic green tensor (with unit of [1/m]) is defined as:
 ```math
 \tilde{G}_m/k=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{ikr-1}{ikr}\right)\vec{u_r}
 ```
 """
-
 function G_em(r1,r2,k)
 
     kr1 = k*r1
@@ -52,7 +51,7 @@ end
 
 @doc raw"""
     G_em_renorm(kr1,kr2)
-Compute the electric and magnetic green tensor between two position r1 and r2, where the imputs are the positions multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
+Compute the electric and magnetic green tensor between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
 The output are two 3x3 complex matrix.
 The electric green tensor (with unit of [1]) is defined as:
 ```math
@@ -63,7 +62,6 @@ The magnetic green tensor (with unit of [1]) is defined as:
 G_m=\frac{4*\pi}{k^2}\tilde{G}_m
 ```
 """
-
 function G_em_renorm(kr1,kr2)
 
     kR_vec = kr1-kr2
@@ -88,7 +86,7 @@ end
 @doc raw"""
     G_m(r1,r2,knorm)
 Compute the magnetic green tensor between two position  `r1` and `r2` with wavenumber `knorm`.
-The output isd a 3x3 complex matrix.
+The output is a 3x3 complex matrix.
 The magnetic green tensor (with units [1/m^2]) is defined as:
 ```math
 \tilde{G}_m=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}k\left(\frac{ikr-1}{ikr}\right)\vec{u_r}
@@ -116,10 +114,10 @@ end
 @doc raw"""
     G_e(r1,r2,knorm)
 Compute the electric green tensor between two position  `r1` and `r2` with wavenumber `knorm`.
-The output isd a 3x3 complex matrix.
+The output is a 3x3 complex matrix.
 The electric green tensor (with units [1/m]) is defined as:
 ```math
-\tilde{G}_e=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\vec{u_r}\right)
+\tilde{G}_e=\left(\vec{r_1},\vec{r_2},k\right)=\frac{e^{ikr}}{4 \pi r}\left(\frac{(kr)^2+ikr-1}{(kr)^2}I+\frac{-(kr)^2-3ikr+3}{(kr)^2}\vec{u_r}\otimes\vec{u_r}\right)
 ```
 with
 ```math
@@ -335,7 +333,6 @@ end
 Compute the derivative green tensor (defined in G_e(r1,r2,knorm) and G_m(r1,r2,knorm)/knorm) regarding the x component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output are two 3x3 complex matrix (with units of [1/m^2]).
 """
-
 function dxG_em(r1,r2,knorm)
     
     R_vec = r1-r2
@@ -373,11 +370,10 @@ function dxG_em(r1,r2,knorm)
 end
 
 @doc raw"""
-    dxG_em(r1,r2,knorm)
+    dyG_em(r1,r2,knorm)
 Compute the derivative green tensor (defined in G_e(r1,r2,knorm) and G_m(r1,r2,knorm)/knorm) regarding the y component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output are two 3x3 complex matrix (with units of [1/m^2]).
 """
-
 function dyG_em(r1,r2,knorm)
     
     R_vec = r1-r2
@@ -415,11 +411,10 @@ function dyG_em(r1,r2,knorm)
 end
 
 @doc raw"""
-    dxG_em(r1,r2,knorm)
+    dzG_em(r1,r2,knorm)
 Compute the derivative green tensor (defined in G_e(r1,r2,knorm) and G_m(r1,r2,knorm)/knorm) regarding the x component of `r1` between two position  `r1` and `r2` with wavenumber `knorm`.
 The output are two 3x3 complex matrix (with units of [1/m^2]).
 """
-
 function dzG_em(r1,r2,knorm)
     
     R_vec = r1-r2
@@ -457,6 +452,7 @@ function dzG_em(r1,r2,knorm)
 end
 
 @doc raw"""
+    Sigma(n)
 Sigma represent the base-change-matrix [E, ZH] to [E, iZH]
 """
 function Sigma(n)

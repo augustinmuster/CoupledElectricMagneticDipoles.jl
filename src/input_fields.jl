@@ -93,7 +93,6 @@ Equation
 \E_{\bm \mu}(\r) = `E_0i`
 
 """
-
 function point_dipole(knorm, E0_const, positions, rd, dip_o)
     
     N_points = length(positions[:,1])
@@ -155,7 +154,6 @@ Equation
 \E_{\bm \mu}(\r) = `E_0i`
 
 """
-
 function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
     
     N_points = length(kpositions[:,1])

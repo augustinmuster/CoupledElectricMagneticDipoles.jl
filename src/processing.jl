@@ -100,20 +100,23 @@ end
 
 @doc raw"""
     point_dipole(knorm, E0_const, positions, rd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment \dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (see equation below)
+Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
+```math
+\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
+``` 
 
 Imputs
 - `knorm0` is the medium wavevector (scalar)
 - `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
 - `position` contains the position at which the field is calculated (N x 3 matrix, where -N- is the number of points)
 - `rd` is the position of the emitting source/dipole (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then
-dip_o = 1 -> elecric dipole along x-axis
-dip_o = 2 -> elecric dipole along y-axis
-dip_o = 3 -> elecric dipole along z-axis
-dip_o = 4 -> magnetic dipole along x-axis
-dip_o = 5 -> magnetic dipole along y-axis
-dip_o = 6 -> magnetic dipole along z-axis
+- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
+    - dip_o = 1 -> elecric dipole along x-axis
+    - dip_o = 2 -> elecric dipole along y-axis
+    - dip_o = 3 -> elecric dipole along z-axis
+    - dip_o = 4 -> magnetic dipole along x-axis
+    - dip_o = 5 -> magnetic dipole along y-axis
+    - dip_o = 6 -> magnetic dipole along z-axis
 if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
 
 Outputs
@@ -122,17 +125,15 @@ Outputs
 Equation
 
 ```math
-\E_{\bm \mu}(\r) = \omega^2 \mu \mu_0 \G(\r, \r_0) \bm \mu = k^2 \G(\r, \r_0) \dfrac{1}{\epsilon_0\epsilon} \bm \mu
+\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) = \omega^2 \mu \mu_0 G(\mathbf{r}, \mathbf{r}_0) \overrightarrow{\mu} = k^2 G(\mathbf{r}, \mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
 ```
-
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o`
-\r = `positions`
-\r_0 = `rd`
-
-\E_{\bm \mu}(\r) = `E_0i`
-
+with
+```math
+\mathrm{positions} = \mathbf{r}, \\
+\mathrm{rd} = \mathbf{r}_0, \\
+\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
+``` 
 """
-
 function point_dipole(knorm, E0_const, positions, rd, dip_o)
     
     N_points = length(positions[:,1])
@@ -160,22 +161,26 @@ function point_dipole(knorm, E0_const, positions, rd, dip_o)
         
 end
 
+
 @doc raw"""
     point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment \dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (see equation below)
+Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
+```math
+\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
+``` 
 
 Imputs
 - `knorm0` is the medium wavevector (scalar)
 - `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
 - `kposition` contains the position (multiplied by the wavevector) at which the field is calculated (N x 3 matrix, where -N- is the number of points)
 - `krd` is the position of the emitting source/dipole (multiplied by the wavevector) (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then
-dip_o = 1 -> elecric dipole along x-axis
-dip_o = 2 -> elecric dipole along y-axis
-dip_o = 3 -> elecric dipole along z-axis
-dip_o = 4 -> magnetic dipole along x-axis
-dip_o = 5 -> magnetic dipole along y-axis
-dip_o = 6 -> magnetic dipole along z-axis
+- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
+    - dip_o = 1 -> elecric dipole along x-axis
+    - dip_o = 2 -> elecric dipole along y-axis
+    - dip_o = 3 -> elecric dipole along z-axis
+    - dip_o = 4 -> magnetic dipole along x-axis
+    - dip_o = 5 -> magnetic dipole along y-axis
+    - dip_o = 6 -> magnetic dipole along z-axis
 if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
 
 Outputs
@@ -184,17 +189,15 @@ Outputs
 Equation
 
 ```math
-\E_{\bm \mu}(\r) = k^2 \G(\r, \r_0) \dfrac{1}{\epsilon_0\epsilon} \bm \mu
+\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) =  k^2 G(k\mathbf{r}, k\mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
 ```
-
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o`
-\r = `positions`
-\r_0 = `rd`
-
-\E_{\bm \mu}(\r) = `E_0i`
-
+with
+```math
+\mathrm{kpositions} = \mathbf{kr}, \\
+\mathrm{krd} = \mathbf{kr}_0, \\
+\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
+``` 
 """
-
 function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
     
     N_points = length(kpositions[:,1])
@@ -240,7 +243,7 @@ Outputs
 Equation
 
 ```math
-\E_{sca}(\r) = k^2\GG(\r,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \E_{inc}(\mathbf{\bar{r}}_N) = k^2\GG(\r,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) \E_{0}
+\mathbf{E}_{sca}(\mathbf{r}) = k^2G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) \mathbf{E}_{inc}(\mathbf{\bar{r}}_N) = k^2 G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) D(\mathbf{\bar{r}}_N) \E_{0}
 ```
 
 \r = `r0`
@@ -251,8 +254,6 @@ Equation
 
 \E_{sca}(\r) = `field_r`
 """
-
-
 function field_sca(knorm, alpha, E_inc, r0, pos)
 
     N_particles = length(pos[:,1]) 
@@ -311,7 +312,6 @@ k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}
 
 \mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
 """
-
 function LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
  
     E_0i = point_dipole(knorm, 1, pos, rd, dip_o)
@@ -351,7 +351,6 @@ LDOS = \sigma^{sca}/\sigma^{sca}_{0}
 ```
 
 """
-
 function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 
     r = [pos; rd]
@@ -409,7 +408,6 @@ LDOS = P/P_{0}
 ```
 
 """
-
 function LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
 
     Pos = [pos; rd]
