@@ -351,7 +351,7 @@ function dxG_em(r1,r2,knorm)
     term3 = - knorm*(im - 6/(knorm*R) - 15*im/(knorm*R)^2 + 15/(knorm*R)^3)*x/R
     term4 = - (1 + 3*im/(knorm*R) - 3/(knorm*R)^2)/R^2
     Rmx = [2*x y z;y 0 0;z 0 0]
-    matrix=R*transpose(R)/R^2
+    matrix=R_vec*transpose(R_vec)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
 
     dxGe =  term1*(term2*id3 + term3*matrix + term4*Rmx)	# same as dxG_e(r1,r2,knorm)
@@ -393,7 +393,7 @@ function dyG_em(r1,r2,knorm)
     term3 = - knorm*(im - 6/(knorm*R) - 15*im/(knorm*R)^2 + 15/(knorm*R)^3)*y/R
     term4 = - (1 + 3*im/(knorm*R) - 3/(knorm*R)^2)/R^2
     Rmy = [0 x 0;x 2*y z;0 z 0]
-    matrix=R*transpose(R)/R^2
+    matrix=R_vec*transpose(R_vec)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
 
     dyGe =  term1*(term2*id3 + term3*matrix + term4*Rmy)	# same as dxG_e(r1,r2,knorm)
@@ -435,7 +435,7 @@ function dzG_em(r1,r2,knorm)
     term3 = - knorm*(im - 6/(knorm*R) - 15*im/(knorm*R)^2 + 15/(knorm*R)^3)*z/R
     term4 = - (1 + 3*im/(knorm*R) - 3/(knorm*R)^2)/R^2
     Rmz = [0 0 x;0 0 y;x y 2*z]
-    matrix=R*transpose(R)/R^2
+    matrix=R_vec*transpose(R_vec)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
 
     dzGe =  term1*(term2*id3 + term3*matrix + term4*Rmz)	# same as dxG_e(r1,r2,knorm)
