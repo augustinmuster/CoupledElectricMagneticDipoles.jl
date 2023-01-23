@@ -342,9 +342,9 @@ function dxG_em(r1,r2,knorm)
     R = norm(R_vec)
     Ur=R_vec/R
     
-    x = R[1]
-    y = R[2]
-    z = R[3]
+    x = R_vec[1]
+    y = R_vec[2]
+    z = R_vec[3]
 
     term1 = exp(im*knorm*R)/(4*pi*R)
     term2 = knorm*(im - 2/(knorm*R) - 3*im/(knorm*R)^2 + 3/(knorm*R)^3)*x/R
@@ -384,9 +384,9 @@ function dyG_em(r1,r2,knorm)
     R = norm(R_vec)
     Ur=R_vec/R
     
-    x = R[1]
-    y = R[2]
-    z = R[3]
+    x = R_vec[1]
+    y = R_vec[2]
+    z = R_vec[3]
 
     term1 = exp(im*knorm*R)/(4*pi*R)
     term2 = knorm*(im - 2/(knorm*R) - 3*im/(knorm*R)^2 + 3/(knorm*R)^3)*y/R
@@ -396,7 +396,7 @@ function dyG_em(r1,r2,knorm)
     matrix=R*transpose(R)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
 
-    dxGe =  term1*(term2*id3 + term3*matrix + term4*Rmy)	# same as dxG_e(r1,r2,knorm)
+    dyGe =  term1*(term2*id3 + term3*matrix + term4*Rmy)	# same as dxG_e(r1,r2,knorm)
     
     #difference vector
 
@@ -409,9 +409,9 @@ function dyG_em(r1,r2,knorm)
     term5=(im*knorm*R-1)
     term6=(im*knorm*R)^2 - 3*im*knorm*R + 3
     #return green tensor
-    dxGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
+    dyGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
     
-    return dxGe, dxGm
+    return dyGe, dyGm
 end
 
 @doc raw"""
@@ -426,9 +426,9 @@ function dzG_em(r1,r2,knorm)
     R = norm(R_vec)
     Ur=R_vec/R
     
-    x = R[1]
-    y = R[2]
-    z = R[3]
+    x = R_vec[1]
+    y = R_vec[2]
+    z = R_vec[3]
 
     term1 = exp(im*knorm*R)/(4*pi*R)
     term2 = knorm*(im - 2/(knorm*R) - 3*im/(knorm*R)^2 + 3/(knorm*R)^3)*z/R
@@ -438,7 +438,7 @@ function dzG_em(r1,r2,knorm)
     matrix=R*transpose(R)/R^2
     id3=[1 0 0;0 1 0;0 0 1]
 
-    dxGe =  term1*(term2*id3 + term3*matrix + term4*Rmz)	# same as dxG_e(r1,r2,knorm)
+    dzGe =  term1*(term2*id3 + term3*matrix + term4*Rmz)	# same as dxG_e(r1,r2,knorm)
     
     #difference vector
 
@@ -451,9 +451,9 @@ function dzG_em(r1,r2,knorm)
     term5=(im*knorm*R-1)
     term6=(im*knorm*R)^2 - 3*im*knorm*R + 3
     #return green tensor
-    dxGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
+    dzGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
     
-    return dxGe, dxGm
+    return dzGe, dzGm
 end
 
 @doc raw"""
