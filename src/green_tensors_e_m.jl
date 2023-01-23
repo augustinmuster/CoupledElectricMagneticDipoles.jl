@@ -409,7 +409,7 @@ function dyG_em(r1,r2,knorm)
     term5=(im*knorm*R-1)
     term6=(im*knorm*R)^2 - 3*im*knorm*R + 3
     #return green tensor
-    dyGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
+    dyGm = term1/R^2*(term6*mat*Ur[2] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
     
     return dyGe, dyGm
 end
@@ -451,7 +451,7 @@ function dzG_em(r1,r2,knorm)
     term5=(im*knorm*R-1)
     term6=(im*knorm*R)^2 - 3*im*knorm*R + 3
     #return green tensor
-    dzGm = term1/R^2*(term6*mat*Ur[1] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
+    dzGm = term1/R^2*(term6*mat*Ur[3] + term5*mat3)/knorm		# same as dxG_m(r1,r2,knorm)/knorm
     
     return dzGe, dzGm
 end
