@@ -98,42 +98,47 @@ function compute_cross_sections_e_m(knorm,r,p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,
 
 end
 
-#=
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment "\dfrac{1}{\epsilon_0\epsilon} \bm \mu = "dip_o"" (see equation below)
+@doc raw"""
+    point_dipole(knorm, E0_const, positions, rd, dip_o)
+Function that calculated the electromagnetic field emitted by a point dipole with dipole moment \dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (see equation below)
 
 Imputs
-- "knorm0" is the medium wavevector (scalar)
-- "E0_const" is the field intensity (scalar). The modulus of the dipole moment is set to "(epsilon_0*epsilon_m)", where "epsilon_0" and "epsilon_m" are the vacuum and medium permittivity, respectively.
-- "position" contains the position at which the field is calculated ("N x 3" matrix, where "N" is the number of points)
-- "rd" is the position of the emitting source/dipole ("1 x 3" vector)
-- "dip_o" defined the "nature of the dipole". If "dip_o" is a scalar then
-dip_o = 1 -> elecric dipole along "x" axis
-dip_o = 2 -> elecric dipole along "y" axis
-dip_o = 3 -> elecric dipole along "z" axis
-dip_o = 4 -> magnetic dipole along "x" axis
-dip_o = 5 -> magnetic dipole along "y" axis
-dip_o = 6 -> magnetic dipole along "z" axis
-if "dip_o" is "6 x 1" vector then specified the dipole moment orentation of the source. 
+- `knorm0` is the medium wavevector (scalar)
+- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
+- `position` contains the position at which the field is calculated (N x 3 matrix, where -N- is the number of points)
+- `rd` is the position of the emitting source/dipole (1 x 3 vector)
+- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then
+dip_o = 1 -> elecric dipole along x-axis
+dip_o = 2 -> elecric dipole along y-axis
+dip_o = 3 -> elecric dipole along z-axis
+dip_o = 4 -> magnetic dipole along x-axis
+dip_o = 5 -> magnetic dipole along y-axis
+dip_o = 6 -> magnetic dipole along z-axis
+if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
 
 Outputs
-- "E_0i" is the electromagnetic field vector of the field at the requiered positions ("6N x 1" vector)
+- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
 
 Equation
 
-\E_{\bm \mu}(\r) = \omega^2 \mu \mu_0 \G(\r, \r_0) \bm \mu = k^2 \G(\r_0, \r_0) \dfrac{1}{\epsilon_0\epsilon} \bm \mu
+```math
+\E_{\bm \mu}(\r) = \omega^2 \mu \mu_0 \G(\r, \r_0) \bm \mu = k^2 \G(\r, \r_0) \dfrac{1}{\epsilon_0\epsilon} \bm \mu
+```
 
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = "dip_o"
-\G(\r_0, \r_0) = "G"
+\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o`
+\r = `positions`
+\r_0 = `rd`
 
-=#
+\E_{\bm \mu}(\r) = `E_0i`
+
+"""
 
 function point_dipole(knorm, E0_const, positions, rd, dip_o)
     
     N_points = length(positions[:,1])
     
-    G_tensor = zeros(ComplexF64,N_points*6,6) 
-
-# "dip_o" is the dipole orientation ("1 x 6" vector. A electric dipole along the "y" axis would be "dip_o = [0,1,0,0,0,0]", while a magnetic dipole along the "z" axis would be "dip_o = [0,0,0,0,0,1]") 
+    G_tensor = zeros(ComplexF64,N_points*6,6)
+    G = zeros(ComplexF64,6,6) 
 
     if length(dip_o) == 1
         dip_oi = dip_o
@@ -143,28 +148,59 @@ function point_dipole(knorm, E0_const, positions, rd, dip_o)
         dip_o = dip_o/norm(dip_o) # Ensure that its modulus is equal to one
     end
 
-    for i = 1:N_points     
-        G = knorm^2*GreenTensors.G_em_s(positions[i,:],rd[1,:],knorm)
+    for i = 1:N_points  
+        Ge, Gm = GreenTensors.G_em(positions[i,:],rd[1,:],knorm)   
+        G[:,:] = [Ge im*Gm, -im*Gm Ge]
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
-    E_0i = G_tensor*dip_o*E0_const
+    E_0i = k^2*G_tensor*dip_o*E0_const
 
     return E_0i
         
 end
 
-# Same as before, but the possicional arguments are given in dimmensiola units
-# kpositions = knorm*positions
-# krd = knorm*krd
+@doc raw"""
+    point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
+Function that calculated the electromagnetic field emitted by a point dipole with dipole moment \dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (see equation below)
+
+Imputs
+- `knorm0` is the medium wavevector (scalar)
+- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
+- `kposition` contains the position (multiplied by the wavevector) at which the field is calculated (N x 3 matrix, where -N- is the number of points)
+- `krd` is the position of the emitting source/dipole (multiplied by the wavevector) (1 x 3 vector)
+- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then
+dip_o = 1 -> elecric dipole along x-axis
+dip_o = 2 -> elecric dipole along y-axis
+dip_o = 3 -> elecric dipole along z-axis
+dip_o = 4 -> magnetic dipole along x-axis
+dip_o = 5 -> magnetic dipole along y-axis
+dip_o = 6 -> magnetic dipole along z-axis
+if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
+
+Outputs
+- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
+
+Equation
+
+```math
+\E_{\bm \mu}(\r) = k^2 \G(\r, \r_0) \dfrac{1}{\epsilon_0\epsilon} \bm \mu
+```
+
+\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o`
+\r = `positions`
+\r_0 = `rd`
+
+\E_{\bm \mu}(\r) = `E_0i`
+
+"""
 
 function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
     
     N_points = length(kpositions[:,1])
     
-    G_tensor = zeros(ComplexF64,N_points*6,6) 
-
-# "dip_o" is the dipole orientation ("1 x 6" vector. A electric dipole along the "y" axis would be "dip_o = [0,1,0,0,0,0]", while a magnetic dipole along the "z" axis would be "dip_o = [0,0,0,0,0,1]") 
+    G_tensor = zeros(ComplexF64,N_points*6,6)
+    G = zeros(ComplexF64,6,6)  
 
     if length(dip_o) == 1
         dip_oi = dip_o
@@ -175,42 +211,47 @@ function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
     end
 
     for i = 1:N_points     
-        G = GreenTensors.G_em_s_renorm(kpositions[i,:],krd[1,:])
+        Ge, Gm = GreenTensors.G_em_renorm(kpositions[i,:],krd[1,:],knorm)   
+        G[:,:] = k^3/(6*pi)*[Ge im*Gm, -im*Gm Ge]
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
-    E_0i = G_tensor*dip_o*E0_const
+    E_0i = k^3/(6*pi)*G_tensor*dip_o*E0_const
 
     return E_0i
         
 end
 
-#= 
-It Computes scattered Field from the ensambel of dipoles.
+@doc raw"""
+    field_sca(knorm, alpha, E_inc, r0, pos)
+It computes the scattered Field from the ensamble of dipoles.
 
-Input
-- "knorm" = wavenumber
-- "alpha" = polarizability of the particles ("6N x 6N" matrix, where "N" is the number of dipoles)
-- "E_inc" = is the incoming field at every dipole ("6N x 1" vector, where "N" is the number of dipoles). It is equal to the product of the (inverse) DDA matrix and the external field. 
-- "r0" = position where the field is observed ("Np x 3" matrix, where "Np" is the number of points where the field is calculated)
-- "pos" = position of the dipoles ("N x 3" matrix, where "N" is the number of points)
+Imputs
+- `knorm` = wavenumber
+- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
+- `E_inc` = incoming field at every dipole (6N x 1 vector, where -N- is the number of dipoles). It is equal to the product of the (inverse) DDA matrix and the external field. 
+- `r0` = position where the field is observed (Np x 3 matrix, where -Np- is the number of points where the field is calculated)
+- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
 
 Outputs
-- "field_r" is the field scattered by the dipoles ("6N x 1" vector)
+- `field_r` is the field scattered by the dipoles (6N x 1 vector)
+
 
 Equation
 
+```math
 \E_{sca}(\r) = k^2\GG(\r,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \E_{inc}(\mathbf{\bar{r}}_N) = k^2\GG(\r,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) \E_{0}
+```
 
-\r = "r0"
-\bar{r}}_N = "pos"
-\alphagg(\mathbf{\bar{r}}_N) = "alpha"
-\GG(\r,\mathbf{\bar{r}}_N) = "G_tensor"
-\E_{inc}(\mathbf{\bar{r}}_N) = "E_inc"
+\r = `r0`
+\bar{r}}_N = `pos`
+\alphagg(\mathbf{\bar{r}}_N) = `alpha`
+\GG(\r,\mathbf{\bar{r}}_N) = `G_tensor`
+\E_{inc}(\mathbf{\bar{r}}_N) = `E_inc`
 
-\E_{sca}(\r) = "field_r"
+\E_{sca}(\r) = `field_r`
+"""
 
-=#
 
 function field_sca(knorm, alpha, E_inc, r0, pos)
 
@@ -218,46 +259,58 @@ function field_sca(knorm, alpha, E_inc, r0, pos)
     N_r0 = length(r0[:,1]) 
 
     G_tensor = zeros(ComplexF64,N_r0*6,N_particles*6)
+    G = zeros(ComplexF64,6,6)
 
     for i = 1:N_particles
         for j = 1:N_r0
-            G = knorm^2*GreenTensors.G_em_s(r0[j,:],pos[i,:],knorm)
+            Ge, Gm = GreenTensors.G_em(r0[j,:],pos[i,:],knorm)   
+            G[:,:] = [Ge im*Gm, -im*Gm Ge]
             G_tensor[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = copy(G)
 	end
     end
 
     p = alpha*E_inc 
-    field_r = G_tensor*p
+    field_r = knorm^2*G_tensor*p
 
     return field_r
             
 end
 
-#= 
+
+@doc raw"""
+    LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
 It Computes partial local density of states (LDOS) by the imaginary part of the returning field (rf)
 
-Inputs
-- "knorm" = wavenumber
-- "alpha" = polarizability of the particles ("6N x 6N" matrix, where "N" is the number of dipoles)
-- "Ainv" = (inverse) DDA matrix ("6N x 6N" matrix, [I - k^2*G*alpha]^(-1))
-- "pos" = position of the dipoles ("N x 3" matrix, where "N" is the number of points)
-- "rd" = dipole position = position where the LDOS is calculated
-- "dip_oi" defined the "nature of the dipole (see "point_dipole" function). Therefore, it defines the component of the LDOS that is calculated 
+Imputs
+- `knorm` = wavenumber
+- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
+- `Ainv` = (inverse) DDA matrix (6N x 6N matrix, [I - k^2*G*alpha]^(-1))
+- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
+- `rd` = emitting dipole position, i. e., position where the LDOS is calculated
+- `dip_o` defined the nature of the dipole (see -point_dipole- function). Therefore, it defines the component of the LDOS that is calculated 
 
 Outputs
-- "LDOS" is a scalar with the value of the partial LDOS
+- `LDOS` is a scalar with the value of the partial LDOS
 
 Equation
 
+```math
 \mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+```
 
-\alphagg(\mathbf{\bar{r}}_N) = "alpha"
-\DD(\mathbf{\bar{r}}_N) = "Ainv"
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = "dip_o" (the pre-factor "\dfrac{1}{\epsilon_0\epsilon}" dessapears after normalization)
-k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = "field_r"
-\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = "E_inc"
+\alphagg(\mathbf{\bar{r}}_N) = `alpha`
+\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
+\bar{r}}_N = `pos`
+\r_0 = `rd`
+\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
 
-=#
+
+k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
+\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
+
+
+\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
+"""
 
 function LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
  
@@ -277,7 +330,28 @@ function LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
 
 end
 
-# LDOS_sc: It Computes partial local density of states (LDOS) by the scattering cross section (sc)
+@doc raw"""
+    LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
+It Computes partial local density of states (LDOS) by the scattering cross section (sc)
+
+Imputs
+- `knorm` = wavenumber
+- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
+- `Ainv` = (inverse) DDA matrix (6N x 6N matrix, [I - k^2*G*alpha]^(-1))
+- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
+- `rd` = emitting dipole position, i. e., position where the LDOS is calculated
+- `dip_o` defined the nature of the dipole (see -point_dipole- function). Therefore, it defines the component of the LDOS that is calculated 
+
+Outputs
+- `LDOS` is a scalar with the value of the partial LDOS
+
+Equation
+```math
+LDOS = \sigma^{sca}/\sigma^{sca}_{0}
+```
+
+"""
+
 function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 
     r = [pos; rd]
@@ -314,64 +388,29 @@ function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 
 end
 
-# LDOS_EP: It Computes partial local density of states (LDOS) by calculating the emiting power (EP)
+@doc raw"""
+    LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
+It Computes partial local density of states (LDOS) by calculating the emiting power (EP). Due to the integration, the method is not very accurate.
+
+Imputs
+- `knorm` = wavenumber
+- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
+- `Ainv` = (inverse) DDA matrix (6N x 6N matrix, [I - k^2*G*alpha]^(-1))
+- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
+- `rd` = emitting dipole position, i. e., position where the LDOS is calculated
+- `dip_o` defined the nature of the dipole (see -point_dipole- function). Therefore, it defines the component of the LDOS that is calculated 
+
+Outputs
+- `LDOS` is a scalar with the value of the partial LDOS
+
+Equation
+```math
+LDOS = P/P_{0}
+```
+
+"""
+
 function LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
-    
-    Pos = [pos; rd]
-    
-    center = sum(Pos,dims=1)/length(Pos[:,1])
-    
-    Pos_c = zeros(length(Pos[:,1]),3)
-    Pos_c[:,1] = Pos[:,1] .- center[1,1]
-    Pos_c[:,2] = Pos[:,2] .- center[1,2]
-    Pos_c[:,3] = Pos[:,3] .- center[1,3]
-    
-    R = maximum(sqrt.(sum(Pos_c.^2,dims=2)))
-    
-    Rc = 1.5*R
-    
-    Nth = 100
-    Nph = 100
-    
-    theta = LinRange(0,pi,Nth)
-    phi = LinRange(0,2*pi,Nph)
-        
-    E_0i = point_dipole(knorm, 1, pos, rd, dip_o)
-    
-    E_inc = Ainv*E_0i
-    
-    P0 = 0
-    Pt = 0
-    
-    for i=1:Nth
-        for j=1:Nph
-        
-            rf = zeros(1,3)
-        
-            rf[1,1] = Rc*sin(theta[i])*cos(phi[j]) + center[1,1]
-            rf[1,2] = Rc*sin(theta[i])*sin(phi[j]) + center[1,2]
-            rf[1,3] = Rc*cos(theta[i]) + center[1,3]
-            
-            field_d = point_dipole(knorm, 1, rf, rd, dip_o) 
-            field_t = field_d + field_sca(knorm, alpha, E_inc, rf, pos)
-            
-            S_0 = real(cross(vec(field_d[1:3]),vec(conj(field_d[4:6])) ))
-            S_t = real(cross(vec(field_t[1:3]),vec(conj(field_t[4:6])) ))
-
-            P0 = P0 .+ (vec(rf)'*S_0)*sin(theta[i])
-            Pt = Pt .+ (vec(rf)'*S_t)*sin(theta[i])
-                   
-        end
-    end    
-    
-    LDOS = Pt/P0
-
-    return LDOS
-
-end
-
-# Same than before but calculating all fields at once (more memory, a "bit" faster) 
-function LDOS_EP2(knorm, alpha, Ainv, pos, rd, dip_o)
 
     Pos = [pos; rd]
     
@@ -384,10 +423,10 @@ function LDOS_EP2(knorm, alpha, Ainv, pos, rd, dip_o)
     
     R = maximum(sqrt.(sum(Pos_c.^2,dims=2)))
     
-    Rc = 1.5*R
+    Rc = 1.5*R	# Radius of integration
     
-    Nth = 100
-    Nph = 100
+    Nth = 100	# Discretitation points in theta
+    Nph = 100	# Discretitation points in phi
     
     theta = LinRange(0,pi,Nth)
     phi = LinRange(0,2*pi,Nph)

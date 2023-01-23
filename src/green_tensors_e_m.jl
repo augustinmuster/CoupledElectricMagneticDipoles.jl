@@ -14,7 +14,7 @@ testing=false
 
 @doc raw"""
     G_em(r1,r2,k)
-Compute the electric and magnetic green tensor between two position r1 and r2 (r2 the origin and r1 the observation) .
+Compute the electric and magnetic green tensor between two position `r1` and `r2` (r2 the origin and r1 the observation) .
 The output are two 3x3 complex matrix.
 The electric green tensor (with unit of [1/m]) is defined as:
 ```math
