@@ -154,7 +154,7 @@ function point_dipole(knorm, E0_const, positions, rd, dip_o)
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
-    E_0i = k^2*G_tensor*dip_o*E0_const
+    E_0i = knorm^2*G_tensor*dip_o*E0_const
 
     return E_0i
         
@@ -216,7 +216,7 @@ function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
-    E_0i = k^3/(6*pi)*G_tensor*dip_o*E0_const
+    E_0i = knorm^3/(6*pi)*G_tensor*dip_o*E0_const
 
     return E_0i
         
