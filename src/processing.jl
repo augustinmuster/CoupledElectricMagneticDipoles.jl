@@ -150,7 +150,7 @@ function point_dipole(knorm, E0_const, positions, rd, dip_o)
 
     for i = 1:N_points  
         Ge, Gm = GreenTensors.G_em(positions[i,:],rd[1,:],knorm)   
-        G[:,:] = [Ge im*Gm, -im*Gm Ge]
+        G[:,:] = [Ge im*Gm; -im*Gm Ge]
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
@@ -212,7 +212,7 @@ function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
 
     for i = 1:N_points     
         Ge, Gm = GreenTensors.G_em_renorm(kpositions[i,:],krd[1,:],knorm)   
-        G[:,:] = k^3/(6*pi)*[Ge im*Gm, -im*Gm Ge]
+        G[:,:] = k^3/(6*pi)*[Ge im*Gm; -im*Gm Ge]
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
     end
 	    
@@ -264,7 +264,7 @@ function field_sca(knorm, alpha, E_inc, r0, pos)
     for i = 1:N_particles
         for j = 1:N_r0
             Ge, Gm = GreenTensors.G_em(r0[j,:],pos[i,:],knorm)   
-            G[:,:] = [Ge im*Gm, -im*Gm Ge]
+            G[:,:] = [Ge im*Gm; -im*Gm Ge]
             G_tensor[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = copy(G)
 	end
     end
