@@ -327,7 +327,7 @@ function dzG_m(r1,r2,knorm)
     term2=(im*knorm*R-1)
     term3=(im*knorm*R)^2 - 3*im*knorm*R + 3
     #return green tensor
-    return term1*(term3*mat*Ur[2] + term2*mat3)
+    return term1*(term3*mat*Ur[3] + term2*mat3)
 end
 
 @doc raw"""
