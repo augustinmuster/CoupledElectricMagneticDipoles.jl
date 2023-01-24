@@ -80,7 +80,7 @@ function gen_sphere_lattice_cubes(s,R;ref_id=1,verbose=true)
                 if dis<s
                     #format: x,y,z,norm,real(alpha),imag(alpha): delimiter: tab
                     latt[m,:]=[px*d,py*d,pz*d,dis*d,ref_id,d,d^3]
-                    global m=m+1
+                    m=m+1
                 end
             end
         end
