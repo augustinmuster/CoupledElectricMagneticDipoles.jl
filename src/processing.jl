@@ -5,6 +5,7 @@ module PostProcessing
 using Base
 using LinearAlgebra
 include("green_tensors_e_m.jl")
+include("input_fields.jl")
 ###########################
 # FUNCTIONS
 ###########################
@@ -98,132 +99,6 @@ function compute_cross_sections_e_m(knorm,r,p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,
 
 end
 
-@doc raw"""
-    point_dipole(knorm, E0_const, positions, rd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
-```math
-\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
-``` 
-
-Imputs
-- `knorm0` is the medium wavevector (scalar)
-- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
-- `position` contains the position at which the field is calculated (N x 3 matrix, where -N- is the number of points)
-- `rd` is the position of the emitting source/dipole (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
-    - dip_o = 1 -> elecric dipole along x-axis
-    - dip_o = 2 -> elecric dipole along y-axis
-    - dip_o = 3 -> elecric dipole along z-axis
-    - dip_o = 4 -> magnetic dipole along x-axis
-    - dip_o = 5 -> magnetic dipole along y-axis
-    - dip_o = 6 -> magnetic dipole along z-axis
-if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
-
-Outputs
-- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
-
-Equation
-
-```math
-\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) = \omega^2 \mu \mu_0 G(\mathbf{r}, \mathbf{r}_0) \overrightarrow{\mu} = k^2 G(\mathbf{r}, \mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
-```
-with
-```math
-\mathrm{positions} = \mathbf{r}, \\
-\mathrm{rd} = \mathbf{r}_0, \\
-\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
-``` 
-"""
-function point_dipole(knorm, E0_const, positions, rd, dip_o)
-    
-    N_points = length(positions[:,1])
-    
-    G_tensor = zeros(ComplexF64,N_points*6,6)
-    G = zeros(ComplexF64,6,6) 
-
-    if length(dip_o) == 1
-        dip_oi = dip_o
-        dip_o = zeros(6,1)
-        dip_o[dip_oi] = 1
-    else
-        dip_o = dip_o/norm(dip_o) # Ensure that its modulus is equal to one
-    end
-
-    for i = 1:N_points  
-        Ge, Gm = GreenTensors.G_em(positions[i,:],rd[1,:],knorm)   
-        G[:,:] = [Ge im*Gm; -im*Gm Ge]
-        G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
-    end
-	    
-    E_0i = knorm^2*G_tensor*dip_o*E0_const
-
-    return E_0i
-        
-end
-
-
-@doc raw"""
-    point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
-```math
-\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
-``` 
-
-Imputs
-- `knorm0` is the medium wavevector (scalar)
-- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
-- `kposition` contains the position (multiplied by the wavevector) at which the field is calculated (N x 3 matrix, where -N- is the number of points)
-- `krd` is the position of the emitting source/dipole (multiplied by the wavevector) (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
-    - dip_o = 1 -> elecric dipole along x-axis
-    - dip_o = 2 -> elecric dipole along y-axis
-    - dip_o = 3 -> elecric dipole along z-axis
-    - dip_o = 4 -> magnetic dipole along x-axis
-    - dip_o = 5 -> magnetic dipole along y-axis
-    - dip_o = 6 -> magnetic dipole along z-axis
-if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
-
-Outputs
-- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
-
-Equation
-
-```math
-\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) =  k^2 G(k\mathbf{r}, k\mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
-```
-with
-```math
-\mathrm{kpositions} = \mathbf{kr}, \\
-\mathrm{krd} = \mathbf{kr}_0, \\
-\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
-``` 
-"""
-function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
-    
-    N_points = length(kpositions[:,1])
-    
-    G_tensor = zeros(ComplexF64,N_points*6,6)
-    G = zeros(ComplexF64,6,6)  
-
-    if length(dip_o) == 1
-        dip_oi = dip_o
-        dip_o = zeros(6,1)
-        dip_o[dip_oi] = 1
-    else
-        dip_o = dip_o/norm(dip_o) # Ensure that its modulus is equal to one
-    end
-
-    for i = 1:N_points     
-        Ge, Gm = GreenTensors.G_em_renorm(kpositions[i,:],krd[1,:],knorm)   
-        G[:,:] = k^3/(6*pi)*[Ge im*Gm; -im*Gm Ge]
-        G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
-    end
-	    
-    E_0i = knorm^3/(6*pi)*G_tensor*dip_o*E0_const
-
-    return E_0i
-        
-end
 
 @doc raw"""
     field_sca(knorm, alpha, E_inc, r0, pos)
@@ -314,7 +189,7 @@ k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}
 """
 function LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
  
-    E_0i = point_dipole(knorm, 1, pos, rd, dip_o)
+    E_0i = InputFields.point_dipole(knorm, 1, pos, rd, dip_o)
     E_inc = Ainv*E_0i
 
     field_r = field_sca(knorm, alpha, E_inc, rd, pos) 
@@ -356,7 +231,7 @@ function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
     r = [pos; rd]
     Np = length(r[:,1])
       
-    E_0i = point_dipole(knorm, 1, pos, rd, dip_o)
+    E_0i = InputFields.point_dipole(knorm, 1, pos, rd, dip_o)
     
     if length(dip_o) == 1
         dip_oi = dip_o
@@ -429,7 +304,7 @@ function LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
     theta = LinRange(0,pi,Nth)
     phi = LinRange(0,2*pi,Nph)
         
-    E_0i = point_dipole(knorm, 1, pos, rd, dip_o)
+    E_0i = InputFields.point_dipole(knorm, 1, pos, rd, dip_o)
     
     E_inc = Ainv*E_0i
     
@@ -445,7 +320,7 @@ function LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
 
     end
             
-    field_d = point_dipole(knorm, 1, rf, rd, dip_o) 
+    field_d = InputFields.point_dipole(knorm, 1, rf, rd, dip_o) 
     field_t = field_d + field_sca(knorm, alpha, E_inc, rf, pos)
     
     field_d = reshape(field_d, 6, Nth*Nph)
