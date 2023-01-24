@@ -8,7 +8,7 @@ refractive_index="silicon_refractive_index.dat"
 ##########################################################################
 
 #read lattice file
-latt=CEMD.Geometries.gen_sphere_lattice_cubes(6,230e-9)
+latt=CEMD.Geometries.gen_sphere_lattice_cubes(7,230e-9)
 
 #run the DDA for all line of the refractive index files
 n_file=open(refractive_index,"r")
