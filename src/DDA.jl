@@ -525,7 +525,7 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="LAPACK",verbose=true)
     end
     #loading matrix
     A=load_dda_matrix_e_m(knorm*r,alpha_e*knorm^3/4/pi,alpha_m*knorm^3/4/pi,verbose)
-    return invert_matrix(matrix,solver,verbose)
+    return invert_system(matrix,solver,verbose)
 end
 
 @doc raw"""
