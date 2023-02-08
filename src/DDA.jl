@@ -525,17 +525,6 @@ function solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="LAPACK",verbose=true)
     end
     #loading matrix
     A=load_dda_matrix_e_m(knorm*r,alpha_e*knorm^3/4/pi,alpha_m*knorm^3/4/pi,verbose)
-    #logging
-    if verbose
-        println("loading input fields")
-    end
-    #compute incident fields
-    phi=zeros(ComplexF64,6*n)
-    for j in 1:n
-        E0,H0=input_field(knorm,r[j,:])
-        phi[6*(j-1)+1:6*(j-1)+3]=E0
-        phi[6*(j-1)+4:6*(j-1)+6]=H0
-    end
     return invert_matrix(matrix,solver,verbose)
 end
 
