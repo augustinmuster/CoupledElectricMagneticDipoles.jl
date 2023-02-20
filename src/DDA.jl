@@ -515,7 +515,7 @@ for a group of ``N`` electric and magnetic dipoles and return the polarisations 
 #Outputs
 - ``6N\times 6N`` inverse of the DDA matrix
 """
-function solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="LAPACK",verbose=true)
+function solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="JULIA",verbose=true)
     #number of point dipoles
     n=length(r[:,1])
     #logging
