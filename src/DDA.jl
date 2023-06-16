@@ -117,7 +117,7 @@ function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     if length(alpha_e_dl)==n
         for i=1:n
             for j=1:i-1
-                Ge,Gm=GreenTensors.G_em_renorm(r[i,:],kr[j,:])
+                Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
                 a_dda[1:3,1:3]=-Ge*alpha_e_dl[j]
                 a_dda[4:6,4:6]=-Ge*alpha_m_dl[j]
                 a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j]
@@ -173,7 +173,7 @@ function load_dda_matrix_e_m(kr,alpha_tensor,verbose)
     #
     for i=1:n
         for j=1:i-1
-            Ge,Gm=GreenTensors.G_em_renorm(r[i,:],kr[j,:])
+            Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
             a_dda[1:3,1:3]=-Ge
             a_dda[4:6,4:6]=-Ge
             a_dda[1:3,4:6]=-im*Gm

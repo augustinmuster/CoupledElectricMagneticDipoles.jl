@@ -6,6 +6,7 @@ using Base
 using LinearAlgebra
 include("green_tensors_e_m.jl")
 include("input_fields.jl")
+include("alpha.jl")
 ###########################
 # FUNCTIONS
 ###########################
@@ -101,19 +102,18 @@ end
 
 
 @doc raw"""
-    field_sca(knorm, alpha, E_inc, r0, pos)
-It computes the scattered Field from the ensamble of dipoles.
+    field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, E_inc, krf)
+It computes the scattered field from the ensamble of dipoles.
 
-Imputs
-- `knorm` = wavenumber
-- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
-- `E_inc` = incoming field at every dipole (6N x 1 vector, where -N- is the number of dipoles). It is equal to the product of the (inverse) DDA matrix and the external field. 
-- `r0` = position where the field is observed (Np x 3 matrix, where -Np- is the number of points where the field is calculated)
-- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `alpha_m_dl`: complex array containing the dimesnionless magnetic polarisability.
+- `E_inc`: 2D complex array of size ``N\times 6`` with the incident field in the dipoles.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
 
-Outputs
-- `field_r` is the field scattered by the dipoles (6N x 1 vector)
-
+#Outputs
+- `field_r`: 2D complex array of size ``Nf\times 6`` with the field scattered by the dipoles at every ``k\vec{r_f}``.
 
 Equation
 
@@ -129,44 +129,92 @@ Equation
 
 \E_{sca}(\r) = `field_r`
 """
-function field_sca(knorm, alpha, E_inc, r0, pos)
+function field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, E_inc, krf)
 
-    N_particles = length(pos[:,1]) 
-    N_r0 = length(r0[:,1]) 
+    n_particles = length(kr[:,1]) 
+    n_r0 = length(krf[:,1]) 
 
-    G_tensor = zeros(ComplexF64,N_r0*6,N_particles*6)
-    G = zeros(ComplexF64,6,6)
+    alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
-    for i = 1:N_particles
-        for j = 1:N_r0
-            Ge, Gm = GreenTensors.G_em(r0[j,:],pos[i,:],knorm)   
-            G[:,:] = [Ge im*Gm; -im*Gm Ge]
-            G_tensor[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = copy(G)
-	end
+    G_tensor_fr = zeros(ComplexF64,n_r0*6,n_particles*6)
+
+    for i = 1:n_particles
+        for j = 1:n_r0
+            Ge, Gm = GreenTensors.G_em_renorm(krf[j,:],kr[i,:])   
+            G_tensor_fr[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] im*Gm*alp_m[i]; -im*Gm*alp_e[i] Ge*alp_m[i]]
+	    end
     end
 
-    p = alpha*E_inc 
-    field_r = knorm^2*G_tensor*p
+    E_inc = reshape(E_inc,n_particles*6,)
+    field_r = G_tensor_fr*E_inc
 
-    return field_r
+    return reshape(field_r,n_r0,6)
             
 end
 
+@doc raw"""
+    field_sca_e(kr, alpha_e_dl, alpha_m_dl, E_inc, krf)
+It computes the scattered field from the ensamble of dipoles.
+
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `E_inc`: 2D complex array of size ``N\times 6`` with the incident field in the dipoles.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
+
+#Outputs
+- `field_r`: 2D complex array of size ``Nf\times 6`` with the field scattered by the dipoles at every ``k\vec{r_f}``.
+
+Equation
+
+```math
+\mathbf{E}_{sca}(\mathbf{r}) = k^2G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) \mathbf{E}_{inc}(\mathbf{\bar{r}}_N) = k^2 G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) D(\mathbf{\bar{r}}_N) \E_{0}
+```
+
+\r = `r0`
+\bar{r}}_N = `pos`
+\alphagg(\mathbf{\bar{r}}_N) = `alpha`
+\GG(\r,\mathbf{\bar{r}}_N) = `G_tensor`
+\E_{inc}(\mathbf{\bar{r}}_N) = `E_inc`
+
+\E_{sca}(\r) = `field_r`
+"""
+function field_sca_e(kr, alpha_e_dl, E_inc, krf)
+
+    n_particles = length(kr[:,1]) 
+    n_r0 = length(krf[:,1]) 
+
+    alp_e = Alphas.dispatch_e(alpha_e_dl,n_particles)
+
+    G_tensor_fr = zeros(ComplexF64,n_r0*3,n_particles*3)
+
+    for i = 1:n_particles
+        for j = 1:n_r0
+            Ge = GreenTensors.G_e_renorm(krf[j,:],kr[i,:])   
+            G_tensor_fr[3 * (j-1) + 1:3 * (j-1) + 3 , 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
+	    end
+    end
+
+    E_inc = reshape(E_inc,n_particles*3,)
+    field_r = G_tensor_fr*E_inc
+
+    return reshape(field_r,n_r0,3)
+            
+end
 
 @doc raw"""
-    LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
-It Computes partial local density of states (LDOS) by the imaginary part of the returning field (rf)
+    ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
+It Computes local density of states (LDOS) by the imaginary part of the returning field.
 
-Imputs
-- `knorm` = wavenumber
-- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
-- `Ainv` = (inverse) DDA matrix (6N x 6N matrix, [I - k^2*G*alpha]^(-1))
-- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
-- `rd` = emitting dipole position, i. e., position where the LDOS is calculated
-- `dip_o` defined the nature of the dipole (see -point_dipole- function). Therefore, it defines the component of the LDOS that is calculated 
-
-Outputs
-- `LDOS` is a scalar with the value of the partial LDOS
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `alpha_m_dl`: complex array containing the dimesnionless magnetic polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where the LDOS is calculated.
+- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+#Outputs
+- `LDOS` float array with the LDOS.
 
 Equation
 
@@ -180,33 +228,137 @@ Equation
 \r_0 = `rd`
 \dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
 
+k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
+\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
+
+\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
+"""
+function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
+
+    n_particles = length(kr[:,1])
+    n_dpos = length(krd[:,1])
+
+    G_tensor = zeros(ComplexF64,n_particles*6,6) 
+    G_tensor_fr = zeros(ComplexF64,6,n_particles*6)
+
+    alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
+
+    if dip == nothing
+        LDOS = zeros(n_dpos,2)
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
+                G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
+                G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] -im*Gm*alp_m[i]; im*Gm*alp_e[i] Ge*alp_m[i]]
+            end
+            G_ldos = G_tensor_fr*Ainv*G_tensor
+            LDOS[j,1] = 1 + 1/3*imag(tr(G_ldos[1:3,1:3]))/(2/3)
+            LDOS[j,2] = 1 + 1/3*imag(tr(G_ldos[4:6,4:6]))/(2/3) 
+        end
+    else
+        LDOS = zeros(n_dpos)
+        if length(dip) == 1  && dip < 7 && dip > 0
+            dip_o = dip
+            dip = zeros(6)
+            dip[dip_o] = 1
+        elseif length(dip) == 6
+            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+        else
+            dip = zeros(6)
+            println("dip should be an integer (between 1 and 6) or a vector of length 6")
+        end
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
+                G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
+                G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] -im*Gm*alp_m[i]; im*Gm*alp_e[i] Ge*alp_m[i]]
+            end
+            field_r = G_tensor_fr*Ainv*G_tensor*dip
+            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+        end
+    end
+
+    return LDOS
+end
+
+@doc raw"""
+    ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
+It Computes local density of states (LDOS) by the imaginary part of the returning field.
+
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where the LDOS is calculated.
+- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
+#Outputs
+- `LDOS` float array with the LDOS.
+
+Equation
+
+```math
+\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+```
+
+\alphagg(\mathbf{\bar{r}}_N) = `alpha`
+\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
+\bar{r}}_N = `pos`
+\r_0 = `rd`
+\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
 
 k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
 \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
 
-
 \mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
 """
-function LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
- 
-    E_0i = InputFields.point_dipole(knorm, 1, pos, rd, dip_o)
-    E_inc = Ainv*E_0i
+function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
 
-    field_r = field_sca(knorm, alpha, E_inc, rd, pos) 
-    
-    if length(dip_o) == 1 
-        LDOS = 1 + imag(field_r[dip_o])/( (knorm)^3/(6*pi) ) # Imaginary part of the dipole component (LDOS)
+    n_particles = length(kr[:,1])
+    n_dpos = length(krd[:,1])
+
+    G_tensor = zeros(ComplexF64,n_particles*3,3) 
+    G_tensor_fr = zeros(ComplexF64,3,n_particles*3)
+
+    alp_e = Alphas.dispatch_e(alpha_e_dl,n_particles)
+
+    LDOS = zeros(n_dpos)
+    if dip == nothing
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge = GreenTensors.G_e_renorm(kr[i,:],krd[j,:])        
+                G_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = Ge 
+                G_tensor_fr[:, 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
+            end
+            G_ldos = G_tensor_fr*Ainv*G_tensor
+            LDOS[j] = 1 + 1/3*imag(tr(G_ldos))/(2/3)
+        end
     else
-        dip_o = dip_o/norm(dip_o)
-        LDOS = 1 + dot(conj(dip_o), imag(field_r))/( (knorm)^3/(6*pi) )
+        if length(dip) == 1 && dip < 4 && dip > 0
+            dip_o = dip
+            dip = zeros(3)
+            dip[dip_o] = 1
+        elseif length(dip) == 3
+            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+        else
+            dip = zeros(3)
+            println("dip should be an integer (between 1 and 3) or a vector of length 3")
+        end
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge = GreenTensors.G_e_renorm(kr[i,:],krd[j,:])        
+                G_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = Ge
+                G_tensor_fr[:, 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
+            end
+            field_r = G_tensor_fr*Ainv*G_tensor*dip
+            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+        end
     end
 
     return LDOS
-
 end
 
 @doc raw"""
-    LDOS_rf(knorm, alpha, Ainv, pos, rd, dip_o)
+    LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 It Computes partial local density of states (LDOS) by the scattering cross section (sc)
 
 Imputs
@@ -224,7 +376,6 @@ Equation
 ```math
 LDOS = \sigma^{sca}/\sigma^{sca}_{0}
 ```
-
 """
 function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 
@@ -262,90 +413,5 @@ function LDOS_sc(knorm, alpha, Ainv, pos, rd, dip_o)
 
 end
 
-@doc raw"""
-    LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
-It Computes partial local density of states (LDOS) by calculating the emiting power (EP). Due to the integration, the method is not very accurate.
 
-Imputs
-- `knorm` = wavenumber
-- `alpha` = polarizability of the particles (6N x 6N matrix, where -N- is the number of dipoles)
-- `Ainv` = (inverse) DDA matrix (6N x 6N matrix, [I - k^2*G*alpha]^(-1))
-- `pos` = position of the dipoles (N x 3 matrix, where -N- is the number of points)
-- `rd` = emitting dipole position, i. e., position where the LDOS is calculated
-- `dip_o` defined the nature of the dipole (see -point_dipole- function). Therefore, it defines the component of the LDOS that is calculated 
-
-Outputs
-- `LDOS` is a scalar with the value of the partial LDOS
-
-Equation
-```math
-LDOS = P/P_{0}
-```
-
-"""
-function LDOS_EP(knorm, alpha, Ainv, pos, rd, dip_o)
-
-    Pos = [pos; rd]
-    
-    center = sum(Pos,dims=1)/length(Pos[:,1])
-    
-    Pos_c = zeros(length(Pos[:,1]),3)
-    Pos_c[:,1] = Pos[:,1] .- center[1,1]
-    Pos_c[:,2] = Pos[:,2] .- center[1,2]
-    Pos_c[:,3] = Pos[:,3] .- center[1,3]
-    
-    R = maximum(sqrt.(sum(Pos_c.^2,dims=2)))
-    
-    Rc = 1.5*R	# Radius of integration
-    
-    Nth = 100	# Discretitation points in theta
-    Nph = 100	# Discretitation points in phi
-    
-    theta = LinRange(0,pi,Nth)
-    phi = LinRange(0,2*pi,Nph)
-        
-    E_0i = InputFields.point_dipole(knorm, 1, pos, rd, dip_o)
-    
-    E_inc = Ainv*E_0i
-    
-    rf = zeros(Nth*Nph,3)
-    Theta = zeros(Nth*Nph,1)
-
-    for j=1:Nph
-        
-        rf[1 + (j-1)*Nth:Nth + (j-1)*Nth,1] = Rc*sin.(theta)*cos(phi[j]) .+ center[1,1]
-        rf[1 + (j-1)*Nth:Nth + (j-1)*Nth,2] = Rc*sin.(theta)*sin(phi[j]) .+ center[1,2]
-        rf[1 + (j-1)*Nth:Nth + (j-1)*Nth,3] = Rc*cos.(theta) .+ center[1,3]
-        Theta[1 + (j-1)*Nth:Nth + (j-1)*Nth,1] = theta
-
-    end
-            
-    field_d = InputFields.point_dipole(knorm, 1, rf, rd, dip_o) 
-    field_t = field_d + field_sca(knorm, alpha, E_inc, rf, pos)
-    
-    field_d = reshape(field_d, 6, Nth*Nph)
-    field_t = reshape(field_t, 6, Nth*Nph)
-    
-    S_0 = zeros(3,Nth*Nph)
-    S_t = zeros(3,Nth*Nph)
-    
-    S_0[1,:] = real(field_d[2,:].*conj(field_d[6,:]) - field_d[3,:].*conj(field_d[5,:]))
-    S_0[2,:] = real(field_d[3,:].*conj(field_d[4,:]) - field_d[1,:].*conj(field_d[6,:]))
-    S_0[3,:] = real(field_d[1,:].*conj(field_d[5,:]) - field_d[2,:].*conj(field_d[4,:]))
-    
-    S_t[1,:] = real(field_t[2,:].*conj(field_t[6,:]) - field_t[3,:].*conj(field_t[5,:]))
-    S_t[2,:] = real(field_t[3,:].*conj(field_t[4,:]) - field_t[1,:].*conj(field_t[6,:]))
-    S_t[3,:] = real(field_t[1,:].*conj(field_t[5,:]) - field_t[2,:].*conj(field_t[4,:]))
-
-    Sn_0 = sum(rf.*S_0',dims=2).*sin.(Theta)
-    Sn_t = sum(rf.*S_t',dims=2).*sin.(Theta)
-            
-    P0 = sum(Sn_0)#/(4*pi)*Rc^2
-    Pt = sum(Sn_t)#/(4*pi)*Rc^2
-
-    LDOS = Pt/P0
-
-    return LDOS
-
-end
 end
