@@ -174,7 +174,7 @@ function load_dda_matrix_e_m(kr,alpha_tensor,verbose)
     #
     for i=1:n
         for j=1:i-1
-            Ge,Gm=GreenTensors.G_em_renorm(r[i,:],kr[j,:])
+            Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
             a_dda[1:3,1:3]=-Ge
             a_dda[4:6,4:6]=-Ge
             a_dda[1:3,4:6]=-im*Gm

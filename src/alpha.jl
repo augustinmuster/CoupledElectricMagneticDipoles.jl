@@ -88,4 +88,66 @@ function alpha_e_m_mie_renorm(vac_knorm,a,n,n_m)
     alpha_m=im*1.5*b1
     return alpha_e,alpha_m
 end
+
+@doc raw"""
+    dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
+
+Imputs
+- `alpha_e_dl` = electric polarizability
+- `alpha_m_dl` = magnetic polarizability
+
+Outputs
+- `alp_e` = iterable electric polarizability
+- `alp_m` = iterable magnetic polarizability
+"""
+function dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
+    if length(alpha_e_dl) == length(alpha_m_dl) == 1 # If alpha is the same scalar for all particles
+        alp_e = fill(alpha_e_dl,n_particles)
+        alp_m = fill(alpha_m_dl,n_particles)
+
+    elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2  # If alpha is the same tensor for all particles 
+        alp_e = fill(alpha_e_dl,n_particles)
+        alp_m = fill(alpha_m_dl,n_particles)
+
+    elseif length(alpha_e_dl) == length(alpha_m_dl) == n_particles*3^2  # If alpha is a tensor
+        alp_e = [alpha_e_dl[i,:,:] for i in 1:size(alpha_e_dl,1)]
+        alp_m = [alpha_m_dl[i,:,:] for i in 1:size(alpha_m_dl,1)]
+
+    elseif length(alpha_e_dl) != length(alpha_m_dl)   
+        println("The length of the electric and magnetic polarizability must match")
+    else
+        println("non-implemented")  
+    end
+
+    return alp_e, alp_m
+end
+
+@doc raw"""
+    dispatch_e(alpha_e_dl,n_particles)
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
+
+Imputs
+- `alpha_e_dl` = electric polarizability
+
+Outputs
+- `alp_e` = iterable electric polarizability
+"""
+function dispatch_e(alpha_e_dl,n_particles)
+    if length(alpha_e_dl) == 1 # If alpha is the same scalar for all particles
+        alp_e = fill(alpha_e_dl,n_particles)
+
+    elseif length(alpha_e_dl) == 3^2  # If alpha is the same tensor for all particles 
+        alp_e = fill(alpha_e_dl,n_particles)
+
+    elseif length(alpha_e_dl)  == n_particles*3^2  # If alpha is a tensor
+        alp_e = [alpha_e_dl[i,:,:] for i in 1:size(alpha_e_dl,1)]
+
+    else
+        println("non-implemented")  
+    end
+
+    return alp_e
+end
+
 end
