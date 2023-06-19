@@ -336,7 +336,9 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
             LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
         end
     end
-
+    if length(LDOS) == 1
+        LDOS = LDOS[1]
+    end
     return LDOS
 end
 
@@ -414,7 +416,9 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
             LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
         end
     end
-
+    if length(LDOS) == 1
+        LDOS = LDOS[1]
+    end
     return LDOS
 end
 
@@ -490,7 +494,9 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
             LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
         end
     end
-
+    if length(LDOS) == 1
+        LDOS = LDOS[1]
+    end
     return LDOS
 end
 

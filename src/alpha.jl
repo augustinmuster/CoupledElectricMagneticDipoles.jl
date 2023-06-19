@@ -106,6 +106,10 @@ function dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
         alp_e = fill(alpha_e_dl,n_particles)
         alp_m = fill(alpha_m_dl,n_particles)
 
+    elseif length(alpha_e_dl) == length(alpha_m_dl) == n_particles # If alpha is the same scalar for all particles
+        alp_e = alpha_e_dl
+        alp_m = alpha_m_dl
+
     elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2 && size(alpha_e_dl,1) == 3 # If alpha is the same tensor for all particles
         alp_e = fill(alpha_e_dl,n_particles)
         alp_m = fill(alpha_m_dl,n_particles)
@@ -168,6 +172,9 @@ function dispatch_e(alpha_e_dl,n_particles)
     if length(alpha_e_dl) == 1 # If alpha is the same scalar for all particles
         alp_e = fill(alpha_e_dl,n_particles)
 
+    elseif length(alpha_e_dl) == n_particles # If alpha is the same scalar for all particles
+        alp_e = alpha_e_dl
+        
     elseif length(alpha_e_dl) == 3^2  # If alpha is the same tensor for all particles 
         alp_e = fill(alpha_e_dl,n_particles)
 
