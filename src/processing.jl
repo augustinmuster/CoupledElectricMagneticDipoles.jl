@@ -341,6 +341,84 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
 end
 
 @doc raw"""
+    ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
+It Computes local density of states (LDOS) by the imaginary part of the returning field.
+
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_dl`: complex array containing the dimensionless polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where the LDOS is calculated.
+- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+#Outputs
+- `LDOS`: float array with the LDOS.
+
+Equation
+
+```math
+\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+```
+
+\alphagg(\mathbf{\bar{r}}_N) = `alpha`
+\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
+\bar{r}}_N = `pos`
+\r_0 = `rd`
+\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
+
+k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
+\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
+
+\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
+"""
+function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
+
+    n_particles = length(kr[:,1])
+    n_dpos = length(krd[:,1])
+
+    G_tensor = zeros(ComplexF64,n_particles*6,6) 
+    G_tensor_fr = zeros(ComplexF64,6,n_particles*6)
+
+    alp = Alphas.dispatch_e_m(alpha_dl,n_particles)
+
+    if dip == nothing
+        LDOS = zeros(n_dpos,2)
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
+                G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
+                G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge -im*Gm; im*Gm Ge]*alp[i]
+            end
+            G_ldos = G_tensor_fr*Ainv*G_tensor
+            LDOS[j,1] = 1 + 1/3*imag(tr(G_ldos[1:3,1:3]))/(2/3)
+            LDOS[j,2] = 1 + 1/3*imag(tr(G_ldos[4:6,4:6]))/(2/3) 
+        end
+    else
+        LDOS = zeros(n_dpos)
+        if length(dip) == 1  && dip < 7 && dip > 0
+            dip_o = dip
+            dip = zeros(6)
+            dip[dip_o] = 1
+        elseif length(dip) == 6
+            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+        else
+            dip = zeros(6)
+            println("dip should be an integer (between 1 and 6) or a vector of length 6")
+        end
+        for j=1:n_dpos
+            for i=1:n_particles
+                Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
+                G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
+                G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge -im*Gm; im*Gm Ge]*alp[i]
+            end
+            field_r = G_tensor_fr*Ainv*G_tensor*dip
+            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+        end
+    end
+
+    return LDOS
+end
+
+@doc raw"""
     ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
 It Computes local density of states (LDOS) by the imaginary part of the returning field.
 
