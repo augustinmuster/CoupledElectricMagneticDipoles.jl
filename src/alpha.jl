@@ -93,22 +93,22 @@ end
     dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
 
-Imputs
-- `alpha_e_dl` = electric polarizability
-- `alpha_m_dl` = magnetic polarizability
+#Arguments
+- `alpha_e_dl`: = electric polarizability
+- `alpha_m_dl`: = magnetic polarizability
 
-Outputs
-- `alp_e` = iterable electric polarizability
-- `alp_m` = iterable magnetic polarizability
+#Outputs
+- `alp_e`: = iterable electric polarizability
+- `alp_m`: = iterable magnetic polarizability
 """
 function dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
     if length(alpha_e_dl) == length(alpha_m_dl) == 1 # If alpha is the same scalar for all particles
         alp_e = fill(alpha_e_dl,n_particles)
         alp_m = fill(alpha_m_dl,n_particles)
 
-    elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2  # If alpha is the same tensor for all particles 
-        alp_e = fill(alpha_e_dl,n_particles)
-        alp_m = fill(alpha_m_dl,n_particles)
+    elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2 && size(alpha_e_dl,1) == n_particles # If alpha is the same tensor for all particles 
+        alp_e = fill(alpha_e_dl[1,:,:],n_particles)
+        alp_m = fill(alpha_m_dl[1,:,:],n_particles)
 
     elseif length(alpha_e_dl) == length(alpha_m_dl) == n_particles*3^2  # If alpha is a tensor
         alp_e = [alpha_e_dl[i,:,:] for i in 1:size(alpha_e_dl,1)]

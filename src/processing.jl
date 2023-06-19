@@ -214,7 +214,7 @@ It Computes local density of states (LDOS) by the imaginary part of the returnin
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where the LDOS is calculated.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
 #Outputs
-- `LDOS` float array with the LDOS.
+- `LDOS`: float array with the LDOS.
 
 Equation
 
@@ -292,7 +292,7 @@ It Computes local density of states (LDOS) by the imaginary part of the returnin
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where the LDOS is calculated.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
 #Outputs
-- `LDOS` float array with the LDOS.
+- `LDOS`: float array with the LDOS.
 
 Equation
 
