@@ -35,6 +35,7 @@ function solve_system(A,b,solver,verbose)
             println("solving with CPU LAPACK solver ...")
         end
         #
+        BLAS.set_num_threads(8)
         LAPACK.gesv!(A,phi)
         #
         return phi
@@ -73,7 +74,7 @@ function load_dda_matrix_e(kr,alpha_dl,verbose)
     A=Matrix{ComplexF64}(I,3*n,3*n)
     #if scalar polarisability
     if length(alpha_dl)==n
-        for j in 1:n
+        Threads.@threads for j in 1:n
             for k=1:j-1
                 G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k])
@@ -81,7 +82,7 @@ function load_dda_matrix_e(kr,alpha_dl,verbose)
             end
         end
     else #if tensor polarisabilty
-        for j in 1:n
+        Threads.@threads for j in 1:n
             for k=1:j-1
                 G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
                 A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k,:,:])
@@ -117,7 +118,7 @@ function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     if length(alpha_e_dl)==n
         for i=1:n
             for j=1:i-1
-                Ge,Gm=GreenTensors.G_em_renorm(r[i,:],kr[j,:])
+                Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
                 a_dda[1:3,1:3]=-Ge*alpha_e_dl[j]
                 a_dda[4:6,4:6]=-Ge*alpha_m_dl[j]
                 a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j]
