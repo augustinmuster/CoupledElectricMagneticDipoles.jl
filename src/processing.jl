@@ -196,19 +196,47 @@ function field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, E_inc, krf)
     alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
     G_tensor_fr = zeros(ComplexF64,n_r0*6,n_particles*6)
-
     for i = 1:n_particles
         for j = 1:n_r0
             Ge, Gm = GreenTensors.G_em_renorm(krf[j,:],kr[i,:])   
             G_tensor_fr[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] im*Gm*alp_m[i]; -im*Gm*alp_e[i] Ge*alp_m[i]]
 	    end
     end
-
-    E_inc = reshape(E_inc,n_particles*6,)
+    E_inc = reshape(transpose(E_inc),n_particles*6,)
     field_r = G_tensor_fr*E_inc
+    return reshape(field_r,6,n_r0)   
+end
 
-    return reshape(field_r,n_r0,6)
-            
+@doc raw"""
+    field_sca_e_m(kr, alpha_dl, E_inc, krf)
+It computes the scattered field from the ensamble of dipoles.
+
+#Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_dl`: complex array containing the dimensionless polarisability.
+- `E_inc`: 2D complex array of size ``N\times 6`` with the incident field in the dipoles.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
+
+#Outputs
+- `field_r`: 2D complex array of size ``Nf\times 6`` with the field scattered by the dipoles at every ``k\vec{r_f}``.
+"""
+function field_sca_e_m(kr, alpha_dl, E_inc, krf)
+
+    n_particles = length(kr[:,1]) 
+    n_r0 = length(krf[:,1]) 
+
+    alp = Alphas.dispatch_e_m(alpha_dl,n_particles)
+
+    G_tensor_fr = zeros(ComplexF64,n_r0*6,n_particles*6)
+    for i = 1:n_particles
+        for j = 1:n_r0
+            Ge, Gm = GreenTensors.G_em_renorm(krf[j,:],kr[i,:])   
+            G_tensor_fr[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge im*Gm; -im*Gm Ge]*alp[i]
+	    end
+    end
+    E_inc = reshape(transpose(E_inc),n_particles*6,)
+    field_r = G_tensor_fr*E_inc
+    return reshape(field_r,6,n_r0)     
 end
 
 @doc raw"""
@@ -246,19 +274,15 @@ function field_sca_e(kr, alpha_e_dl, E_inc, krf)
     alp_e = Alphas.dispatch_e(alpha_e_dl,n_particles)
 
     G_tensor_fr = zeros(ComplexF64,n_r0*3,n_particles*3)
-
     for i = 1:n_particles
         for j = 1:n_r0
             Ge = GreenTensors.G_e_renorm(krf[j,:],kr[i,:])   
             G_tensor_fr[3 * (j-1) + 1:3 * (j-1) + 3 , 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
 	    end
     end
-
-    E_inc = reshape(E_inc,n_particles*3,)
+    E_inc = reshape(transpose(E_inc),n_particles*3,)
     field_r = G_tensor_fr*E_inc
-
-    return reshape(field_r,n_r0,3)
-            
+    return reshape(field_r,n_r0,3)      
 end
 
 @doc raw"""

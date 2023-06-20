@@ -4,6 +4,7 @@ module InputFields
 #######m####################
 using Base
 using LinearAlgebra
+include("green_tensors_e_m.jl")
 ###########################
 # FUNCTIONS
 #######m####################
@@ -64,130 +65,69 @@ function plane_wave_e_m_renorm(kr,khat=[0,0,1],e0=[1,0,0])
 end
 
 @doc raw"""
-    point_dipole(knorm, E0_const, positions, rd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
-```math
-\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
-``` 
+    point_dipole_e_m(krf, krd, dip, e0_const=1)
+Function that calculated the electromagnetic field emitted by a point dipole.
 
-Imputs
-- `knorm0` is the medium wavevector (scalar)
-- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
-- `position` contains the position at which the field is calculated (N x 3 matrix, where -N- is the number of points)
-- `rd` is the position of the emitting source/dipole (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
-    - dip_o = 1 -> elecric dipole along x-axis
-    - dip_o = 2 -> elecric dipole along y-axis
-    - dip_o = 3 -> elecric dipole along z-axis
-    - dip_o = 4 -> magnetic dipole along x-axis
-    - dip_o = 5 -> magnetic dipole along y-axis
-    - dip_o = 6 -> magnetic dipole along z-axis
-if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
-
-Outputs
-- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
-
-Equation
-
-```math
-\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) = \omega^2 \mu \mu_0 G(\mathbf{r}, \mathbf{r}_0) \overrightarrow{\mu} = k^2 G(\mathbf{r}, \mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
-```
-with
-```math
-\mathrm{positions} = \mathbf{r}, \\
-\mathrm{rd} = \mathbf{r}_0, \\
-\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
-``` 
+#Arguments
+- `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
+- `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
+- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+#Outputs
+- `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole(knorm, E0_const, positions, rd, dip_o)
-    
-    N_points = length(positions[:,1])
-    
-    G_tensor = zeros(ComplexF64,N_points*6,6)
-    G = zeros(ComplexF64,6,6) 
-
-    if length(dip_o) == 1
-        dip_oi = dip_o
-        dip_o = zeros(6,1)
-        dip_o[dip_oi] = 1
+function point_dipole_e_m(krf, krd, dip, e0_const=1)
+    n_r0 = length(krf[:,1])
+    G_tensor = zeros(ComplexF64,n_r0*6,6)
+    if length(dip) == 1  && dip < 7 && dip > 0
+        dip_o = dip
+        dip = zeros(6)
+        dip[dip_o] = 1
+    elseif length(dip) == 6
+        dip = dip/norm(dip) # Ensure that its modulus is equal to one
     else
-        dip_o = dip_o/norm(dip_o) # Ensure that its modulus is equal to one
+        dip = zeros(6)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
     end
-
-    for i = 1:N_points  
-        Ge, Gm = GreenTensors.G_em(positions[i,:],rd[1,:],knorm)   
-        G[:,:] = [Ge im*Gm; -im*Gm Ge]
-        G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
+    for i = 1:n_r0  
+        Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd[1,:])   
+        G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
     end
-	    
-    E_0i = knorm^2*G_tensor*dip_o*E0_const
-
-    return E_0i
-        
+    e_dipole = G_tensor*dip*e0_const
+    e_dipole = transpose(reshape(e_dipole,6,n_r0))
+    return e_dipole      
 end
 
-
 @doc raw"""
-    point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
-Function that calculated the electromagnetic field emitted by a point dipole with dipole moment 
-```math
-\mathrm{dip}_o = \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}, \quad \mathrm{(see \ equation \ below)}
-``` 
+    point_dipole_e(krf, krd, dip, e0_const=1)
+Function that calculated the electromagnetic field emitted by a point dipole.
 
-Imputs
-- `knorm0` is the medium wavevector (scalar)
-- `E0_const` is the field intensity (scalar). The modulus of the dipole moment is set to -epsilon_0*epsilon_m-, where -epsilon_0- and -epsilon_m- are the vacuum and medium permittivity, respectively.
-- `kposition` contains the position (multiplied by the wavevector) at which the field is calculated (N x 3 matrix, where -N- is the number of points)
-- `krd` is the position of the emitting source/dipole (multiplied by the wavevector) (1 x 3 vector)
-- `dip_o` defined the nature of the dipole. If `dip_o` is a scalar then:
-    - dip_o = 1 -> elecric dipole along x-axis
-    - dip_o = 2 -> elecric dipole along y-axis
-    - dip_o = 3 -> elecric dipole along z-axis
-    - dip_o = 4 -> magnetic dipole along x-axis
-    - dip_o = 5 -> magnetic dipole along y-axis
-    - dip_o = 6 -> magnetic dipole along z-axis
-if `dip_o` is a 6 x 1 vector then it specifies the dipole moment orentation of the source. 
-
-Outputs
-- `E_0i` is the electromagnetic field vector of the field at the requiered positions (6N x 1 vector)
-
-Equation
-
-```math
-\mathbf{E}_{\mathbf{\mu}}(\mathbf{r}) =  k^2 G(k\mathbf{r}, k\mathbf{r_0}) \dfrac{1}{\epsilon_0\epsilon} \overrightarrow{\mu}
-```
-with
-```math
-\mathrm{kpositions} = \mathbf{kr}, \\
-\mathrm{krd} = \mathbf{kr}_0, \\
-\mathrm{E}_{\mathrm{0i}} = \mathbf{E}_{\mathbf{\mu}}(\mathbf{r}).
-``` 
+#Arguments
+- `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
+- `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
+- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
+#Outputs
+- `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole_dl(knorm, E0_const, kpositions, krd, dip_o)
-    
-    N_points = length(kpositions[:,1])
-    
-    G_tensor = zeros(ComplexF64,N_points*6,6)
-    G = zeros(ComplexF64,6,6)  
-
-    if length(dip_o) == 1
-        dip_oi = dip_o
-        dip_o = zeros(6,1)
-        dip_o[dip_oi] = 1
+function point_dipole_e(krf, krd, dip, e0_const=1)
+    n_r0 = length(krf[:,1])
+    G_tensor = zeros(ComplexF64,n_r0*3,3)
+    if length(dip) == 1  && dip < 4 && dip > 0
+        dip_o = dip
+        dip = zeros(3)
+        dip[dip_o] = 1
+    elseif length(dip) == 3
+        dip = dip/norm(dip) # Ensure that its modulus is equal to one
     else
-        dip_o = dip_o/norm(dip_o) # Ensure that its modulus is equal to one
+        dip = zeros(6)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
     end
-
-    for i = 1:N_points     
-        Ge, Gm = GreenTensors.G_em_renorm(kpositions[i,:],krd[1,:],knorm)   
-        G[:,:] = k^3/(6*pi)*[Ge im*Gm; -im*Gm Ge]
-        G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , 1:6] = copy(G)
+    for i = 1:n_r0  
+        Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd[1,:])   
+        G_tensor[3 * (i-1) + 1:3 * (i-1) + 3, :] = Ge
     end
-	    
-    E_0i = knorm^3/(6*pi)*G_tensor*dip_o*E0_const
-
-    return E_0i
-        
+    e_dipole = G_tensor*dip*e0_const
+    e_dipole = transpose(reshape(e_dipole,3,n_r0))
+    return e_dipole      
 end
 
 using Cubature

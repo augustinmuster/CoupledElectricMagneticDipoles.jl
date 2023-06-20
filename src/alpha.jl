@@ -114,7 +114,7 @@ function dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
         alp_e = fill(alpha_e_dl,n_particles)
         alp_m = fill(alpha_m_dl,n_particles)
     
-    elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2 && size(alpha_e_dl,1) == n_particles # If alpha is the same tensor for all particles 
+    elseif length(alpha_e_dl) == length(alpha_m_dl) == 3^2 && size(alpha_e_dl,1) == 1 && ndims(alpha_e_dl) == 3 # If alpha is the same tensor for all particles 
         alp_e = fill(alpha_e_dl[1,:,:],n_particles)
         alp_m = fill(alpha_m_dl[1,:,:],n_particles)
 
@@ -145,7 +145,7 @@ function dispatch_e_m(alpha_dl,n_particles)
     if length(alpha_dl) == 6^2 && size(alpha_dl,1) == 6  # If alpha is the same tensor for all particles 
         alp = fill(alpha_dl,n_particles)
         
-    elseif length(alpha_dl) == 6^2 && size(alpha_dl,1) == n_particles # If alpha is the same tensor for all particles 
+    elseif length(alpha_dl) == 6^2 && size(alpha_dl,1) == 1 && ndims(alpha_dl) == 3 # If alpha is the same tensor for all particles  
         alp = fill(alpha_dl[1,:,:],n_particles)
 
     elseif length(alpha_dl) == n_particles*6^2  # If alpha is a tensor
@@ -175,8 +175,11 @@ function dispatch_e(alpha_e_dl,n_particles)
     elseif length(alpha_e_dl) == n_particles # If alpha is the same scalar for all particles
         alp_e = alpha_e_dl
         
-    elseif length(alpha_e_dl) == 3^2  # If alpha is the same tensor for all particles 
+    elseif length(alpha_e_dl) == 3^2 && size(alpha_e_dl,1) == 3 # If alpha is the same tensor for all particles 
         alp_e = fill(alpha_e_dl,n_particles)
+
+    elseif length(alpha_e_dl) == 3^2 && size(alpha_e_dl,1) == 1 && ndims(alpha_e_dl) == 3 # If alpha is the same tensor for all particles 
+        alp_e = fill(alpha_e_dl[1,:,:],n_particles)
 
     elseif length(alpha_e_dl)  == n_particles*3^2  # If alpha is a tensor
         alp_e = [alpha_e_dl[i,:,:] for i in 1:size(alpha_e_dl,1)]
