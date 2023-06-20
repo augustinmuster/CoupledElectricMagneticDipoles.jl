@@ -69,7 +69,7 @@ function compute_cross_sections_e(knorm,kr,e_inc,alpha_dl,input_field;explicit_s
             #extinction
             sumext=sumext+imag(dot(input_field[j,:],alpha_dl[j]*e_inc[j,:]))
             #absorption
-            sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi*Matrix{ComplexF64}(I,3,3))*alpha_dl[j]*e_inc[j,:]))
+            sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi)*alpha_dl[j]*e_inc[j,:]))
             #scattering
         end
         if explicit_scattering
@@ -119,17 +119,16 @@ end
 #INPUTS:  norm of the wave vector, polarisations, incident fields, quasistatic polarisabilities,e0,whether to compute explicitely csca, verbose
 #OUTPUT: array with lambda, Cabs, Csca, Cext
 #*************************************************
-function compute_cross_sections_e_m(knorm,kr,phi_inc,input_field,alpha_e,alpha_m;explicit_scattering=true,verbose=true)
+function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e,alpha_m,input_field;explicit_scattering=true,verbose=true)
     #redefine things
     e_inc=phi_inc[:,1:3]
     h_inc=phi_inc[:,4:6]
     p=compute_dipole_moment(alpha_e,e_inc)
     m=compute_dipole_moment(alpha_m,h_inc)
-    println(size(p))
     e_inp=input_field[:,1:3]
     h_inp=input_field[:,4:6]
     if verbose
-        println("computing cross sections")
+        println("computing cross sections...")
     end
     #number of dipoles
     n=length(kr[:,1])

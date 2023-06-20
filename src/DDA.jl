@@ -35,7 +35,7 @@ function solve_system(A,b,solver,verbose)
             println("solving with CPU LAPACK solver ...")
         end
         #
-        BLAS.set_num_threads(8)
+        BLAS.set_num_threads(Threads.nthreads())
         LAPACK.gesv!(A,phi)
         #
         return phi

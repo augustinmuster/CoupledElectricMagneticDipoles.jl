@@ -72,4 +72,13 @@ function Mie_bn(k0, R, m_p, m_bg, order)
 
     return (mt * psi(order, alpha) * diff_psi(order, beta) - diff_psi(order, alpha) * psi(order,beta)) / (mt * xi(order, alpha) * diff_psi(order, beta) - diff_xi(order, alpha) * psi(order, beta))
 end
+
+
+function mie_scattering_cross_section(knorm0,a,eps,eps_h;cutoff=50)
+    sum=0
+    for i=1:cutoff
+        sum=sum+(2*i+1)*(abs2(Mie_an(knorm0, a, sqrt(eps), sqrt(eps_h), i))+abs2(Mie_bn(knorm0, a, sqrt(eps), sqrt(eps_h), i)))
+    end
+    return 2*pi/(knorm0)^2/eps_h*sum
+end
 end
