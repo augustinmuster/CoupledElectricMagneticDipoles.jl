@@ -72,24 +72,17 @@ function load_dda_matrix_e(kr,alpha_dl,verbose)
     end
     #create DDA matrix
     A=Matrix{ComplexF64}(I,3*n,3*n)
-    #if scalar polarisability
-    if length(alpha_dl)==n
-        Threads.@threads for j in 1:n
-            for k=1:j-1
-                G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
-                A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k])
-                A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_dl[j])
-            end
-        end
-    else #if tensor polarisabilty
-        Threads.@threads for j in 1:n
-            for k=1:j-1
-                G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
-                A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k,:,:])
-                A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_dl[j,:,:])
-            end
+    #dispatch alphas
+    alpha_dl=dispatch_e(alpha_dl,n)
+    #load matrix
+    Threads.@threads for j in 1:n
+        for k=1:j-1
+            G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
+            A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k])
+            A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_dl[j])
         end
     end
+
     #return DDA matrix
     return A
 end
@@ -114,38 +107,22 @@ function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     A=Matrix{ComplexF64}(I,6*n,6*n)
     #
     a_dda=zeros(ComplexF64,6,6)
-    #
-    if length(alpha_e_dl)==n
-        for i=1:n
-            for j=1:i-1
-                Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
-                a_dda[1:3,1:3]=-Ge*alpha_e_dl[j]
-                a_dda[4:6,4:6]=-Ge*alpha_m_dl[j]
-                a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j]
-                a_dda[4:6,1:3]=+im*Gm*alpha_e_dl[j]
-                A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
-                a_dda[1:3,1:3]=-Ge*alpha_e_dl[i]
-                a_dda[4:6,4:6]=-Ge*alpha_m_dl[i]
-                a_dda[1:3,4:6]=+im*Gm*alpha_m_dl[i]
-                a_dda[4:6,1:3]=-im*Gm*alpha_e_dl[i]
-                A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda)
-            end
-        end
-    else 
-        for i=1:n
-            for j=1:i-1
-                Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
-                a_dda[1:3,1:3]=-Ge*alpha_e_dl[j,:,:]
-                a_dda[4:6,4:6]=-Ge*alpha_m_dl[j,:,:]
-                a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j,:,:]
-                a_dda[4:6,1:3]=+im*Gm*alpha_e_dl[j,:,:]
-                A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
-                a_dda[1:3,1:3]=-Ge*alpha_e_dl[i,:,:]
-                a_dda[4:6,4:6]=-Ge*alpha_m_dl[i,:,:]
-                a_dda[1:3,4:6]=+im*Gm*alpha_m_dl[i,:,:]
-                a_dda[4:6,1:3]=-im*Gm*alpha_e_dl[i,:,:]
-                A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda)
-            end
+    #dispactch alpha
+    alpha_e_dl,alpha_m_dl=dispatch_e_m(alpha_e_dl,alpha_m_dl,n)
+    #load matrix
+    for i=1:n
+        for j=1:i-1
+            Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
+            a_dda[1:3,1:3]=-Ge*alpha_e_dl[j]
+            a_dda[4:6,4:6]=-Ge*alpha_m_dl[j]
+            a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j]
+            a_dda[4:6,1:3]=+im*Gm*alpha_e_dl[j]
+            A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
+            a_dda[1:3,1:3]=-Ge*alpha_e_dl[i]
+            a_dda[4:6,4:6]=-Ge*alpha_m_dl[i]
+            a_dda[1:3,4:6]=+im*Gm*alpha_m_dl[i]
+            a_dda[4:6,1:3]=-im*Gm*alpha_e_dl[i]
+            A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda)
         end
     end
     return A
@@ -171,6 +148,8 @@ function load_dda_matrix_e_m(kr,alpha_tensor,verbose)
     A=Matrix{ComplexF64}(I,6*n,6*n)
     #
     a_dda=zeros(ComplexF64,6,6)
+    #dispatch alpha
+    alpha_tensor=dispatch_e_m(alpha_dl,n)
     #
     for i=1:n
         for j=1:i-1

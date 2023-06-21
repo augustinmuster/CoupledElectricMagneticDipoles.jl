@@ -63,41 +63,23 @@ function compute_cross_sections_e(knorm,kr,e_inc,alpha_dl,input_field;explicit_s
     sumext=0.0
     sumabs=0.0
     sumsca=0.0
-
-    if ndims(alpha_dl)==1
+    #dispatch alpha
+    alpha_dl=dispatch_e(alpha_dl,n)
+    #compute_cross sections
+    for j=1:n
+        #extinction
+        sumext=sumext+imag(dot(input_field[j,:],alpha_dl[j]*e_inc[j,:]))
+        #absorption
+        sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi)*alpha_dl[j]*e_inc[j,:]))
+        #scattering
+    end
+    if explicit_scattering
         for j=1:n
-            #extinction
-            sumext=sumext+imag(dot(input_field[j,:],alpha_dl[j]*e_inc[j,:]))
-            #absorption
-            sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi)*alpha_dl[j]*e_inc[j,:]))
-            #scattering
-        end
-        if explicit_scattering
-            for j=1:n
-                sumsca=sumsca+dot(alpha_dl[j]*e_inc[j,:],(knorm/6/pi)*alpha_dl[j]*e_inc[j,:])
-                for k=1:j-1
-                    G=imag(knorm/4/pi*GreenTensors.G_e_renorm(kr[j,:],kr[k,:]))
-                    sumsca=sumsca+dot(alpha_dl[j]*e_inc[j,:],G*alpha_dl[k]*e_inc[k,:])
-                    sumsca=sumsca+dot(alpha_dl[k]*e_inc[k,:],G*alpha_dl[j]*e_inc[j,:])
-                end
-            end
-        end
-    elseif ndims(alpha_dl)==3
-        for j=1:n
-            #extinction
-            sumext=sumext+imag(dot(input_field[j,:],alpha_dl[j,:,:]*e_inc[j,:]))
-            #absorption
-            sumabs=sumabs-imag(dot(alpha_dl[j,:,:]*e_inc[j,:],(inv(factor_p*alpha_dl[j,:,:])+im*knorm^3/6/pi*Matrix{ComplexF64}(I,3,3))*alpha_dl[j,:,:]*e_inc[j,:]))
-            #scattering
-        end
-        if explicit_scattering
-            for j=1:n
-                sumsca=sumsca+dot(alpha_dl[j,:,:]*e_inc[j,:],(knorm/6/pi)*alpha_dl[j,:,:]*e_inc[j,:])
-                for k=1:j-1
-                    G=imag(knorm/4/pi*GreenTensors.G_e_renorm(kr[j,:],kr[k,:]))
-                    sumsca=sumsca+dot(alpha_dl[j,:,:]*e_inc[j,:],G*alpha_dl[k,:,:]*e_inc[k,:])
-                    sumsca=sumsca+dot(alpha_dl[k,:,:]*e_inc[k,:],G*alpha_dl[j,:,:]*e_inc[j,:])
-                end
+            sumsca=sumsca+dot(alpha_dl[j]*e_inc[j,:],(knorm/6/pi)*alpha_dl[j]*e_inc[j,:])
+            for k=1:j-1
+                G=imag(knorm/4/pi*GreenTensors.G_e_renorm(kr[j,:],kr[k,:]))
+                sumsca=sumsca+dot(alpha_dl[j]*e_inc[j,:],G*alpha_dl[k]*e_inc[k,:])
+                sumsca=sumsca+dot(alpha_dl[k]*e_inc[k,:],G*alpha_dl[j]*e_inc[j,:])
             end
         end
     end
@@ -136,7 +118,8 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e,alpha_m,input_field
     sum_sca=0.
     sum_ext=0.
     sum_abs=0.
-
+    
+    #compute cross sections
     for i=1:n
         sum_ext=sum_ext+imag(alpha_e[i,1,1]*dot(e_inp[i,:],e_inc[i,:])+alpha_m[i,1,1]*dot(h_inp[i,:],h_inc[i,:]))
         sum_abs=sum_abs+ ( imag(alpha_e[i,1,1]) -2/3*abs2(alpha_e[i,1,1]))*dot(e_inc[i,:],e_inc[i,:])+(imag(alpha_m[i,1,1])-2/3*abs2(alpha_m[i,1,1]))*dot(h_inc[i,:],h_inc[i,:])
