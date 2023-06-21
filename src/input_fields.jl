@@ -8,60 +8,43 @@ include("green_tensors_e_m.jl")
 ###########################
 # FUNCTIONS
 #######m####################
-@doc raw"""
-    plane_wave(knorm,r,khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane wave of wavenumber `knorm` evaluated at position `r` function. `khat` is the direction of propagation and `e0` is the polarization.
-The output is a 3d complex vector.
-This plane wave is defined as:
-```math
-\mathbf{E}\left(\mathbf{r}\right)=\mathbf{E}_{0}e^{i\mathbf{k}\cdot\mathbf{r}}
-```
-"""
-function plane_wave(knorm,r,khat=[0,0,1],e0=[1,0,0])
-    return exp(im*dot(knorm*khat,r))*e0
-end
 
 @doc raw"""
-    plane_wave_renorm(kr,khat=[0,0,1],e0=[1,0,0])
+    plane_wave_e(kr;khat=[0,0,1],e0=[1,0,0])
 Computes a simple plane with dimensionless input evaluated at `kr`. `khat` is the direction of propagation and `e0` is the polarization.
-The output is a 3d complex vector.
+`kr` is a ``N\times 3`` float array. The output is a ``N\times 3`` complex array represeinting the electric field.
 This plane wave is defined as:
 ```math
 \mathbf{E}\left(\mathbf{r}\right)=\mathbf{E}_{0}e^{i\mathbf{k}\cdot\mathbf{r}}
 ```
 """
-function plane_wave_renorm(kr,khat=[0,0,1],e0=[1,0,0])
-    return exp(im*dot(khat,kr))*e0
+function plane_wave_e(kr;khat=[0,0,1],e0=[1,0,0])
+    n=length(kr[:,1])
+    E0=zeros(ComplexF64,n,3)
+    for i=1:n
+        E0[i,:]=exp(im*dot(khat,kr[i,:]))*e0
+    end
+    return E0
 end
 
-@doc raw"""
-    plane_wave_e_m(knorm,r,khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane wave of wavenumber `knorm` evaluated at position `r` function. `khat` is the direction of propagation and `e0` is the polarization.
-The output is a 3d complex vector.
-This plane wave is defined as:
-```math
-\mathbf{E}\left(\mathbf{r}\right)=\mathbf{E}_{0}e^{i\mathbf{k}\cdot\mathbf{r}}
-```
-"""
-function plane_wave_e_m(knorm,r,khat=[0,0,1],e0=[1,0,0])
-    E=exp(im*dot(knorm*khat,r))*e0
-    H=cross(khat,E)
-    return E,H
-end
 
 @doc raw"""
-    plane_wave_e_m_renorm(kr,khat=[0,0,1],e0=[1,0,0])
+    plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
 Computes a simple plane with dimensionless input evaluated at `kr`. `khat` is the direction of propagation and `e0` is the polarization.
-The output is a 3d complex vector.
+`kr` is a ``N\times 3`` float array. The output is a ``N\times 6`` complex array representing the electric and magnetic field.
 This plane wave is defined as:
 ```math
 \mathbf{E}\left(\mathbf{r}\right)=\mathbf{E}_{0}e^{i\mathbf{k}\cdot\mathbf{r}}
 ```
 """
-function plane_wave_e_m_renorm(kr,khat=[0,0,1],e0=[1,0,0])
-    E=exp(im*dot(khat,kr))*e0
-    H=cross(khat,E)
-    return E,H
+function plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
+    n=length(kr[:,1])
+    phi=zeros(ComplexF64,n,6)
+    for i=1:n
+        phi[i,1:3]=exp(im*dot(khat,kr[i,:]))*e0
+        phi[i,4:6]=cross(khat,phi[i,1:3])
+    end
+    return phi
 end
 
 @doc raw"""
