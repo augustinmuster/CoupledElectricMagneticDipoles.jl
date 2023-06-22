@@ -20,13 +20,21 @@ Computes the dipole moment (magnetic or electric) of a dipole with polarizabilit
 function compute_dipole_moment(alpha,phi_inc)
     n=length(phi_inc[:,1])
     p=zeros(ComplexF64,n,length(phi_inc[1,:]))
-    if ndims(alpha)==2
+    if ndims(alpha)==2 
         for i=1:n
-            p[i,:]=alpha[i]*phi_inc[i,:]
+            p[i,:]=alpha*phi_inc[i,:]
         end
     elseif ndims(alpha)==3
         for i=1:n
             p[i,:]=alpha[i,:,:]*phi_inc[i,:]
+        end
+    elseif ndims(alpha)==0
+        for i=1:n
+            p[i,:]=alpha*phi_inc[i,:]
+        end
+    elseif ndims(alpha)==1
+        for i=1:n
+            p[i,:]=alpha[i]*phi_inc[i,:]
         end
     end
     return p
@@ -64,13 +72,18 @@ function compute_cross_sections_e(knorm,kr,e_inc,alpha_dl,input_field;explicit_s
     sumabs=0.0
     sumsca=0.0
     #dispatch alpha
-    alpha_dl=dispatch_e(alpha_dl,n)
+    if ndims(alpha_dl)==1 || ndims(alpha_dl)==0
+        id=1
+    else
+        id=Matrix{ComplexF64}(I,3,3)
+    end
+    alpha_dl=Alphas.dispatch_e(alpha_dl,n)
     #compute_cross sections
     for j=1:n
         #extinction
         sumext=sumext+imag(dot(input_field[j,:],alpha_dl[j]*e_inc[j,:]))
         #absorption
-        sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi)*alpha_dl[j]*e_inc[j,:]))
+        sumabs=sumabs-imag(dot(alpha_dl[j]*e_inc[j,:],(inv(factor_p*alpha_dl[j])+im*knorm^3/6/pi*id)*alpha_dl[j]*e_inc[j,:]))
         #scattering
     end
     if explicit_scattering
@@ -118,11 +131,10 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e,alpha_m,input_field
     sum_sca=0.
     sum_ext=0.
     sum_abs=0.
-    
     #compute cross sections
     for i=1:n
-        sum_ext=sum_ext+imag(alpha_e[i,1,1]*dot(e_inp[i,:],e_inc[i,:])+alpha_m[i,1,1]*dot(h_inp[i,:],h_inc[i,:]))
-        sum_abs=sum_abs+ ( imag(alpha_e[i,1,1]) -2/3*abs2(alpha_e[i,1,1]))*dot(e_inc[i,:],e_inc[i,:])+(imag(alpha_m[i,1,1])-2/3*abs2(alpha_m[i,1,1]))*dot(h_inc[i,:],h_inc[i,:])
+        sum_ext=sum_ext+imag(dot(e_inp[i,:],p[i,:])+dot(h_inp[i,:],m[i,:]))
+        sum_abs=sum_abs+ (imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))+imag(dot(h_inc[i,:],m[i,:]))-2/3*dot(m[i,:],m[i,:])
         if (explicit_scattering)
             sum_sca=sum_sca+1/3*dot(p[i,:],p[i,:])+1/3*dot(m[i,:],m[i,:])
             for j=(i+1):n

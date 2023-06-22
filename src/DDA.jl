@@ -13,6 +13,7 @@ using LinearAlgebra
 using CUDA
 using Test
 include("green_tensors_e_m.jl")
+include("alpha.jl")
 ########################################################################################################################################
 # FUNCTIONS
 ########################################################################################################################################
@@ -73,7 +74,7 @@ function load_dda_matrix_e(kr,alpha_dl,verbose)
     #create DDA matrix
     A=Matrix{ComplexF64}(I,3*n,3*n)
     #dispatch alphas
-    alpha_dl=dispatch_e(alpha_dl,n)
+    alpha_dl=Alphas.dispatch_e(alpha_dl,n)
     #load matrix
     Threads.@threads for j in 1:n
         for k=1:j-1
@@ -108,7 +109,7 @@ function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     #
     a_dda=zeros(ComplexF64,6,6)
     #dispactch alpha
-    alpha_e_dl,alpha_m_dl=dispatch_e_m(alpha_e_dl,alpha_m_dl,n)
+    alpha_e_dl,alpha_m_dl=Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n)
     #load matrix
     for i=1:n
         for j=1:i-1
@@ -149,7 +150,7 @@ function load_dda_matrix_e_m(kr,alpha_tensor,verbose)
     #
     a_dda=zeros(ComplexF64,6,6)
     #dispatch alpha
-    alpha_tensor=dispatch_e_m(alpha_dl,n)
+    alpha_tensor=Alphas.dispatch_e_m(alpha_dl,n)
     #
     for i=1:n
         for j=1:i-1
