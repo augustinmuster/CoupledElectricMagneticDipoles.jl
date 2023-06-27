@@ -153,10 +153,10 @@ end
 Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
 
 Imputs
-- `alpha_e_dl` = electric polarizability
+- `alpha_e_dl`: = electric polarizability
 
 Outputs
-- `alp_e` = iterable electric polarizability
+- `alp_e`: = iterable electric polarizability
 """
 function dispatch_e(alpha_e_dl,n_particles)
     if length(alpha_e_dl) == 1 # If alpha is the same scalar for all particles

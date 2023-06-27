@@ -251,14 +251,6 @@ Equation
 ```math
 \mathbf{E}_{sca}(\mathbf{r}) = k^2G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) \mathbf{E}_{inc}(\mathbf{\bar{r}}_N) = k^2 G(\mathbf{r},\mathbf{\bar{r}}_N) \alpha(\mathbf{\bar{r}}_N) D(\mathbf{\bar{r}}_N) \E_{0}
 ```
-
-\r = `r0`
-\bar{r}}_N = `pos`
-\alphagg(\mathbf{\bar{r}}_N) = `alpha`
-\GG(\r,\mathbf{\bar{r}}_N) = `G_tensor`
-\E_{inc}(\mathbf{\bar{r}}_N) = `E_inc`
-
-\E_{sca}(\r) = `field_r`
 """
 function field_sca_e(kr, alpha_e_dl, E_inc, krf)
 
@@ -296,19 +288,8 @@ It Computes local density of states (LDOS) by the imaginary part of the returnin
 Equation
 
 ```math
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+\mathrm{Copy from documentation}
 ```
-
-\alphagg(\mathbf{\bar{r}}_N) = `alpha`
-\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
-\bar{r}}_N = `pos`
-\r_0 = `rd`
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
-
-k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
-\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
-
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
 """
 function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
 
@@ -320,7 +301,7 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
 
     alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
-    if dip == nothing
+    if dip === nothing
         LDOS = zeros(n_dpos,2)
         for j=1:n_dpos
             for i=1:n_particles
@@ -376,19 +357,8 @@ It Computes local density of states (LDOS) by the imaginary part of the returnin
 Equation
 
 ```math
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+\mathrm{Copy from documentation}
 ```
-
-\alphagg(\mathbf{\bar{r}}_N) = `alpha`
-\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
-\bar{r}}_N = `pos`
-\r_0 = `rd`
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
-
-k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
-\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
-
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
 """
 function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
 
@@ -400,7 +370,7 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
 
     alp = Alphas.dispatch_e_m(alpha_dl,n_particles)
 
-    if dip == nothing
+    if dip === nothing
         LDOS = zeros(n_dpos,2)
         for j=1:n_dpos
             for i=1:n_particles
@@ -456,19 +426,8 @@ It Computes local density of states (LDOS) by the imaginary part of the returnin
 Equation
 
 ```math
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = 1 + \dfrac{1}{|\bm \mu|^2 }\dfrac{6\pi}{k^3} \Im\left[\bm \mu^{*} \cdot k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu  \right]
+\mathrm{Copy from documentation}
 ```
-
-\alphagg(\mathbf{\bar{r}}_N) = `alpha`
-\DD(\mathbf{\bar{r}}_N) = `Ainv` = [I - k^2*G*alpha]^(-1)
-\bar{r}}_N = `pos`
-\r_0 = `rd`
-\dfrac{1}{\epsilon_0\epsilon} \bm \mu = `dip_o` (the pre-factor -\dfrac{1}{\epsilon_0\epsilon}- dessapears after normalization)
-
-k^2\GG(\r_0,\mathbf{\bar{r}}_N) \alphagg(\mathbf{\bar{r}}_N) \DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `field_r`
-\DD(\mathbf{\bar{r}}_N) k^2 \GG(\mathbf{\bar{r}}_N, \r_0) \bm \mu = `E_inc`
-
-\mathrm{LDOS}(\mathbf{\bar{r}}_N,\r_0) = `LDOS`
 """
 function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
 
@@ -481,7 +440,7 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
     alp_e = Alphas.dispatch_e(alpha_e_dl,n_particles)
 
     LDOS = zeros(n_dpos)
-    if dip == nothing
+    if dip === nothing
         for j=1:n_dpos
             for i=1:n_particles
                 Ge = GreenTensors.G_e_renorm(kr[i,:],krd[j,:])        
@@ -516,6 +475,245 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
         LDOS = LDOS[1]
     end
     return LDOS
+end
+
+
+@doc raw"""
+    force_e_m(k,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+It computes the optical forces for deterministics imputs fields.
+
+#Arguments
+- `k`: float with the wavevector.
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `alpha_m_dl`: complex array containing the dimensionless magnetic polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `e_0`: 2D complex array of size ``N\times 6`` containing the external imput field.
+- `dxe_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*x`` argument of the external imput field.
+- `dye_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*y`` argument of the external imput field.
+- `dze_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*z`` argument of the external imput field.
+#Outputs
+- `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
+- `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
+- `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
+"""
+function force_e_m(k,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+
+    eps0 = 1/2*k*8.8541878128e-12
+
+    n_particles = length(kr[:,1])
+    n_e_0 = length(e_0[:,1])
+    n_dxe_0 = length(dxe_0[:,1])
+    n_dye_0 = length(dye_0[:,1])
+    n_dze_0 = length(dze_0[:,1])
+
+    if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
+        println("the dimension of the filed must coincided with the number of particles")
+        return 0
+    end
+
+    e_0 = reshape(transpose(e_0),n_particles*6,)
+    dxe_0 = reshape(transpose(dxe_0),n_particles*6,)
+    dye_0 = reshape(transpose(dye_0),n_particles*6,)
+    dze_0 = reshape(transpose(dze_0),n_particles*6,)
+    e_inc = Ainv*e_0
+    
+    dxG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    dyG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    dzG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    p = zeros(ComplexF64,n_particles*6,)
+
+    alpha_e_dl,alpha_m_dl=Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
+
+    for i=1:n_particles
+        p[6*(i-1)+1:6*(i-1)+6] = [alpha_e_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+3];alpha_m_dl[i]*e_inc[6*(i-1)+4:6*(i-1)+6]]
+        for j=1:i-1
+            dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
+            dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe*alpha_e_dl[j] im*dxGm*alpha_m_dl[j]; -im*dxGm*alpha_e_dl[j] dxGe*alpha_m_dl[j]]
+            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dxGe*alpha_e_dl[i] -im*dxGm*alpha_m_dl[i]; im*dxGm*alpha_e_dl[i] dxGe*alpha_m_dl[i]]
+            dyGe, dyGm = GreenTensors.dyG_em_renorm(kr[i,:],kr[j,:])
+            dyG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dyGe*alpha_e_dl[j] im*dyGm*alpha_m_dl[j]; -im*dyGm*alpha_e_dl[j] dyGe*alpha_m_dl[j]]
+            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dyGe*alpha_e_dl[i] -im*dyGm*alpha_m_dl[i]; im*dyGm*alpha_e_dl[i] dyGe*alpha_m_dl[i]]
+            dzGe, dzGm = GreenTensors.dzG_em_renorm(kr[i,:],kr[j,:])
+            dzG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dzGe*alpha_e_dl[j] im*dzGm*alpha_m_dl[j]; -im*dzGm*alpha_e_dl[j] dzGe*alpha_m_dl[j]]
+            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dzGe*alpha_e_dl[i] -im*dzGm*alpha_m_dl[i]; im*dzGm*alpha_e_dl[i] dzGe*alpha_m_dl[i]]
+        end
+    end
+
+    dxe_inc = dxe_0 + dxG_alp*e_inc
+    dye_inc = dye_0 + dyG_alp*e_inc
+    dze_inc = dze_0 + dzG_alp*e_inc
+
+    p = conj(transpose(reshape(p,6,n_particles)))
+    dxe_inc = transpose(reshape(dxe_inc,6,n_particles))
+    dye_inc = transpose(reshape(dye_inc,6,n_particles))
+    dze_inc = transpose(reshape(dze_inc,6,n_particles))
+
+    fx = eps0*sum(p.*dxe_inc,dims=2)
+    fy = eps0*sum(p.*dye_inc,dims=2)
+    fz = eps0*sum(p.*dze_inc,dims=2)
+    if length(fz) == 1
+        return real(fx[1]), real(fy[1]), real(fz[1])
+    end
+    return real(fx[:,1]), real(fy[:,1]), real(fz[:,1])
+end
+
+@doc raw"""
+    force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+It computes the optical forces for deterministics imputs fields.
+
+#Arguments
+- `k`: float with the wavevector.
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_dl`: complex array containing the dimensionless polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `e_0`: 2D complex array of size ``N\times 6`` containing the external imput field.
+- `dxe_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*x`` argument of the external imput field.
+- `dye_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*y`` argument of the external imput field.
+- `dze_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*z`` argument of the external imput field.
+#Outputs
+- `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
+- `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
+- `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
+"""
+function force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+
+    eps0 = 1/2*k*8.8541878128e-12
+
+    n_particles = length(kr[:,1])
+    n_e_0 = length(e_0[:,1])
+    n_dxe_0 = length(dxe_0[:,1])
+    n_dye_0 = length(dye_0[:,1])
+    n_dze_0 = length(dze_0[:,1])
+
+    if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
+        println("the dimension of the filed must coincided with the number of particles")
+        return 0
+    end
+
+    e_0 = reshape(transpose(e_0),n_particles*6,)
+    dxe_0 = reshape(transpose(dxe_0),n_particles*6,)
+    dye_0 = reshape(transpose(dye_0),n_particles*6,)
+    dze_0 = reshape(transpose(dze_0),n_particles*6,)
+    e_inc = Ainv*e_0
+    
+    dxG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    dyG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    dzG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
+    p = zeros(ComplexF64,n_particles*6,)
+
+    alpha_dl=Alphas.dispatch_e_m(alpha_dl,n_particles)
+
+    for i=1:n_particles
+        p[6*(i-1)+1:6*(i-1)+6] = alpha_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+6]
+        for j=1:i-1
+            dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
+            dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe im*dxGm; -im*dxGm dxGe]*alpha_dl[j]
+            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dxGe -im*dxGm; im*dxGm dxGe]*alpha_dl[i]
+            dyGe, dyGm = GreenTensors.dyG_em_renorm(kr[i,:],kr[j,:])
+            dyG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dyGe im*dyGm; -im*dyGm dyGe]*alpha_dl[j]
+            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dyGe -im*dyGm; im*dyGm dyGe]*alpha_dl[i]
+            dzGe, dzGm = GreenTensors.dzG_em_renorm(kr[i,:],kr[j,:])
+            dzG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dzGe im*dzGm; -im*dzGm dzGe]*alpha_dl[j]
+            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dzGe -im*dzGm; im*dzGm dzGe]*alpha_dl[i]
+        end
+    end
+
+    dxe_inc = dxe_0 + dxG_alp*e_inc
+    dye_inc = dye_0 + dyG_alp*e_inc
+    dze_inc = dze_0 + dzG_alp*e_inc
+
+    p = conj(transpose(reshape(p,6,n_particles)))
+    dxe_inc = transpose(reshape(dxe_inc,6,n_particles))
+    dye_inc = transpose(reshape(dye_inc,6,n_particles))
+    dze_inc = transpose(reshape(dze_inc,6,n_particles))
+
+    fx = eps0*sum(p.*dxe_inc,dims=2)
+    fy = eps0*sum(p.*dye_inc,dims=2)
+    fz = eps0*sum(p.*dze_inc,dims=2)
+    if length(fz) == 1
+        return real(fx[1]), real(fy[1]), real(fz[1])
+    end
+    return real(fx[:,1]), real(fy[:,1]), real(fz[:,1])
+end
+
+@doc raw"""
+    force_e(k,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+It computes the optical forces for deterministics imputs fields.
+
+#Arguments
+- `k`: float with the wavevector.
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex array containing the dimensionless electric polarisability.
+- `Ainv`: (inverse) DDA matrix ``[I - G*alpha]^(-1)``.
+- `e_0`: 2D complex array of size ``N\times 3`` containing the external imput field.
+- `dxe_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*x`` argument of the external imput field.
+- `dye_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*y`` argument of the external imput field.
+- `dze_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*z`` argument of the external imput field.
+#Outputs
+- `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
+- `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
+- `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
+"""
+function force_e(k,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+
+    eps0 = 1/2*k*8.8541878128e-12
+
+    n_particles = length(kr[:,1])
+    n_e_0 = length(e_0[:,1])
+    n_dxe_0 = length(dxe_0[:,1])
+    n_dye_0 = length(dye_0[:,1])
+    n_dze_0 = length(dze_0[:,1])
+
+    if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
+        println("the dimension of the filed must coincided with the number of particles")
+        return 0
+    end
+
+    e_0 = reshape(transpose(e_0),n_particles*3,)
+    dxe_0 = reshape(transpose(dxe_0),n_particles*3,)
+    dye_0 = reshape(transpose(dye_0),n_particles*3,)
+    dze_0 = reshape(transpose(dze_0),n_particles*3,)
+    e_inc = Ainv*e_0
+    
+    dxG_alp = zeros(ComplexF64,n_particles*3,n_particles*3)
+    dyG_alp = zeros(ComplexF64,n_particles*3,n_particles*3)
+    dzG_alp = zeros(ComplexF64,n_particles*3,n_particles*3)
+    p = zeros(ComplexF64,n_particles*3,)
+
+    alpha_e_dl = Alphas.dispatch_e(alpha_e_dl,n_particles)
+
+    for i=1:n_particles
+        p[3*(i-1)+1:3*(i-1)+3] = alpha_e_dl[i]*e_inc[3*(i-1)+1:3*(i-1)+3]
+        for j=1:i-1
+            dxGe = GreenTensors.dxG_e_renorm(kr[i,:],kr[j,:])
+            dxG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dxGe*alpha_e_dl[j]
+            dxG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dxGe*alpha_e_dl[i]
+            dyGe = GreenTensors.dyG_e_renorm(kr[i,:],kr[j,:])
+            dyG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dyGe*alpha_e_dl[j]
+            dyG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dyGe*alpha_e_dl[i]
+            dzGe = GreenTensors.dzG_e_renorm(kr[i,:],kr[j,:])
+            dzG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dzGe*alpha_e_dl[j]
+            dzG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dzGe*alpha_e_dl[i]
+        end
+    end
+
+    dxe_inc = dxe_0 + dxG_alp*e_inc
+    dye_inc = dye_0 + dyG_alp*e_inc
+    dze_inc = dze_0 + dzG_alp*e_inc
+
+    p = conj(transpose(reshape(p,3,n_particles)))
+    dxe_inc = transpose(reshape(dxe_inc,3,n_particles))
+    dye_inc = transpose(reshape(dye_inc,3,n_particles))
+    dze_inc = transpose(reshape(dze_inc,3,n_particles))
+
+    fx = eps0*sum(p.*dxe_inc,dims=2)
+    fy = eps0*sum(p.*dye_inc,dims=2)
+    fz = eps0*sum(p.*dze_inc,dims=2)
+    if length(fz) == 1
+        return real(fx[1]), real(fy[1]), real(fz[1])
+    end
+    return real(fx[:,1]), real(fy[:,1]), real(fz[:,1])
 end
 
 @doc raw"""
