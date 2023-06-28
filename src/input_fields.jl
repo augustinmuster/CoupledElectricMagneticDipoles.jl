@@ -58,7 +58,7 @@ Function that calculated the electromagnetic field emitted by a point dipole.
 #Outputs
 - `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole_e_m(krf, krd, dip, e0_const=1)
+function point_dipole_e_m(krf, krd, dip; e0_const=1)
     n_r0 = length(krf[:,1])
     G_tensor = zeros(ComplexF64,n_r0*6,6)
     if length(dip) == 1  && dip < 7 && dip > 0
@@ -91,7 +91,7 @@ Function that calculated the electromagnetic field emitted by a point dipole.
 #Outputs
 - `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole_e(krf, krd, dip, e0_const=1)
+function point_dipole_e(krf, krd, dip; e0_const=1)
     n_r0 = length(krf[:,1])
     G_tensor = zeros(ComplexF64,n_r0*3,3)
     if length(dip) == 1  && dip < 4 && dip > 0
@@ -101,8 +101,8 @@ function point_dipole_e(krf, krd, dip, e0_const=1)
     elseif length(dip) == 3
         dip = dip/norm(dip) # Ensure that its modulus is equal to one
     else
-        dip = zeros(6)
-        println("dip should be an integer (between 1 and 6) or a vector of length 6")
+        dip = zeros(3)
+        println("dip should be an integer (between 1 and 3) or a vector of length 3")
     end
     for i = 1:n_r0  
         Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd[1,:])   
@@ -544,7 +544,7 @@ Function that calculated the (adimensional) derivative of the electromagnetic fi
 - `dye_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dze_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_point_dipole_e_m(krf, krd, dip, e0_const=1)
+function d_point_dipole_e_m(krf, krd, dip; e0_const=1)
     n_r0 = length(krf[:,1])
     dxG_tensor = zeros(ComplexF64,n_r0*6,6)
     dyG_tensor = zeros(ComplexF64,n_r0*6,6)
@@ -590,7 +590,7 @@ Function that calculated the (adimensional) derivative of the electromagnetic fi
 - `dye_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dze_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_point_dipole_e(krf, krd, dip, e0_const=1)
+function d_point_dipole_e(krf, krd, dip; e0_const=1)
     n_r0 = length(krf[:,1])
     dxG_tensor = zeros(ComplexF64,n_r0*3,3)
     dyG_tensor = zeros(ComplexF64,n_r0*3,3)

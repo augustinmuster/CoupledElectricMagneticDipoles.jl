@@ -530,13 +530,13 @@ function force_e_m(k,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
         for j=1:i-1
             dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
             dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe*alpha_e_dl[j] im*dxGm*alpha_m_dl[j]; -im*dxGm*alpha_e_dl[j] dxGe*alpha_m_dl[j]]
-            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dxGe*alpha_e_dl[i] -im*dxGm*alpha_m_dl[i]; im*dxGm*alpha_e_dl[i] dxGe*alpha_m_dl[i]]
+            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dxGe*alpha_e_dl[i] -im*dxGm*alpha_m_dl[i]; im*dxGm*alpha_e_dl[i] dxGe*alpha_m_dl[i]]
             dyGe, dyGm = GreenTensors.dyG_em_renorm(kr[i,:],kr[j,:])
             dyG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dyGe*alpha_e_dl[j] im*dyGm*alpha_m_dl[j]; -im*dyGm*alpha_e_dl[j] dyGe*alpha_m_dl[j]]
-            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dyGe*alpha_e_dl[i] -im*dyGm*alpha_m_dl[i]; im*dyGm*alpha_e_dl[i] dyGe*alpha_m_dl[i]]
+            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dyGe*alpha_e_dl[i] -im*dyGm*alpha_m_dl[i]; im*dyGm*alpha_e_dl[i] dyGe*alpha_m_dl[i]]
             dzGe, dzGm = GreenTensors.dzG_em_renorm(kr[i,:],kr[j,:])
             dzG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dzGe*alpha_e_dl[j] im*dzGm*alpha_m_dl[j]; -im*dzGm*alpha_e_dl[j] dzGe*alpha_m_dl[j]]
-            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dzGe*alpha_e_dl[i] -im*dzGm*alpha_m_dl[i]; im*dzGm*alpha_e_dl[i] dzGe*alpha_m_dl[i]]
+            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dzGe*alpha_e_dl[i] -im*dzGm*alpha_m_dl[i]; im*dzGm*alpha_e_dl[i] dzGe*alpha_m_dl[i]]
         end
     end
 
@@ -609,13 +609,13 @@ function force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
         for j=1:i-1
             dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
             dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe im*dxGm; -im*dxGm dxGe]*alpha_dl[j]
-            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dxGe -im*dxGm; im*dxGm dxGe]*alpha_dl[i]
+            dxG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dxGe -im*dxGm; im*dxGm dxGe]*alpha_dl[i]
             dyGe, dyGm = GreenTensors.dyG_em_renorm(kr[i,:],kr[j,:])
             dyG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dyGe im*dyGm; -im*dyGm dyGe]*alpha_dl[j]
-            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dyGe -im*dyGm; im*dyGm dyGe]*alpha_dl[i]
+            dyG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dyGe -im*dyGm; im*dyGm dyGe]*alpha_dl[i]
             dzGe, dzGm = GreenTensors.dzG_em_renorm(kr[i,:],kr[j,:])
             dzG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dzGe im*dzGm; -im*dzGm dzGe]*alpha_dl[j]
-            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=[dzGe -im*dzGm; im*dzGm dzGe]*alpha_dl[i]
+            dzG_alp[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=-[dzGe -im*dzGm; im*dzGm dzGe]*alpha_dl[i]
         end
     end
 
@@ -688,13 +688,13 @@ function force_e(k,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
         for j=1:i-1
             dxGe = GreenTensors.dxG_e_renorm(kr[i,:],kr[j,:])
             dxG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dxGe*alpha_e_dl[j]
-            dxG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dxGe*alpha_e_dl[i]
+            dxG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=-dxGe*alpha_e_dl[i]
             dyGe = GreenTensors.dyG_e_renorm(kr[i,:],kr[j,:])
             dyG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dyGe*alpha_e_dl[j]
-            dyG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dyGe*alpha_e_dl[i]
+            dyG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=-dyGe*alpha_e_dl[i]
             dzGe = GreenTensors.dzG_e_renorm(kr[i,:],kr[j,:])
             dzG_alp[3*(i-1)+1:3*(i-1)+3,3*(j-1)+1:3*(j-1)+3]=dzGe*alpha_e_dl[j]
-            dzG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=dzGe*alpha_e_dl[i]
+            dzG_alp[3*(j-1)+1:3*(j-1)+3,3*(i-1)+1:3*(i-1)+3]=-dzGe*alpha_e_dl[i]
         end
     end
 
