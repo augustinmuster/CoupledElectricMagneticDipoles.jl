@@ -1,6 +1,6 @@
 # Green Tensors
 
-This module is aimed to compute the electric and magnetic green tensors for the two system of units.
+GreenTensors is aimed to compute the electric and magnetic green tensors renormalized or not. The list of functions and its documentations is below.
 
 ## Functions Documentation
 ```@docs

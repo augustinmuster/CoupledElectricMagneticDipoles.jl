@@ -15,7 +15,7 @@ using PyCall
 # FUNCTIONS
 ###########################
 
-function discretize_sphere(a,N,N_sub)
+function discretize_sphere(a,N,N_sub=10)
     #lattice parameter
     dx=2*a/N
     #sublattice parameter

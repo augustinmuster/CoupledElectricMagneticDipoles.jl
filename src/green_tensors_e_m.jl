@@ -14,7 +14,7 @@ testing=false
 
 @doc raw"""
     G_em_renorm(kr1,kr2)
-Compute the electric and magnetic green tensor between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
+Compute the renormalized electric and magnetic green tensors between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
 The output are two 3x3 complex matrix.
 The electric green tensor (with unit of [1]) is defined as:
 ```math
@@ -44,6 +44,20 @@ function G_em_renorm(kr1,kr2)
     Gm = term1*term4*mat			#same as G_m_renorm(kr1,kr2)
 
     return Ge, Gm
+end
+
+@doc raw"""
+    G_em_far_field_renorm(kr1,kr2)
+Computes the renormalized electric and magnetic green tensors in the far field approximation between two dimensionless position `kr1` and `kr2`. Note that is is only valid for ``kr_1>>kr_2`` and ``kr_1>>1``
+The outputs are two 3x3 complex matrix.
+"""
+function G_em_far_field_renorm(kr1,kr2)
+    kr1_norm=norm(kr1)
+    kr1_vec=kr1/norm(kr1)
+    common_factor=exp(im*kr1_norm)/kr1_norm*exp(-im*dot(kr2,kr1_vec))
+    Ge=common_factor*(Matrix{ComplexF64}(I,3,3)-kr1_vec*transpose(kr1_vec))
+    Gm=common_factor*im*[0 -kr1_vec[3] kr1_vec[2];kr1_vec[3] 0 -kr1_vec[1];-kr1_vec[2] kr1_vec[1] 0]
+    return Ge,Gm
 end
 
 @doc raw"""
