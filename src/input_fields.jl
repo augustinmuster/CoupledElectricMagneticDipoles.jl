@@ -134,7 +134,7 @@ end
 @doc raw"""
     gauss_beam_e_m(rf,k,bw0, maxe = Int(5e3))
 Field distribution of a Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
+For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E -> ZH and H -> -E. 
 
 #Arguments
 - `rf`: 2D float array of size ``N\times 3`` containing the positions where the field is calculated (``N`` is the number of positions).
