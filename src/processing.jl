@@ -217,7 +217,7 @@ function diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,u
         krf=knorm*ur*100*max_norm
         
         poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf))
-        d_sigma=(100*max_norm)^2*dot(poynting,ur)/dot(input_field[1,:],input_field[1,:])/2
+        d_sigma=(100*max_norm)^2*dot(poynting,ur)/(dot(input_field[1,:],input_field[1,:])/2)
         return real(d_sigma)
     #if more than one, i.e. 2D array
     else
@@ -239,9 +239,103 @@ function diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,u
         for i=1:nur
             krf=knorm*ur[i,:]*100*max_norm
             poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf))
-            d_sigma[i]=(100*max_norm)^2*dot(poynting,ur[i,:])/dot(input_field[1,:],input_field[1,:])/2
+            d_sigma[i]=(100*max_norm)^2*dot(poynting,ur[i,:])/(dot(input_field[1,:],input_field[1,:])/2)
         end
         return d_sigma
+    end
+end
+
+@doc raw"""
+    diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur))
+
+Computes the differential scattering cross section of a system made out of electric dipoles in directions `ur`.
+
+Inputs 
+- `knorm`: wavenumber
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident fields ``E_{inc}`` on every dipole.
+- `alpha_e_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `alpha_m_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `input_field`: 2D complex array of size ``N\times 3`` containing the input field ``E_0`` at each of the dipoles positions.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
+Outputs
+- an array containing the differential cross section in every directions.
+"""
+function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur)
+    #if only one direction
+    if ndims(ur)==1
+        if norm(ur)!=1.
+            ur=ur/norm(ur)
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        krf=knorm*ur*100*max_norm
+        
+        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf))
+        d_sigma=(100*max_norm)^2*dot(poynting,ur)/(dot(input_field[1,:],input_field[1,:])/2)
+        return real(d_sigma)
+    #if more than one, i.e. 2D array
+    else
+        nur=length(ur[:,1])
+        for i=1:nur
+            if norm(ur[i,:])!=1.
+                ur[i,:]=ur[i,:]/norm(ur[i,:])
+            end
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+
+        d_sigma=zeros(nur)
+        for i=1:nur
+            krf=knorm*ur[i,:]*100*max_norm
+            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf))
+            d_sigma[i]=real((100*max_norm)^2*dot(poynting,ur[i,:])/(dot(input_field[1,:],input_field[1,:])/2))
+        end
+        return d_sigma
+    end
+end
+
+@doc raw"""
+    diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur))
+
+Computes the differential scattering cross section of a system made out of electric dipoles in directions `ur`.
+
+Inputs 
+- `knorm`: wavenumber
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident fields ``E_{inc}`` on every dipole.
+- `alpha_e_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `alpha_m_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `input_field`: 2D complex array of size ``N\times 3`` containing the input field ``E_0`` at each of the dipoles positions.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
+Outputs
+- an array containing the differential cross section in every directions.
+"""
+function diff_total_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_krf)
+    #if only one direction
+    if ndims(krf)==1
+        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+phi_krf)
+        pow=real((norm(krf)/knorm)^2*dot(poynting,krf/norm(krf)))
+        return real(pow)
+    #if more than one, i.e. 2D array
+    else
+        nur=length(krf[:,1])
+        pow=zeros(nur)
+        for i=1:nur
+            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf[i,:]).+phi_krf[i,:])
+            pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
+        end
+        return real(pow)
     end
 end
 
@@ -399,6 +493,50 @@ function far_field_sca_e(kr,e_inc,alpha_e_dl,krf)
                 Ge,Gm=GreenTesors.G_em_far_field_renorm(krf[j,:],kr[i,:])
                 res[j,1:3]=res[j,1:3]+Ge*alpha_e_dl[i]*e_inc[i,:]
                 res[j,4:6]=res[j,4:6]-im*Gm*alpha_e_dl[i]*e_inc[i,:]
+            end
+        end
+        return res
+    end
+end
+
+@doc raw"""
+    function far_field_sca_e_m(kr,e_inc,alpha_e_dl,alpha_m_dl,krf)
+It computes the scattered electric and magnetic field from the ensemble of dipoles in the far field approximation.
+
+# Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
+- `alpha_e_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `alpha_m_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `e_inc`: 2D complex array of size ``N\times 3`` with the incident field ``E_{inc}`` in the dipoles.
+- `krf`: 2D float array of size ``Nf\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the scattered field is calculated.
+
+# Outputs
+- `field_r`: 2D complex array of size ``Nf\times 6`` with the electric and magnetic field scattered by the dipoles at every ``k\vec{r_f}``.
+
+"""
+function far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf)
+    #number of dipoles
+    n=length(kr[:,1])
+    #dispatch alpha
+    alpha_e_dl=Alphas.dispatch_e(alpha_e_dl,n)
+    #if only one position
+    if ndims(krf)==1
+        res=zeros(ComplexF64,6)
+        for i=1:n
+            Ge,Gm=GreenTensors.G_em_far_field_renorm(krf,kr[i,:])
+            res[1:3]=res[1:3]+Ge*alpha_e_dl[i]*phi_inc[i,1:3]+im*Gm*alpha_m_dl[i]*phi_inc[i,4:6]
+            res[4:6]=res[4:6]-im*Gm*alpha_e_dl[i]*phi_inc[i,1:3]+Ge*alpha_m_dl[i]*phi_inc[i,4:6]
+        end
+        return res
+    #if more than 1, i.e. 2D array
+    else
+        nf=length(krf[i,:])
+        res=zeros(nf,6)
+        for j=1:nf
+            for i=1:n
+                Ge,Gm=GreenTesors.G_em_far_field_renorm(krf[j,:],kr[i,:])
+                res[j,1:3]=res[j,1:3]+Ge*alpha_e_dl[i]*phi_inc[i,1:3]+im*Gm*alpha_m_dl[i]*phi_inc[i,4:6]
+                res[j,4:6]=res[j,4:6]-im*Gm*alpha_e_dl[i]*e_inc[i,1:3]+Ge*alpha_m_dl[i]*phi_inc[i,4:6]
             end
         end
         return res

@@ -132,5 +132,4 @@ function mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=50)
     end
     return 2*pi/(knorm)^2*sum
 end
-
 end

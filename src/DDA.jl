@@ -59,12 +59,12 @@ end
 ########################################################################################################################################
 ########################################################################################################################################
 @doc raw"""
-     load_dda_matrix_e(kr,alpha_dl,verbose)
+     load_dda_matrix_e(kr,alpha_e_dl,verbose)
 
-Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``Nx3``) and dimensionless polarisabilities `alpha_dl` (3D complex array of size ``N\times 3\times 3``containing the polarisability ``3\times 3`` tensor of each dipole, or 1D array of size ``N`` containing the scalar polarizability of each dipole).
+Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``Nx3``) and dimensionless polarisabilities `alpha_e_dl` (see foramt rules in Alphas module).
 Returns ``3N\times 3N`` complex DDA matrix.
 """
-function load_dda_matrix_e(kr,alpha_dl,verbose)
+function load_dda_matrix_e(kr,alpha_e_dl,verbose)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
@@ -74,13 +74,13 @@ function load_dda_matrix_e(kr,alpha_dl,verbose)
     #create DDA matrix
     A=Matrix{ComplexF64}(I,3*n,3*n)
     #dispatch alphas
-    alpha_dl=Alphas.dispatch_e(alpha_dl,n)
+    alpha_e_dl=Alphas.dispatch_e(alpha_e_dl,n)
     #load matrix
     Threads.@threads for j in 1:n
         for k=1:j-1
             G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
-            A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k])
-            A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_dl[j])
+            A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_e_dl[k])
+            A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_e_dl[j])
         end
     end
 
@@ -94,7 +94,7 @@ end
 @doc raw"""
      load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
 
-Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (3D complex array of size ``N\times 3\times 3``containing the polarisability ``3\times 3`` tensor of each dipole, or 1D  array of size ``N`` containing the scalar polarizability of each dipole).
+Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (see format rules in the Alphas module).
 Return ``6N\times 6N`` complex DDA matrix.
 """
 function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
@@ -150,7 +150,7 @@ function load_dda_matrix_e_m(kr,alpha_tensor,verbose)
     #
     a_dda=zeros(ComplexF64,6,6)
     #dispatch alpha
-    alpha_tensor=Alphas.dispatch_e_m(alpha_dl,n)
+    alpha_tensor=Alphas.dispatch_e_m(alpha_tensor,n)
     #
     for i=1:n
         for j=1:i-1
@@ -173,25 +173,25 @@ end
 ########################################################################################################################################
 
 @doc raw"""
-    solve_DDA_e(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
+    solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
 
-Builds and solves the DDA equations with dimensionless input under a given input field, i.e.
+Builds and solves the DDA equations under a given input field ``\vec{E}_{0}``, i.e.
 ```math
 \vec{E}_{i}=\vec{E}_{0}(\vec{r}_{i})+\sum^N_{j\neq i}G_e(\vec{r}_i,\vec{r}_j)\alpha_j\vec{E}_j
 
 ```
-for a group of ``N`` only electric dipoles and returns the incident fields on each of the dipoles.
+for a group of ``N`` only electric dipoles and returns the incident fields on each of the dipoles. 
 
 #Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
-- `alpha_dl`: 3D complex array of size ``N\times 3\times 3``containing the dimensionless polarisability ``3\times 3`` tensor of each dipole, or 1D array of size ``N`` containing the scalar polarizability of each dipole.
+- `alpha_e_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formattings.
 - `input_field`: 2D complex array of size ``N\times 3`` containing the input field ``E_0`` at each of the dipoles positions.
 - `solver`: string that contains the name of the solver that need to be used. For this, check the `DDACore.solve_system` function documentation. By default set to "CPU".
 - `verbose`: whether to output informations to the standard output during running or not. By default set to `true`.
 #Outputs
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident fields ``E_inc`` on every dipole.
 """
-function solve_DDA_e(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
+function solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
@@ -200,7 +200,7 @@ function solve_DDA_e(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
         println("number of dipoles: ",n)
     end
     #generate the matrix
-    A=load_dda_matrix_e(kr,alpha_dl,verbose)
+    A=load_dda_matrix_e(kr,alpha_e_dl,verbose)
     #solving the system
     if input_field===nothing
         E=solve_system(A,Matrix{ComplexF64}(I,3*n,3*n),solver,verbose)
@@ -246,8 +246,8 @@ for a group of ``N`` electric and magnetic dipoles and return the polarisations 
 
 #Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\vec{r}`` of all the dipoles.
-- `alpha_e_dl`: 3D complex array of size ``N\times 3\times 3``containing the dimensionless electric polarisability ``3\times 3`` tensor of every dipole, or 1D array of size ``N`` containing the scalar polarizability of every dipole.
-- `alpha_m_dl`: 3D complex array of size ``N\times 3\times 3``containing the dimesnionless magnetic polarisability ``3\times 3`` tensor of every dipole, or 1D array of size ``N`` containing the scalar polarizability of every dipole.
+- `alpha_e_dl`: complex dimensionless electric polarisability of each dipoles. See the Alphas module for accepted formats.
+- `alpha_m_dl`: complex dimensionless magnetic polarisability of each dipoles. See the Alphas module for accepted formats.
 - `input_field`: 2D complex array of size ``N\times 6`` containing the input field ``\phi_{0}=(E_0,H_0)`` at each of the dipoles positions.
 - `solver`:string that contains the name of the solver that need to be used. For this, check the `DDACore.solve_system` function documentation. By default set to "CPU".
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
