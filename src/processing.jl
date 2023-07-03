@@ -4,7 +4,7 @@ module PostProcessing
 ###########################
 using Base
 using LinearAlgebra
-include("green_tensors_e_m.jl")
+include("green_tensors_e_m.jl")c
 include("input_fields.jl")
 include("alpha.jl")
 ###########################
@@ -559,7 +559,7 @@ function field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, phi_inc, krf; verbose=true)
     end
     phi_inc = reshape(transpose(phi_inc),n_particles*6,)
     field_r = G_tensor_fr*phi_inc
-    return reshape(field_r,6,n_r0)   
+    return transpose(reshape(field_r,6,n_r0))   
 end
 
 @doc raw"""
@@ -585,7 +585,7 @@ function field_sca_e_m(kr, alpha_dl, phi_inc, krf; verbose=true)
     end
     phi_inc = reshape(transpose(phi_inc),n_particles*6,)
     field_r = G_tensor_fr*phi_inc
-    return reshape(field_r,6,n_r0)     
+    return transpose(reshape(field_r,6,n_r0))       
 end
 
 @doc raw"""
@@ -621,7 +621,7 @@ function field_sca_e(kr, alpha_e_dl, e_inc, krf; verbose=true)
     end
     e_inc = reshape(transpose(e_inc),n_particles*3,)
     field_r = G_tensor_fr*e_inc
-    return reshape(field_r,n_r0,3)      
+    return transpose(reshape(field_r,3,n_r0))       
 end
 
 @doc raw"""
@@ -781,7 +781,7 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
 
     alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
-    if dip == nothing
+    if dip === nothing
         LDOS = zeros(n_dpos,2)
         Threads.@threads for j=1:n_dpos
             for i=1:n_particles
@@ -838,7 +838,7 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing, verbose=true)
 
     alp = Alphas.dispatch_e_m(alpha_dl,n_particles)
 
-    if dip == nothing
+    if dip === nothing
         LDOS = zeros(n_dpos,2)
         Threads.@threads for j=1:n_dpos
             for i=1:n_particles
