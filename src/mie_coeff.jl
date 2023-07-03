@@ -1,10 +1,9 @@
 module MieCoeff
-#code to compute the mie coefficients author Augustin Muster (translate from python code of Diego Romero Abujetas)
 #imports
 using Base
 using LinearAlgebra
 using SpecialFunctions
-
+#bessel functions
 function spherical_jn(n,x,deriv)
     if deriv==0
         return sphericalbesselj(n, x)
@@ -40,7 +39,7 @@ end
 @doc raw"""
     mie_an(knorm, a, eps, eps_h, n)
 
-Computes the `n`-th mie coefficient ``a_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `vac_knorm` is wavenumber in the medium. 
+Computes the `n`-th mie coefficient ``a_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm` is wavenumber in the medium. 
 Retruns a complex scalar.
 """
 function mie_an(knorm, a, eps, eps_h,n)
@@ -56,7 +55,7 @@ end
 @doc raw"""
     mie_bn(knorm, a, eps, eps_h, n)
 
-Computes the `n`-th mie coefficient ``b_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `vac_knorm` is wavenumber in the medium.
+Computes the `n`-th mie coefficient ``b_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm` is wavenumber in the medium.
 Returns a complex scalar. 
 """
 function mie_bn(knorm, a, eps, eps_h, n)
@@ -68,19 +67,20 @@ function mie_bn(knorm, a, eps, eps_h, n)
 end
 
 @doc raw"""
-    mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=50)
+    mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
 
 Computes the scattering cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
 
 ```math
 C_{sca} =\frac{2\pi}{k^2}\sum^{\infty}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2\right)
 ```
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 50).
+
+The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
 Returns a float with units of surface.
 
 """
-function mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=50)
+function mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
     sum=0
     for i=1:cutoff
         sum=sum+(2*i+1)*(abs2(mie_an(knorm, a, eps, eps_h, i))+abs2(mie_bn(knorm, a, eps, eps_h, i)))
@@ -89,19 +89,19 @@ function mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=50)
 end
 
 @doc raw"""
-    mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=50)
+    mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
 
 Computes the extinction cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
 
 ```math
 C_{ext} =\frac{2\pi}{k^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
 ```
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 50).
+The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
 Returns a float with units of surface.
 
 """
-function mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=50)
+function mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
     sum=0
     for i=1:cutoff
         sum=sum+(2*i+1)*real(mie_an(knorm, a, eps, eps_h, i)+mie_bn(knorm, a, eps, eps_h, i))
@@ -111,19 +111,19 @@ end
 
 
 @doc raw"""
-    mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=50)
+    mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
 
 Computes the extinction cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
 
 ```math
 C_{abs} =C_{ext}-C_{sca}
 ```
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 50).
+The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
 Returns a float with units of surface.
 
 """
-function mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=50)
+function mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
     sum=0
     for i=1:cutoff
         an=mie_an(knorm, a, eps, eps_h, i)

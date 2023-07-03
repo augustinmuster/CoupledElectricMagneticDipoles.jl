@@ -16,13 +16,13 @@ CoupledElectricMagneticDipoles.MieCoeff.mie_bn(vac_knorm, a, eps, eps_h, n)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=50)
+CoupledElectricMagneticDipoles.MieCoeff.mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=50)
+CoupledElectricMagneticDipoles.MieCoeff.mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=50)
+CoupledElectricMagneticDipoles.MieCoeff.mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
 ```
