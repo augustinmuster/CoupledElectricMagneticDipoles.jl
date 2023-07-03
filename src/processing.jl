@@ -4,7 +4,7 @@ module PostProcessing
 ###########################
 using Base
 using LinearAlgebra
-include("green_tensors_e_m.jl")c
+include("green_tensors_e_m.jl")
 include("input_fields.jl")
 include("alpha.jl")
 ###########################
