@@ -1,8 +1,3 @@
-"""
-CoupledElectricMagneticDipoles.jl : Geometries Module
-This module contains a small library to discretize spheres on a cubic lattice.
-Author: Augustin Muster, November 2022, augustin@must-r.com
-"""
 module Geometries
 ###########################
 # imports
@@ -16,12 +11,12 @@ using PyCall
 ###########################
 
 @doc raw"""
-    discretize_sphere(a,N,N_sub=10)
+    discretize_sphere(a,N;N_sub=10)
 
-Discretize the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the anti-aliasing accuracy of the discretisation. By default set to 10.
-If ``N_d`` is the obtained number of cubes, the output is a ``N \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction. Returns as well the size of the edge of the cube.
+Discretizes the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the anti-aliasing accuracy of the discretisation. It is by default set to 10.
+If ``N_d`` is the obtained number of cubes, the output is a ``N_d \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction. Returns as well the size of the edge of the cubes `dx`.
 """
-function discretize_sphere(a,N,N_sub=10)
+function discretize_sphere(a,N;N_sub=10)
     #lattice parameter
     dx=2*a/N
     #sublattice parameter
@@ -77,8 +72,8 @@ end
 @doc raw"""
     discretize_cube(L,N)
 
-Discretize the volume of a cube of edge `L` in small cubes of edge `dx=L/N`.
-If ``N_d`` is the obtained number of cubes, the output is a ``N \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction (i.e. 1). Returns as well the size of the edge of the cube.
+Discretizes the volume of a cube of edge `L` in small cubes of edge `dx=L/N`.
+If ``N_d`` is the obtained number of cubes, the output is a ``N_d \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction (i.e. 1). Returns as well the size of the edge of the cubes `dx`.
 """
 function discretize_cube(L,N)
      #lattice parameter
