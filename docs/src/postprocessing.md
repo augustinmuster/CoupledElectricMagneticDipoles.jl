@@ -2,16 +2,16 @@
 
 The PostProcessing modules allows you to process the results of a CEMD calculation. Mostly for:
 
-- Computing cross sections.
+- Computing cross sections and differential emitted power. 
 - Computing scattered fields.
 - Computing local density of states (LDOS).
 
 The list of functions and a description of how to use them is given in the following section.
 
 ## Functions List and Documentation
-```@docs
-CoupledElectricMagneticDipoles.PostProcessing.compute_dipole_moment(alpha,phi_inc)
-```
+
+### Functions for Cross Sections and Differential Emitted Power
+
 ```@docs
 CoupledElectricMagneticDipoles.PostProcessing.compute_cross_sections_e(knorm,kr,e_inc,alpha,input_field;explicit_scattering=true,verbose=true)
 ```
@@ -19,20 +19,67 @@ CoupledElectricMagneticDipoles.PostProcessing.compute_cross_sections_e(knorm,kr,
 CoupledElectricMagneticDipoles.PostProcessing.compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field;explicit_scattering=true,verbose=true)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.field_sca_e(kr, alpha_e_dl, e_inc, krf)
+CoupledElectricMagneticDipoles.PostProcessing.compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_dl,input_field;explicit_scattering=true,verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,ur;verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur;verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field,ur;verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e(knorm,kr,e_inc,alpha_e_dl,krf,phi_inp_krf;verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)
+```
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_dl,krf,phi_inp_krf;verbose=true)
+```
+### Functions for Scattered Fields
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.field_sca_e(kr, alpha_e_dl, e_inc, krf; verbose=true)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, e_inc, krf)
+CoupledElectricMagneticDipoles.PostProcessing.field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, e_inc, krf; verbose=true)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.field_sca_e_m(kr, alpha_dl, e_inc, krf)
+CoupledElectricMagneticDipoles.PostProcessing.field_sca_e_m(kr, alpha_dl, e_inc, krf; verbose=true)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing)
+CoupledElectricMagneticDipoles.PostProcessing.far_field_sca_e(kr, alpha_e_dl, e_inc, krf)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing)
+CoupledElectricMagneticDipoles.PostProcessing.far_field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, e_inc, krf)
 ```
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing)
+CoupledElectricMagneticDipoles.PostProcessing.far_field_sca_e_m(kr, alpha_dl, e_inc, krf)
+```
+### Functions for LDOS
+
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing; verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing;verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing; verbose=true)
+```
+### Utilities Functions
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.compute_dipole_moment(alpha,phi_inc)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.poynting_vector(phi)
 ```

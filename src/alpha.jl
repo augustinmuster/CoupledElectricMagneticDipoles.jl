@@ -30,7 +30,7 @@ end
 @doc raw"""
     alpha0_sphere(a,eps,eps_h)
 Computes the quasistatic polarizability of a sphere of radius`a` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
-Outputs a float matrix with units of volume.
+Outputs a float with units of volume.
 """
 function alpha0_sphere(a,eps,eps_h)
     V=4/3*pi*a^3
@@ -40,7 +40,7 @@ end
 @doc raw"""
     alpha0_volume(a,eps,eps_h)
 Computes the quasistatic polarizability of any object with volume `V` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
-Outputs a float matrix with units of volume.
+Outputs a float with units of volume.
 """
 function alpha0_volume(V,eps,eps_h)
     return 3*V*(eps-eps_h)/(eps+2*eps_h)
@@ -48,12 +48,8 @@ end
 
 @doc raw"""
     alpha_radiative(alpha0,knorm)
-Applies the radiative correction to the polarizability tensor or scalar `alpha0`, with units of voume.
+Applies the radiative correction to the polarizability tensor or scalar `alpha0`(with units of volume).
 Outputs a (3x3) complex dimensionless scalar or tensor computed as follow:
-
-```math
-\alpha=\frac{k^3}{4\pi}\left(\alpha_{0}^{-1}-i\frac{k{{}^3}}{6\pi}\right)^{-1}
-```
 """
 function alpha_radiative(alpha0,knorm)
     id=[1 0 0;0 1 0;0 0 1]
@@ -62,12 +58,8 @@ end
 
 @doc raw"""
     alpha_e_m_mie(vac_knorm,a,eps,eps_h)
-Computes the electric and magnetic polarisabilitie from the mie coefficients ``a_1`` and  ``b_1`` of a particle of dielectric constant `eps` and radius `a` in a medium with dielectric constant `eps_h`. `knorm is the wavenumber in the medium`
-It outputs two dimensionless scalars which are computed with:
-
-```math
-\alpha_{E} =\frac{k^{3}\tilde{\alpha}_{E}}{4\pi}=i\frac{3}{2}a_{1},\ \alpha_{M} =\frac{k^{3}\tilde{\alpha}_{M}}{4\pi}=i\frac{3}{2}b_{1}
-```
+Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with radius `a` and of dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm`` is the wavenumber in the medium.
+Outputs two dimensionless scalars that are respectively the electric and the magnetic polarizability.
 """
 function alpha_e_m_mie(knorm,a,eps,eps_h)
     a1=MieCoeff.mie_an(knorm, a, eps, eps_h, 1)
@@ -79,15 +71,15 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i.
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i.
 
-#Arguments
-- `alpha_e_dl`: = electric polarizability
-- `alpha_m_dl`: = magnetic polarizability
-
-#Outputs
-- `alp_e`: = iterable electric polarizability
-- `alp_m`: = iterable magnetic polarizability
+# Arguments
+- `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
+- `alpha_m_dl`: magnetic polarizability, see the Alphas module's documentation for the accepted formats.
+- `n_particles`: number of particles (integer)
+# Outputs
+- `alp_e`: iterable electric polarizability
+- `alp_m`: iterable magnetic polarizability
 """
 function dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
     if length(alpha_e_dl) == length(alpha_m_dl) == 1 # If alpha is the same scalar for all particles
@@ -121,13 +113,14 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i
 
-#Arguments
-- `alpha_dl`: = polarizability
+# Arguments
+- `alpha_dl`: polarizability 6x6 tensor, see the Alphas module's documentation for the accepted formats.
+- `n_particles`: number of particles (integer)
 
-#Outputs
-- `alp`: = iterable polarizability
+# Outputs
+- `alp`: iterable polarizability
 """
 function dispatch_e_m(alpha_dl,n_particles)
     if length(alpha_dl) == 6^2 && size(alpha_dl,1) == 6  # If alpha is the same tensor for all particles 
@@ -148,13 +141,14 @@ end
 
 @doc raw"""
     dispatch_e(alpha_e_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuply a Green function for the polarizability of particle i
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i
 
-Imputs
-- `alpha_e_dl`: = electric polarizability
+# Arguments
+- `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
+- `n_particles`: number of particles (integer)
 
-Outputs
-- `alp_e`: = iterable electric polarizability
+# Outputs
+- `alp_e`: iterable electric polarizability
 """
 function dispatch_e(alpha_e_dl,n_particles)
     if length(alpha_e_dl) == 1 # If alpha is the same scalar for all particles
@@ -181,7 +175,7 @@ end
 
 @doc raw"""
     renorm_alpha(knorm,alpha)
-Renormalizes any polarizability with units of volume in a dimensionless polarizability by multiplying by ``k^3/4\pi``.
+Renormalizes any polarizability `alpha` with units of volume in a dimensionless polarizability by multiplying by ``k^3/4\pi``. `knorm` is the wavenumber in the medium.
 """
 function renorm_alpha(knorm,alpha)
     return alpha.*(knorm^3/4/pi)
@@ -189,7 +183,7 @@ end
 
 @doc raw"""
     denorm_alpha(knorm,alpha)
-Denormalizes any dimensionless polarizability in a polarizability with units of volume by multiplying by ``4\pi /k^3``.
+Denormalizes any dimensionless polarizability `alpha` in a polarizability with units of volume by multiplying by ``4\pi /k^3``. `knorm` is the wavenumber in the medium.
 """
 function denorm_alpha(knorm,alpha)
     return alpha.*(4*pi/knorm^3)

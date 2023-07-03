@@ -1,4 +1,4 @@
-# Polarisabilities
+# Polarizabilities
 
 Alphas is a module to load polarizabilities. In this module, you will find functions to compute electric and magnetic polarizabilities of several objects. The modules also contains some functions to renormalize polarizabilities and to manage  the multiple formats of the polarizabilities (dispatch). The list of functions as well as how to use them is given below. 
 
@@ -8,6 +8,8 @@ The functions of the DDACore and PostProcessing modules come with an automatic d
 - a 1D complex array of size ``N``
 - a ``3\times 3`` or ``6\times 6`` complex matrix.
 - a 3D complex array of size ``N\times 3\times 3`` or ``N\times 6\times 6``
+
+
 
 ## Functions Documentation
 
