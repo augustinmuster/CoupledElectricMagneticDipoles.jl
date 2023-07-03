@@ -1,14 +1,10 @@
 # Green Tensors
 
-GreenTensors is aimed to compute the electric and magnetic green tensors renormalized or not. The list of functions and its documentations is below.
+GreenTensors is aimed to compute the renormalized electric and magnetic green tensors. To learn more about the renormalization and the expressions that are used, see the theory part.
 
 ## Functions Documentation
-```@docs
-CoupledElectricMagneticDipoles.GreenTensors.G_e
-```
-```@docs
-CoupledElectricMagneticDipoles.GreenTensors.G_m
-```
+
+### Renormalized Green Tensors
 ```@docs
 CoupledElectricMagneticDipoles.GreenTensors.G_e_renorm
 ```
@@ -16,38 +12,43 @@ CoupledElectricMagneticDipoles.GreenTensors.G_e_renorm
 CoupledElectricMagneticDipoles.GreenTensors.G_m_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.G_em
-```
-```@docs
 CoupledElectricMagneticDipoles.GreenTensors.G_em_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dxG_e
+CoupledElectricMagneticDipoles.GreenTensors.G_em_far_field_renorm
+```
+### Derivatives of the Renormalized Green Tensors
+```@docs
+CoupledElectricMagneticDipoles.GreenTensors.dxG_e_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dyG_e
+CoupledElectricMagneticDipoles.GreenTensors.dyG_e_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dzG_e
+CoupledElectricMagneticDipoles.GreenTensors.dzG_e_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dxG_m
+CoupledElectricMagneticDipoles.GreenTensors.dxG_m_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dyG_m
+CoupledElectricMagneticDipoles.GreenTensors.dyG_m_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dzG_m
+CoupledElectricMagneticDipoles.GreenTensors.dzG_m_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dxG_em
+CoupledElectricMagneticDipoles.GreenTensors.dxG_em_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dyG_em
+CoupledElectricMagneticDipoles.GreenTensors.dyG_em_renorm
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.dzG_em
+CoupledElectricMagneticDipoles.GreenTensors.dzG_em_renorm
+```
+### Utilities Functions
+```@docs
+CoupledElectricMagneticDipoles.GreenTensors.denormalize_G_e
 ```
 ```@docs
-CoupledElectricMagneticDipoles.GreenTensors.Sigma
+CoupledElectricMagneticDipoles.GreenTensors.denormalize_G_m
 ```

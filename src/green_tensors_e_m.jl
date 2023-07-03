@@ -1,8 +1,4 @@
 module GreenTensors
-#""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-#code to compute the magnetic green tensor and it's derivative
-#author: Augustin Muster
-#""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 #***********************
 #imports
 #***********************
@@ -14,16 +10,8 @@ testing=false
 
 @doc raw"""
     G_em_renorm(kr1,kr2)
-Compute the renormalized electric and magnetic green tensors between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
-The output are two 3x3 complex matrix.
-The electric green tensor (with unit of [1]) is defined as:
-```math
-G_e=\frac{4*\pi}{k}\tilde{G}_e
-```
-The magnetic green tensor (with unit of [1]) is defined as:
-```math
-G_m=\frac{4*\pi}{k^2}\tilde{G}_m
-```
+Computes the renormalized electric and magnetic green tensors between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2`.
+The outputs are two dimensionless 3x3 complex matrix.
 """
 function G_em_renorm(kr1,kr2)
 
@@ -49,7 +37,7 @@ end
 @doc raw"""
     G_em_far_field_renorm(kr1,kr2)
 Computes the renormalized electric and magnetic green tensors in the far field approximation between two dimensionless position `kr1` and `kr2`. Note that is is only valid for ``kr_1>>kr_2`` and ``kr_1>>1``
-The outputs are two 3x3 complex matrix.
+The outputs are two dimensionless 3x3 complex matrix.
 """
 function G_em_far_field_renorm(kr1,kr2)
     kr1_norm=norm(kr1)
@@ -62,12 +50,8 @@ end
 
 @doc raw"""
     G_m_renorm(kr1,kr2)
-Compute the magnetic green tensor in renormalized units (see Home page) between two position multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
-The output isd a 3x3 complex matrix.
-The renormalized magnetic green tensor (with units [1]) is defined as:
-```math
-G_m=\frac{4*\pi}{k^2}\tilde{G}_m
-```
+Computes the renormalized magnetic green tensor between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function G_m_renorm(kr1,kr2)
     #difference vector
@@ -85,12 +69,8 @@ end
 
 @doc raw"""
     G_e_renorm(kr1,kr2)
-Compute the electric green tensor in renormalized units (see Home page) between two position multiplied by the wave number `kr1` and `kr2` (->dimensionless input).
-The output is a 3x3 complex matrix.
-The renormalized electric green tensor (with units [1]) is defined as:
-```math
-G_e=\frac{4*\pi}{k}\tilde{G}_e
-```
+Computes the renormalized electric green tensor between two position `r1` and `r2`, where the imputs are the positions multiplied by the wave number `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function G_e_renorm(kr1,kr2)
     #difference vector
@@ -109,7 +89,8 @@ end
 
 @doc raw"""
     dxG_e_renorm(kr1,kr2)
-Compute the derivative of the renormalized green tensor (defined in G_e_renorm(kr1,kr2)) regarding the k*x component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric green tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `k*x` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dxG_e_renorm(kr1,kr2)
 
@@ -137,7 +118,8 @@ end
 
 @doc raw"""
     dyG_e_renorm(kr1,kr2)
-Compute the derivative of the renormalized green tensor (defined in G_e_renorm(kr1,kr2)) regarding the k*y component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric green tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `k*y` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dyG_e_renorm(kr1,kr2)
 
@@ -165,7 +147,8 @@ end
 
 @doc raw"""
     dzG_e_renorm(kr1,kr2)
-Compute the derivative of the renormalized green tensor (defined in G_e_renorm(kr1,kr2)) regarding the k*z component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric green tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `k*z` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dzG_e_renorm(kr1,kr2)
 
@@ -194,7 +177,8 @@ end
 
 @doc raw"""
     dxG_m_renorm(kr1,kr2)
-Compute the derivative of the renormalized magnetic green tensor (defined in G_m_renorm(kr1,kr2)) regarding the k*x component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized magnetic green tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `k*x` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dxG_m_renorm(kr1,kr2)
     #difference vector
@@ -217,7 +201,8 @@ end
 
 @doc raw"""
     dyG_m_renorm(kr1,kr2)
-Compute the derivative of the renormalized magnetic green tensor (defined in G_m_renorm(kr1,kr2)) regarding the k*y component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized magnetic green tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `k*y` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dyG_m_renorm(kr1,kr2)
     #difference vector
@@ -238,9 +223,11 @@ function dyG_m_renorm(kr1,kr2)
 end
 
 
+
 @doc raw"""
     dzG_m_renorm(kr1,kr2)
-Compute the derivative of the renormalized magnetic green tensor (defined in G_m_renorm(kr1,kr2)) regarding the k*z component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized magnetic green tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `k*z` component of `kr1` between two position  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix.
 """
 function dzG_m_renorm(kr1,kr2)
     #difference vector
@@ -262,7 +249,8 @@ end
 
 @doc raw"""
     dxG_em_renorm(kr1,kr2)
-Compute the x-derivative of the renormalized electric and magnetic green tensor regarding the components of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric and magnetic green tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `k*x` component of `kr1` between two position  `kr1` and `kr2`.
+The outputs are two dimensionless 3x3 complex matrix.
 """
 function dxG_em_renorm(kr1,kr2)
 
@@ -293,7 +281,8 @@ end
 
 @doc raw"""
     dyG_em_renorm(kr1,kr2)
-Compute the y-derivative of the renormalized electric and magnetic green tensor regarding the components of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric and magnetic green tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `k*y` component of `kr1` between two position  `kr1` and `kr2`.
+The outputs are two dimensionless 3x3 complex matrix.
 """
 function dyG_em_renorm(kr1,kr2)
 
@@ -324,7 +313,8 @@ end
 
 @doc raw"""
     dzG_em_renorm(kr1,kr2)
-Compute the z-derivative of the renormalized electric and magnetic green tensor regarding the components of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized electric and magnetic green tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `k*z` component of `kr1` between two position  `kr1` and `kr2`.
+The outputs are two dimensionless 3x3 complex matrix.
 """
 function dzG_em_renorm(kr1,kr2)
 
@@ -353,239 +343,19 @@ function dzG_em_renorm(kr1,kr2)
     return dzGe, dzGm
 end
 
-if testing
-    ###########################
-    #TESTS
-    ###########################
-    println("")
-    println("*************************")
-    println("Testing")
-    println("*************************")
-    println("")
-    #***********************
-    #TEST THE X DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[x,2,3]*1e-6
-    x1bis=[x+h,2,3]*1e-6
-    #
-    x2=[2,3,4]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(G_m(x1bis,x2,knorm)-G_m(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-G_m([x+2*h,2,3]*1e-6,x2,knorm)+8*G_m([x+h,2,3]*1e-6,x2,knorm)-8*G_m([x-h,2,3]*1e-6,x2,knorm)+G_m([x-2*h,2,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dxG_m(x1,x2,knorm)
+@doc raw"""
+    denormalize_G_e(Ge,knorm)
+Passes from a dimensionless electric green tensor `Ge` to a green tensor with units of length⁻¹. `knorm` is the wavenumber into the medium.
+"""
+function denormalize_G_e(Ge,knorm)
+    return (knorm/4/pi).*Ge
+end
 
-    println("testing the function for the x-derivative of the magnetic green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
-
-
-    #***********************
-    #TEST THE Y DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,x,3]*1e-6
-    x1bis=[1,x+h,3]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(G_m(x1bis,x2,knorm)-G_m(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-G_m([1,x+2*h,3]*1e-6,x2,knorm)+8*G_m([1,x+h,3]*1e-6,x2,knorm)-8*G_m([1,x-h,3]*1e-6,x2,knorm)+G_m([1,x-2*h,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dyG_m(x1,x2,knorm)
-    println("")
-    println("testing the function for the y-derivative of the magnetic green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
-
-    #***********************
-    #TEST THE Z DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,2,x]*1e-6
-    x1bis=[1,2,x+h]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    #numerical one
-    num=(G_m_renorm(x1bis,x2)-G_m_renorm(x1,x2))/(h*1e-6)
-    #numerical highest order
-    num2=-G_m_renorm([1,2,x+2*h]*1e-6,x2)+8*G_m_renorm([1,2,x+h]*1e-6,x2)-8*G_m_renorm([1,2,x-h]*1e-6,x2)+G_m_renorm([1,2,x-2*h]*1e-6,x2)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dzG_m_renorm(x1,x2)
-    println("")
-    println("testing the function for the z-derivative of the magnetic green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
-
-    #***********************
-    #TEST THE X DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[x,2,3]*1e-6
-    x1bis=[x+h,2,3]*1e-6
-    #
-    x2=[2,3,4]*1e-6
-    #numerical one
-    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
-    #numerical highest order
-    num2=-G_e_renorm([x+2*h,2,3]*1e-6,x2)+8*G_e_renorm([x+h,2,3]*1e-6,x2)-8*G_e_renorm([x-h,2,3]*1e-6,x2)+G_e_renorm([x-2*h,2,3]*1e-6,x2)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dxG_e_renorm(x1,x2)
-
-    println("testing the function for the x-derivative of the electric green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
-
-
-    #***********************
-    #TEST THE Y DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,x,3]*1e-6
-    x1bis=[1,x+h,3]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    #numerical one
-    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
-    #numerical highest order
-    num2=-G_e_renorm([1,x+2*h,3]*1e-6,x2)+8*G_e_renorm([1,x+h,3]*1e-6,x2)-8*G_e_renorm([1,x-h,3]*1e-6,x2)+G_e_renorm([1,x-2*h,3]*1e-6,x2)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dyG_e_renorm(x1,x2)
-    println("")
-    println("testing the function for the y-derivative of the electric green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
-
-    #***********************
-    #TEST THE Z DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,2,x]*1e-6
-    x1bis=[1,2,x+h]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    #numerical one
-    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
-    #numerical highest order
-    num2=-G_e_renorm([1,2,x+2*h]*1e-6,x2)+8*G_e_renorm([1,2,x+h]*1e-6,x2)-8*G_e_renorm([1,2,x-h]*1e-6,x2)+G_e_renorm([1,2,x-2*h]*1e-6,x2)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=dzG_e_renorm(x1,x2)
-    println("")
-    println("testing the function for the z-derivative of the electric green tensor...")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("test passed ;) ")
-    println("")
+@doc raw"""
+    denormalize_G_m(Gm,knorm)
+Passes from a dimensionless magnetic green tensor `Gm` to a green tensor with units of length⁻². `knorm` is the wavenumber into the medium.
+"""
+function denormalize_G_m(Gm,knorm)
+    return (knorm^2/4/pi).*Gm
 end
 end
