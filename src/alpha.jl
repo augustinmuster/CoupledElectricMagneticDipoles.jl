@@ -13,7 +13,7 @@ include("mie_coeff.jl")
     alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
 Computes the quasistatic polarizability tensor of a parallelepiped of dimensions `lx,ly,lz` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
 Outputs a ``3\times 3`` float matrix with units of volume.
-"""CoupledElectricMagneticDipoles/
+"""
 function alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
     #depolarization tensor
     Vn=lx*ly*lz
@@ -50,10 +50,6 @@ end
     alpha_radiative(alpha0,knorm)
 Applies the radiative correction to the polarizability tensor or scalar `alpha0`(with units of volume).
 Outputs a (3x3) complex dimensionless scalar or tensor computed as follow:
-
-```math
-\alpha=\frac{k^3}{4\pi}\left(\alpha_{0}^{-1}-i\frac{k{{}^3}}{6\pi}\right)^{-1}
-```
 """
 function alpha_radiative(alpha0,knorm)
     id=[1 0 0;0 1 0;0 0 1]
