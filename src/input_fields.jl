@@ -48,17 +48,18 @@ function plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
 end
 
 @doc raw"""
-    point_dipole_e_m(krf, krd, dip, e0_const=1)
+    point_dipole_e_m(krf, krd, dip, e0=1)
 Function that calculated the electromagnetic field emitted by a point dipole.
 
 #Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
 - `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+- `e0`: scalar with the modulus of the dipole moment. 
 #Outputs
 - `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole_e_m(krf, krd, dip; e0_const=1)
+function point_dipole_e_m(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
     G_tensor = zeros(ComplexF64,n_r0*6,6)
     if length(dip) == 1  && dip < 7 && dip > 0
@@ -75,7 +76,7 @@ function point_dipole_e_m(krf, krd, dip; e0_const=1)
         Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd[1,:])   
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
     end
-    e_dipole = G_tensor*dip*e0_const
+    e_dipole = G_tensor*dip*e0
     e_dipole = transpose(reshape(e_dipole,6,n_r0))
     return e_dipole      
 end
@@ -88,10 +89,11 @@ Function that calculated the electromagnetic field emitted by a point dipole.
 - `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
 - `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
+- `e0`: scalar with the modulus of the dipole moment. 
 #Outputs
 - `e_dipole`: complex array with the electromagnetic field.
 """
-function point_dipole_e(krf, krd, dip; e0_const=1)
+function point_dipole_e(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
     G_tensor = zeros(ComplexF64,n_r0*3,3)
     if length(dip) == 1  && dip < 4 && dip > 0
@@ -108,7 +110,7 @@ function point_dipole_e(krf, krd, dip; e0_const=1)
         Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd[1,:])   
         G_tensor[3 * (i-1) + 1:3 * (i-1) + 3, :] = Ge
     end
-    e_dipole = G_tensor*dip*e0_const
+    e_dipole = G_tensor*dip*e0
     e_dipole = transpose(reshape(e_dipole,3,n_r0))
     return e_dipole      
 end
@@ -132,7 +134,7 @@ function besselj2(z)
 end
 
 @doc raw"""
-    gauss_beam_e_m(rf,k,bw0, maxe = Int(5e3))
+    gauss_beam_e_m(rf,k,bw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
 Field distribution of a Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E -> ZH and H -> -E. 
 
@@ -140,12 +142,13 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `rf`: 2D float array of size ``N\times 3`` containing the positions where the field is calculated (``N`` is the number of positions).
 - `k`: scalar with the modulus wavevector.
 - `bw0`: float with the beam waist radius.
+- `e0`: scalar with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function gauss_beam_e_m(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
+function gauss_beam_e_m(rf,k,bw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -190,11 +193,11 @@ function gauss_beam_e_m(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
         ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
         eh_gauss[i,:] = [E; ZH]
     end
-    return eh_gauss
+    return eh_gauss*e0
 end
 
 @doc raw"""
-    ghermite_beam_e_m(rf,k,bw0,n,m,maxe=Int(5e3))
+    ghermite_beam_e_m(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
 Field distribution of a Hermite-Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -204,12 +207,13 @@ For another polarization just rotate the field in the .xy-plane. Also, for a pol
 - `bw0`: float with the beam waist radius.
 - `n`: int with the order of the beam.
 - `m`: int with the degree of the beam.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_hermite`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function ghermite_beam_e_m(rf,k,bw0,n,m; kmax = nothing, maxe=Int(5e3))
+function ghermite_beam_e_m(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -252,11 +256,11 @@ function ghermite_beam_e_m(rf,k,bw0,n,m; kmax = nothing, maxe=Int(5e3))
         ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
         eh_hermite[i,:] = [E; ZH]
     end
-    return eh_hermite
+    return eh_hermite*e0
 end
 
 @doc raw"""
-    glaguerre_beam_e_m(rf,k,bw0,n,m,maxe=Int(5e3))
+    glaguerre_beam_e_m(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
 Field distribution of a Laguerre-Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -266,12 +270,13 @@ For another polarization just rotate the field in the .xy-plane. Also, for a pol
 - `bw0`: float with the beam waist radius.
 - `n`: non-negative int with the radial order of the beam.
 - `m`: int with the azimuthal order of the beam.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_hermite`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function glaguerre_beam_e_m(rf,k,bw0,n,m; kmax = nothing, maxe = Int(5e3))
+function glaguerre_beam_e_m(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -318,11 +323,11 @@ function glaguerre_beam_e_m(rf,k,bw0,n,m; kmax = nothing, maxe = Int(5e3))
         ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
         eh_laguerre[i,:] = [E; ZH]
     end
-    return eh_laguerre
+    return eh_laguerre*e0
 end
 
 @doc raw"""
-    gauss_beam_e(rf,k,bw0, maxe = Int(5e3))
+    gauss_beam_e(rf,k,bw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
 Field distribution of a Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -330,12 +335,13 @@ For another polarization just rotate the field in the .xy-plane. Also, for a pol
 - `rf`: 2D float array of size ``N\times 3`` containing the positions where the field is calculated (``N`` is the number of positions).
 - `k`: scalar with the modulus wavevector.
 - `bw0`: float with the beam waist radius.
+- `e0`: scalar with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function gauss_beam_e(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
+function gauss_beam_e(rf,k,bw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -370,11 +376,11 @@ function gauss_beam_e(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
         E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
         e_gauss[i,:] = E
     end
-    return e_gauss
+    return e_gauss*e0
 end
 
 @doc raw"""
-    ghermite_beam_e(rf,k,bw0,n,m,maxe=Int(5e3))
+    ghermite_beam_e(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
 Field distribution of a Hermite-Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -384,12 +390,13 @@ For another polarization just rotate the field in the .xy-plane. Also, for a pol
 - `bw0`: float with the beam waist radius.
 - `n`: int with the order of the beam.
 - `m`: int with the degree of the beam.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_hermite`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function ghermite_beam_e(rf,k,bw0,n,m; kmax = nothing, maxe=Int(5e3))
+function ghermite_beam_e(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -422,11 +429,11 @@ function ghermite_beam_e(rf,k,bw0,n,m; kmax = nothing, maxe=Int(5e3))
         E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
         e_hermite[i,:] = E
     end
-    return e_hermite
+    return e_hermite*e0
 end
 
 @doc raw"""
-    glaguerre_beam_e(rf,k,bw0,n,m,maxe=Int(5e3))
+    glaguerre_beam_e(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
 Field distribution of a Laguerre-Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -436,12 +443,13 @@ For another polarization just rotate the field in the .xy-plane. Also, for a pol
 - `bw0`: float with the beam waist radius.
 - `n`: non-negative int with the radial order of the beam.
 - `m`: int with the azimuthal order of the beam.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
 - `eh_hermite`: 2D complex array of size ``N\times 6`` with the value of the field at every position.
 """
-function glaguerre_beam_e(rf,k,bw0,n,m; kmax = nothing, maxe = Int(5e3))
+function glaguerre_beam_e(rf,k,bw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -478,7 +486,7 @@ function glaguerre_beam_e(rf,k,bw0,n,m; kmax = nothing, maxe = Int(5e3))
         E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
         e_laguerre[i,:] = E
     end
-    return e_laguerre
+    return e_laguerre*e0
 end
 
 # Derivative of the fields
@@ -532,19 +540,20 @@ function d_plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
 end
 
 @doc raw"""
-    d_point_dipole_e_m(krf, krd, dip, e0_const=1)
+    d_point_dipole_e_m(krf, krd, dip, e0=1)
 Function that calculated the (adimensional) derivative of the electromagnetic field emitted by a point dipole.
 
 #Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
 - `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+- `e0`: scalar with the modulus of the dipole moment. 
 #Outputs
 - `dxe_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*x`.
 - `dye_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dze_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_point_dipole_e_m(krf, krd, dip; e0_const=1)
+function d_point_dipole_e_m(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
     dxG_tensor = zeros(ComplexF64,n_r0*6,6)
     dyG_tensor = zeros(ComplexF64,n_r0*6,6)
@@ -567,30 +576,31 @@ function d_point_dipole_e_m(krf, krd, dip; e0_const=1)
         dzGe, dzGm = GreenTensors.dzG_em_renorm(krf[i,:],krd[1,:])   
         dzG_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [dzGe im*dzGm; -im*dzGm dzGe]
     end
-    dxe_dipole = dxG_tensor*dip*e0_const
+    dxe_dipole = dxG_tensor*dip*e0
     dxe_dipole = transpose(reshape(dxe_dipole,6,n_r0))
-    dye_dipole = dyG_tensor*dip*e0_const
+    dye_dipole = dyG_tensor*dip*e0
     dye_dipole = transpose(reshape(dye_dipole,6,n_r0))
-    dze_dipole = dzG_tensor*dip*e0_const
+    dze_dipole = dzG_tensor*dip*e0
     dze_dipole = transpose(reshape(dze_dipole,6,n_r0))
 
     return dxe_dipole, dye_dipole, dze_dipole        
 end
 
 @doc raw"""
-    d_point_dipole_e(krf, krd, dip, e0_const=1)
+    d_point_dipole_e(krf, krd, dip, e0=1)
 Function that calculated the (adimensional) derivative of the electromagnetic field emitted by a point dipole.
 
 #Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r_f}`` where the field is calculated.
 - `krd`: 2D float array of size ``1\times 3`` containing the dimentionless positions ``k\vec{r_d}`` where source is located.
 - `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
+- `e0`: scalar with the modulus of the dipole moment. 
 #Outputs
 - `dxe_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*x`.
 - `dye_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dze_dipole`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_point_dipole_e(krf, krd, dip; e0_const=1)
+function d_point_dipole_e(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
     dxG_tensor = zeros(ComplexF64,n_r0*3,3)
     dyG_tensor = zeros(ComplexF64,n_r0*3,3)
@@ -613,18 +623,18 @@ function d_point_dipole_e(krf, krd, dip; e0_const=1)
         dzGe = GreenTensors.dzG_e_renorm(krf[i,:],krd[1,:])   
         dzG_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = dzGe
     end
-    dxe_dipole = dxG_tensor*dip*e0_const
+    dxe_dipole = dxG_tensor*dip*e0
     dxe_dipole = transpose(reshape(dxe_dipole,3,n_r0))
-    dye_dipole = dyG_tensor*dip*e0_const
+    dye_dipole = dyG_tensor*dip*e0
     dye_dipole = transpose(reshape(dye_dipole,3,n_r0))
-    dze_dipole = dzG_tensor*dip*e0_const
+    dze_dipole = dzG_tensor*dip*e0
     dze_dipole = transpose(reshape(dze_dipole,3,n_r0))
 
     return dxe_dipole, dye_dipole, dze_dipole      
 end
 
 @doc raw"""
-    d_gauss_beam_e_m(rf,k,bw0, maxe = Int(5e3))
+    d_gauss_beam_e_m(rf,k,bw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
 Adimensional derivative of the field distribution of a Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -632,6 +642,7 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `rf`: 2D float array of size ``N\times 3`` containing the positions where the field is calculated (``N`` is the number of positions).
 - `k`: scalar with the modulus wavevector.
 - `bw0`: float with the beam waist radius.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
@@ -639,7 +650,7 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `dyeh_gauss`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dzeh_gauss`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_gauss_beam_e_m(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
+function d_gauss_beam_e_m(rf,k,bw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -744,11 +755,11 @@ function d_gauss_beam_e_m(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
         dzZH = [dzEHg[5] + im*dzEHg[6], dzEHg[7] + im*dzEHg[8], dzEHg[9] + im*dzEHg[10]]
         dzeh_gauss[i,:] = [dzE; dzZH]
     end
-    return 1/k*dxeh_gauss, 1/k*dyeh_gauss, 1/k*dzeh_gauss
+    return 1/k*dxeh_gauss*e0, 1/k*dyeh_gauss*e0, 1/k*dzeh_gauss*e0
 end
 
 @doc raw"""
-    d_gauss_beam_e(rf,k,bw0, maxe = Int(5e3))
+    d_gauss_beam_e(rf,k,bw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
 Adimensional derivative of the field distribution of a Gaussian beam that propagates along the z-axis and the electric field is polarized along the x-axis (polarized electric).
 For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E -> Hz and Hz -> -E. 
 
@@ -756,6 +767,7 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `rf`: 2D float array of size ``N\times 3`` containing the positions where the field is calculated (``N`` is the number of positions).
 - `k`: scalar with the modulus wavevector.
 - `bw0`: float with the beam waist radius.
+- `e0`: scalar with the modulus of the electric field (see theory for more details). 
 - `kmax`: float setting the limit of the radial integration (it shoud be ``kmax < k``).
 - `maxe`: maximum number of evaluations in the adapative integral (see Cubature for more details).
 #Outputs
@@ -763,7 +775,7 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `dyeh_gauss`: complex array with the derivative of the electromagnetic field with respect to `k*y`.
 - `dzeh_gauss`: complex array with the derivative of the electromagnetic field with respect to `k*z`.
 """
-function d_gauss_beam_e(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
+function d_gauss_beam_e(rf,k,bw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = k
     elseif kmax>k
@@ -847,7 +859,7 @@ function d_gauss_beam_e(rf,k,bw0; kmax = nothing, maxe=Int(5e3))
         dzE = [dzEHg[1] + im*dzEHg[2], 0, dzEHg[3] + im*dzEHg[4]]
         dzeh_gauss[i,:] = dzE
     end
-    return 1/k*dxeh_gauss, 1/k*dyeh_gauss, 1/k*dzeh_gauss
+    return 1/k*dxeh_gauss*e0, 1/k*dyeh_gauss*e0, 1/k*dzeh_gauss*e0
 end
 
 end
