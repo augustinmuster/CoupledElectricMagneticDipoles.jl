@@ -6,7 +6,7 @@ The PostProcessing modules allows you to process the results of a CEMD calculati
 - Computing scattered fields.
 - Computing local density of states (LDOS).
 
-The list of functions and a description of how to use them is given in the following section.
+The list of functions and a description of how to use them is given in the following section. In general ``N`` represents the number of dipoles.
 
 ## Functions List and Documentation
 
