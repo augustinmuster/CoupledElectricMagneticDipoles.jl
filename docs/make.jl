@@ -28,5 +28,6 @@ makedocs(
                     "PS Sphere" => "example_PS_sphere.md"
                     "Yagi-Uda Antenna" => "example_yagi_uda.md"
                     "LDOS Silver Particle" => "example_ldos_silver_np.md"
+                    "Optical Trap"=> "example_force_gaussbeam_PS_sphere.md"
                 ]
                ])

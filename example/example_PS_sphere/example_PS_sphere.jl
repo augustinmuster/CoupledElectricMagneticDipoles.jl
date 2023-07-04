@@ -40,7 +40,7 @@ n=length(latt[:,1])
 #createa an array to store results
 res=zeros(Float64,N_lambda,3)
 
-#=
+
 #solves DDA problem for each wavelength
 for i=1:N_lambda
     #wavenumber in medium
@@ -78,7 +78,7 @@ ax1[2].plot(lambdas0./a,(res[:,1].-res[:,2].-res[:,3])./res[:,1],color="black",m
 ax1[1].legend()
 plt.tight_layout()
 fig1.savefig("Q_sca.svg")
-=#
+
 
 
 #computes polarizability for each dipoles using effective dielectric constant 

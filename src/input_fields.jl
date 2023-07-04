@@ -74,7 +74,7 @@ function point_dipole_e_m(krf, krd, dip; e0=1)
         G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
     end
     phi_dipole = G_tensor*dip*e0
-    phi_dipole = transpose(reshape(e_dipole,6,n_r0))
+    phi_dipole = transpose(reshape(phi_dipole,6,n_r0))
     return phi_dipole      
 end
 

@@ -4,8 +4,6 @@ module Geometries
 ###########################
 using Base
 using LinearAlgebra
-using PyCall
-@pyimport matplotlib.pyplot as plt
 ###########################
 # FUNCTIONS
 ###########################

@@ -75,7 +75,7 @@ for i=1:N_dir+1
 end
 println(alpha_m)
 #computes the input input_field
-input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0 0 355e-9],2)
+input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0,0,355e-9],2)
 
 println(input_field)
 println(size(input_field))
@@ -89,20 +89,19 @@ krf=zeros(200,3)
 krf[:,3]=100e-5*knorm*cos.(thetas)
 krf[:,2]=100e-5*knorm*sin.(thetas)
 
-phi_krf=InputFields.point_dipole_e_m(krf,knorm*[0 0 355e-9],2)
+phi_krf=InputFields.point_dipole_e_m(krf,knorm*[0,0,355e-9],2)
 
-res=PostProcessing.diff_total_emitted_power_e_m(knorm,knorm*r,phi_inc,alpha_e,alpha_m,krf,phi_krf)
+res=PostProcessing.diff_emitted_power_e_m(knorm,knorm*r,phi_inc,alpha_e,alpha_m,krf,phi_krf)
 
 println(res)
 
 #plotting
 fig2=plt.figure()
 ax2 = fig2.add_subplot(projection="polar")
-ax2.set_title(L"d P/ d \Omega\ ()")
+ax2.set_title(L"d P/ d \Omega")
 ax2.plot(thetas,res,label="y-z plane")
 ax2.legend()
-plt.show()
-fig2.savefig("diff_Q_sca.svg")
+fig2.savefig("diff_P.svg")
 
 
 
