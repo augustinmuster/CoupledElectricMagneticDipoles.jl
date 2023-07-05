@@ -11,12 +11,13 @@ include("alpha.jl")
 ###########################
 
 @doc raw"""
-    force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+    force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
-Computes the optical forces on a system made out of electric and magnetic dipoles for deterministic input fields.
+Computes the optical forces on a system made out of electric and magnetic dipoles for deterministic input fields. The output force has units of the input
+electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
+the field, the vacuun permittivity and the wavevector are in accordance.
 
 # Arguments
-- `knorm`: wavenumber in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
@@ -31,10 +32,7 @@ Computes the optical forces on a system made out of electric and magnetic dipole
 - `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
 - `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
 """
-function force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
-    k=knorm
-    
-    eps0 = 1/2*k*8.8541878128e-12
+function force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
     n_particles = length(kr[:,1])
     n_e_0 = length(e_0[:,1])
@@ -84,9 +82,9 @@ function force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze
     dye_inc = transpose(reshape(dye_inc,6,n_particles))
     dze_inc = transpose(reshape(dze_inc,6,n_particles))
 
-    fx = eps0*sum(p.*dxe_inc,dims=2)
-    fy = eps0*sum(p.*dye_inc,dims=2)
-    fz = eps0*sum(p.*dze_inc,dims=2)
+    fx = sum(p.*dxe_inc,dims=2)/2
+    fy = sum(p.*dye_inc,dims=2)/2
+    fz = sum(p.*dze_inc,dims=2)/2
     if length(fz) == 1
         return real(fx[1]), real(fy[1]), real(fz[1])
     end
@@ -94,12 +92,12 @@ function force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze
 end
 
 @doc raw"""
-    force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+    force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 Same as `force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
+The output force has units of the input electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, 
+taking care that the units of the field, the vacuun permittivity and the wavevector are in accordance.
 """
-function force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
-
-    eps0 = 1/2*k*8.8541878128e-12
+function force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
     n_particles = length(kr[:,1])
     n_e_0 = length(e_0[:,1])
@@ -149,9 +147,9 @@ function force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dye_inc = transpose(reshape(dye_inc,6,n_particles))
     dze_inc = transpose(reshape(dze_inc,6,n_particles))
 
-    fx = eps0*sum(p.*dxe_inc,dims=2)
-    fy = eps0*sum(p.*dye_inc,dims=2)
-    fz = eps0*sum(p.*dze_inc,dims=2)
+    fx = sum(p.*dxe_inc,dims=2)/2
+    fy = sum(p.*dye_inc,dims=2)/2
+    fz = sum(p.*dze_inc,dims=2)/2
     if length(fz) == 1
         return real(fx[1]), real(fy[1]), real(fz[1])
     end
@@ -159,11 +157,12 @@ function force_e_m(k,kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 end
 
 @doc raw"""
-    force_e(knorm,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
-Computes the optical forces on a system made out of electric dipoles for deterministic input fields.
+    force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
+Computes the optical forces on a system made out of electric dipoles for deterministic input fields. The output force has units of the input
+electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
+the field, the vacuun permittivity and the wavevector are in accordance.
 
 #Arguments
-- `knorm`: wavenumber in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
@@ -176,11 +175,7 @@ Computes the optical forces on a system made out of electric dipoles for determi
 - `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
 - `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
 """
-function force_e(knorm,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
-
-    k=knorm
-
-    eps0 = 1/2*k*8.8541878128e-12
+function force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
     n_particles = length(kr[:,1])
     n_e_0 = length(e_0[:,1])
@@ -230,9 +225,9 @@ function force_e(knorm,kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dye_inc = transpose(reshape(dye_inc,3,n_particles))
     dze_inc = transpose(reshape(dze_inc,3,n_particles))
 
-    fx = eps0*sum(p.*dxe_inc,dims=2)
-    fy = eps0*sum(p.*dye_inc,dims=2)
-    fz = eps0*sum(p.*dze_inc,dims=2)
+    fx = sum(p.*dxe_inc,dims=2)/2
+    fy = sum(p.*dye_inc,dims=2)/2
+    fz = sum(p.*dze_inc,dims=2)/2
     if length(fz) == 1
         return real(fx[1]), real(fy[1]), real(fz[1])
     end
