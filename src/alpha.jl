@@ -52,9 +52,14 @@ Applies the radiative correction to the polarizability tensor or scalar `alpha0`
 Outputs a (3x3) complex dimensionless scalar or tensor computed as follow:
 """
 function alpha_radiative(alpha0,knorm)
-    id=[1 0 0;0 1 0;0 0 1]
-    return knorm^3/4/pi*inv(inv(alpha0)-im*(knorm^3)/(6*pi)*id)
+    if ndims(alpha0)==0
+        return knorm^3/4/pi*inv(inv(alpha0)-im*(knorm^3)/(6*pi))
+    else
+        id=[1 0 0;0 1 0;0 0 1]
+        return knorm^3/4/pi*inv(inv(alpha0)-im*(knorm^3)/(6*pi)*id)
+    end
 end
+
 
 @doc raw"""
     alpha_e_m_mie(vac_knorm,a,eps,eps_h)

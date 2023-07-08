@@ -15,18 +15,18 @@ include("../../src/mie_coeff.jl")
 
 
 ##################### Parameters ########################################
-#radius 
-a=250e-9
+#radius (in nm)
+a=250
 #dielectric constant of the particle
 eps=(1.59)^2
 #dielectric constant of the medium
 eps_h=(1.33)^2
-#number of wavelengths to compute
+#number of wavelengths to compute (in nm)
 N_lambda=10
-lambda_min=1000e-9
-lambda_max=1100e-9
+lambda_min=1000
+lambda_max=1100
 #wavelengths to compute
-lambdas0=LinRange(1000e-9,1100e-9,N_lambda)
+lambdas0=LinRange(lambda_min,lambda_max,N_lambda)
 lambdas=lambdas0/sqrt(eps_h)
 ##########################################################################
 

@@ -45,7 +45,7 @@ as=a_dir*ones(N_dir+1)
 as[1]=a_refl
 
 
-#=
+
 #------------------modelling silicon particles---------------
 #parameter
 lambdas=LinRange(1200e-9,1600e-9,100)
@@ -63,7 +63,7 @@ ax1.plot(lambdas.*1e9,mie_sca./(pi*a^2),color="black",label="Mie")
 ax1.plot(lambdas.*1e9,dipole_sca./(pi*a^2),color="red",label="Dipoles")
 fig1.savefig("mie_dipole_qsca.svg")
 #------------------------------------------------------------
-=#
+
 
 #computes the wavenumber
 knorm=2*pi/lambda
