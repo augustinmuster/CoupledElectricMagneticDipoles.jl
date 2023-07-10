@@ -1,8 +1,3 @@
-"""
-CoupledElectricMagneticDipoles.jl : DDACore Module
-This module contains the implementation of the basics functionalities of the DDA.
-Author: Augustin Muster, January 2022, augustin@must-r.com+
-"""
 module DDACore
 ###########################
 # IMPORTS
@@ -10,51 +5,48 @@ module DDACore
 using Base
 using DelimitedFiles
 using LinearAlgebra
-using IterativeSolvers
-using LinearSolveCUDA
-using LinearSolve
+using CUDA
 using Test
 include("green_tensors_e_m.jl")
-
+include("alpha.jl")
 ########################################################################################################################################
 # FUNCTIONS
 ########################################################################################################################################
 @doc raw"""
-     solve_system(matrix,vector,solver,verbose)
+     solve_system(A,b,solver,verbose)
 
-Solves a system of equations of the type ``Ax=b`` wher `matrix` is ``A`` and `vector` is ``b`` using the method `solver` and returns `x`.
-To choose the appropriate solver, please read the informations on the home page.
+Solves a system of equations of the type ``Ax=b`` using the method `solver` and returns `x`.
+`x` can be a 1D column vector or a 2D matrix. In this second case, the system is going to solve each column of the matrix as a different problem (without re-inverting `A`).
+The `solver` flag can be set to
+- `CPU`: In this case, the system is solved using LAPACK on the CPU.
+- `GPU`: In this case, the system is solved using CUSOLVE on the GPU (if available).
 """
-function solve_system(matrix,vector,solver,verbose)
-    A=copy(matrix)
-    phi=copy(vector)
+function solve_system(A,b,solver,verbose)
     #lapack julia solver
-    if solver=="LAPACK"
+    if solver=="CPU"
+        #
+        phi=copy(b)
+        #
         if verbose
-            println("solving with LAPACK solver ...")
+            println("solving with CPU LAPACK solver ...")
         end
-        LAPACK.gesv!(A, phi)
-    #Linearsolve auto solver
-    elseif solver=="AUTO"
-        if verbose
-            println("solving with AUTO (LinearSolve) solver ...")
-        end
-        prob = LinearProblem(A, phi)
-        sol = solve(prob)
-        phi=sol.u
-    #Linearsolve auto GPU solver
+        #
+        BLAS.set_num_threads(Threads.nthreads())
+        LAPACK.gesv!(A,phi)
+        #
+        return phi
+    #CUDA solver
     elseif solver=="GPU"
+        #
         if verbose
-            println("solving with GPU (LinearSolve) solver ...")
+            println("solving with GPU CUSOLVER solver ...")
         end
-        prob = LinearProblem(A, phi)
-        sol = solve(prob,CudaOffloadFactorization())
-        phi=sol.u
+        #
+        A=CuArray(A)
+        b=CuArray(b)
+        b=A\b
+        return Array(b)
     end
-    if verbose
-        println("equations solved")
-    end
-    return phi
 end
 
 ########################################################################################################################################
@@ -62,84 +54,43 @@ end
 ########################################################################################################################################
 ########################################################################################################################################
 @doc raw"""
-     invert_system(matrix,solver,verbose)
+     load_dda_matrix_e(kr,alpha_e_dl,verbose)
 
-Inverts the square matrix `matrix` using the `solver` method
-To choose the appropriate solver, please read the informations on the home page.
-"""
-function invert_system(matrix,solver,verbose)
-    A=copy(matrix)
-    #julia inverter
-    if solver=="JULIA"
-        if verbose
-            println("inverting with julia inv() ...")
-        end
-        A_inv=inv(A)
-    end
-    if verbose
-        println("matrix inverted")
-    end
-    return A_inv
-end
-
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-@doc raw"""
-     load_dda_matrix_e(kr,alpha_dl,verbose)
-
-Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (two dimensional arrays of size ``Nx3``) and dimensionless polarisabilities `alpha_dl` (a three-dimensional complex array of size ``N\times 3\times 3``containing the polarisability ``3\times 3`` tensor of each dipole, or one dimensional array of size ``N`` containing the scalar polarizability of each dipole.)
+Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``Nx3``) and dimensionless polarisabilities `alpha_e_dl` (see foramt rules in Alphas module).
 Returns ``3N\times 3N`` complex DDA matrix.
 """
-function load_dda_matrix_e(kr,alpha_dl,verbose)
-    #id matrix
-    id=Matrix{ComplexF64}(I,3,3)
+function load_dda_matrix_e(kr,alpha_e_dl,verbose)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
     if verbose
         println("formatting the equations...")
-        println("coefficient matrix")
     end
-    #computing the big matrix
-    A=zeros(ComplexF64,3*n,3*n)
-    #if scalar polarisability
-    if length(alpha_dl)==n
-        for j in 1:n
-            for k=1:n
-                if k!=j
-                    G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
-                    A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k])
-                else
-                    A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(id)
-                end
-            end
-        end
-    else #if tensor polarisabilty
-        for j in 1:n
-            for k=1:n
-                if k!=j
-                    G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
-                    A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_dl[k,:,:])
-                else
-                    A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(id)
-                end
-            end
+    #create DDA matrix
+    A=Matrix{ComplexF64}(I,3*n,3*n)
+    #dispatch alphas
+    alpha_e_dl=Alphas.dispatch_e(alpha_e_dl,n)
+    #load matrix
+    Threads.@threads for j in 1:n
+        for k=1:j-1
+            G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
+            A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_e_dl[k])
+            A[3*(k-1)+1:3*(k-1)+3,3*(j-1)+1:3*(j-1)+3]=copy(-G*alpha_e_dl[j])
         end
     end
-    #logging
-    if verbose
-        println("equations formatted")
-    end
+
     #return DDA matrix
     return A
 end
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
 @doc raw"""
      load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
 
-Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (two dimensional arrays of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (a three-dimensional complex array of size ``N\times 3\times 3``containing the polarisability ``3\times 3`` tensor of each dipole, or one dimensional array of size ``N`` containing the scalar polarizability of each dipole.)
-Return ``6N\times 6N`` complex DDA matrix
+Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (see format rules in the Alphas module).
+Returns the ``6N\times 6N`` complex DDA matrix.
 """
 function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     #number of point dipoles
@@ -147,47 +98,28 @@ function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
     #logging
     if verbose
         println("formatting the equations...")
-        println("coefficient matrix")
     end
-    #
-    A=zeros(ComplexF64,6*n,6*n)
-    #
-    id=Matrix{ComplexF64}(I,6,6)
+    #create DDA Matrix
+    A=Matrix{ComplexF64}(I,6*n,6*n)
     #
     a_dda=zeros(ComplexF64,6,6)
-    #
-    if length(alpha_e_dl)==n
-        for i=1:n
-            for j=1:n
-                if i==j
-                    A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=id
-                else
-                    a_dda[1:3,1:3]=-GreenTensors.G_e_renorm(kr[i,:],kr[j,:])*alpha_e_dl[j]
-                    a_dda[4:6,4:6]=-GreenTensors.G_e_renorm(kr[i,:],kr[j,:])*alpha_m_dl[j]
-                    a_dda[1:3,4:6]=-im*GreenTensors.G_m_renorm(kr[i,:],kr[j,:])*alpha_m_dl[j]
-                    a_dda[4:6,1:3]=+im*GreenTensors.G_m_renorm(kr[i,:],kr[j,:])*alpha_e_dl[j]
-                    A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
-                end
-            end
+    #dispactch alpha
+    alpha_e_dl,alpha_m_dl=Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n)
+    #load matrix
+    for i=1:n
+        for j=1:i-1
+            Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
+            a_dda[1:3,1:3]=-Ge*alpha_e_dl[j]
+            a_dda[4:6,4:6]=-Ge*alpha_m_dl[j]
+            a_dda[1:3,4:6]=-im*Gm*alpha_m_dl[j]
+            a_dda[4:6,1:3]=+im*Gm*alpha_e_dl[j]
+            A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
+            a_dda[1:3,1:3]=-Ge*alpha_e_dl[i]
+            a_dda[4:6,4:6]=-Ge*alpha_m_dl[i]
+            a_dda[1:3,4:6]=+im*Gm*alpha_m_dl[i]
+            a_dda[4:6,1:3]=-im*Gm*alpha_e_dl[i]
+            A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda)
         end
-    else
-        for i=1:n
-            for j=1:n
-                if i==j
-                    A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=id
-                else
-                    a_dda[1:3,1:3]=-GreenTensors.G_e_renorm(kr[i,:],kr[j,:])*alpha_e_dl[j,:,:]
-                    a_dda[4:6,4:6]=-GreenTensors.G_e_renorm(kr[i,:],kr[j,:])*alpha_m_dl[j,:,:]
-                    a_dda[1:3,4:6]=-im*GreenTensors.G_m_renorm(kr[i,:],kr[j,:])*alpha_m_dl[j,:,:]
-                    a_dda[4:6,1:3]=+im*GreenTensors.G_m_renorm(kr[i,:],kr[j,:])*alpha_e_dl[j,:,:]
-                    A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda)
-                end
-            end
-        end
-    end
-    #logging
-    if verbose
-        println("equations formatted")
     end
     return A
 end
@@ -196,130 +128,66 @@ end
 ########################################################################################################################################
 ########################################################################################################################################
 @doc raw"""
-     solve_DDA_e(knorm,r,alpha,input_field::Function;solver="LAPACK",verbose=true)
+     load_dda_matrix_e_m(kr,alpha_tensor,verbose)
 
-Builds and solves the DDA equations under a given input field, i.e.
-```math
-\vec{E}_{i}=\vec{E}_{0}(\vec{r}_{i})+k^2\sum_{i\neq j}^{N}\tilde{G}_e(\vec{r}_{i},\vec{r}_{j})\alpha_{j}\vec{E}_{j},
-```
-for a group of ``N`` only electric dipoles and returns the polarizations and incident fields of every dipole.
-
-#Arguments
-- `knorm`: the wavenumber of the input field.
-- `r`: a two-dimensional float array of size ``N\times 3`` containing the positions ``\vec{r}`` of all the dipoles.
-- `alpha`: a three-dimensional complex array of size ``N\times 3\times 3``containing the polarisability ``\times 3`` tensor of each dipole, or one dimensional array of size ``N`` containing the scalar polarizability of each dipole.
-- `input_field`: a function taking the wavenumber and one position vector of length 3, i.e. of the form `field(knorm,r)`, and that output a complex array of length 3 which computes the input field ``E_0`` evaluated at this position. Can be for example a plane wave or a point source.
-- `solver`: a string that contains the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
-#Outputs
-- `p`: a two-dimensional complex array of size ``N\times 3`` containing the polarization ``p`` of each dipole.
-- `e_inc`: a two-dimensional complex array of size ``N\times 3`` containing the incident fields ``E_inc`` on each dipole.
+Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (two dimensional arrays of size ``N\times 3``) and dimensionless polarisability `alpha_tensor` (see format rules in the Alphas module).
+Return ``6N\times 6N`` complex DDA matrix
 """
-function solve_DDA_e(knorm,r,alpha,input_field::Function;solver="LAPACK",verbose=true)
+function load_dda_matrix_e_m(kr,alpha_dl,verbose)
     #number of point dipoles
-    n=length(r[:,1])
+    n=length(kr[:,1])
     #logging
     if verbose
-        println()
-        println("number of dipoles: ",n)
+        println("formatting the equations...")
     end
-    #generate the matrix
-    A=load_dda_matrix_e(knorm*r,alpha*knorm^3/4/pi,verbose)
-    #computing input fields
-    if verbose
-        println("loading input fields")
-    end
+    #create DDA Matrix
+    A=Matrix{ComplexF64}(I,6*n,6*n)
     #
-    E=zeros(ComplexF64,3*n)
+    a_dda=zeros(ComplexF64,6,6)
+    #dispatch alpha
+    alpha_tensor=Alphas.dispatch_e_m(alpha_dl,n)
     #
-    for j in 1:n
-        pl=input_field(knorm,r[j,:])
-        E[3*(j-1)+1]=pl[1]
-        E[3*(j-1)+2]=pl[2]
-        E[3*(j-1)+3]=pl[3]
-    end
-    #copy of the input fields
-    E2=copy(E)
-    #
-    E=solve_system(A,E,solver,verbose)
-    #Computing dipoles moments
-    if verbose
-        println("computing the polarisations")
-    end
-    p=zeros(ComplexF64,(n,3))
-    e_inc=zeros(ComplexF64,(n,3))
-    if length(alpha)==n
-        for i=1:n
-            p[i,:]=alpha[i]*[E[3*(i-1)+1],E[3*(i-1)+2],E[3*(i-1)+3]]
-            e_inc[i,:]=[E2[3*(i-1)+1],E2[3*(i-1)+2],E2[3*(i-1)+3]]
-        end
-    else
-        for i=1:n
-            p[i,:]=alpha[i,:,:]*[E[3*(i-1)+1],E[3*(i-1)+2],E[3*(i-1)+3]]
-            e_inc[i,:]=[E2[3*(i-1)+1],E2[3*(i-1)+2],E2[3*(i-1)+3]]
+    for i=1:n
+        for j=1:i-1
+            Ge,Gm=GreenTensors.G_em_renorm(kr[i,:],kr[j,:])
+            a_dda[1:3,1:3]=-Ge
+            a_dda[4:6,4:6]=-Ge
+            a_dda[1:3,4:6]=-im*Gm
+            a_dda[4:6,1:3]=+im*Gm
+            A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda*alpha_tensor[j,:,:])
+            a_dda[1:3,4:6]=-a_dda[1:3,4:6]
+            a_dda[4:6,1:3]=-a_dda[4:6,1:3]
+            A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda*alpha_tensor[i,:,:])
         end
     end
-    #return polarisations and incident fields
-    return p, e_inc
+    return A
 end
-
 ########################################################################################################################################
 ########################################################################################################################################
 ########################################################################################################################################
 ########################################################################################################################################
 
 @doc raw"""
-     solve_DDA_e(knorm,r,alpha;solver="JULIA",verbose=true)
+    solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
 
-Similar to `solve_DDA_e(knorm,r,alpha,input_field::Function;solver="LAPACK",verbose=true)`, but without input field. Returns then the inverse of the DDA Matrix.
-#Arguments
-- `knorm`: the wavenumber of the input field.
-- `r`: a two-dimensional float array of size ``N\times 3`` containing the positions ``\vec{r}`` of all the dipoles.
-- `alpha`: a three-dimensional complex array of size ``N\times 3\times 3``containing the polarisability ``3x3`` tensor of each dipole, or one dimensional array of size ``N`` containing the scalar polarizability of each dipole.
-- `solver`: string that contains the name of the invertion method that need to be used. For this, check the correponding section on the home page. By default set to `"JULIA"`.
+Builds and solves the DDA equations under a given input field for a group of ``N`` only electric dipoles and returns the incident fields on each of the dipoles. 
+
+# Arguments
+
+- `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
+- `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `input_field`: 2D complex array of size ``N\times 3`` containing the electric input field ``\mathbf{E}_0(\mathbf{r}_i)`` at the position of each dipole. It can also be a 3D array of size ``N_f\times N\times 3``, allowing to solve the problem for several input fields without re-inverting the matrix. This is a keyword argument. If ```input_field=nothing``, the output of the function will be the inverse of the DDA matrix.
+- `solver`: string that contains the name of the solver that need to be used. For this, check the `DDACore.solve_system` function documentation. By default set to "CPU".
 - `verbose`: whether to output informations to the standard output during running or not. By default set to `true`.
-#Output
-- ``3N\times 3N`` inverse of the DDA matrix.
+
+# Outputs
+Depending on the value of `input field`, it can be:
+
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole. if `input_field` is a 2D array.
+- `phi_inc`: 3D complex array of size ``N_f\times N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole for each input field, if `input_field` is a 3D array.
+- `Ainv`: complex matrix of size "3N\times 3N", if `input_field=nothing`.
 """
-function solve_DDA_e(knorm,r,alpha;solver="JULIA",verbose=true)
-    #number of point dipoles
-    n=length(r[:,1])
-    #logging
-    if verbose
-        println()
-        println("number of dipoles: ",n)
-    end
-    #generate the matrix
-    A=load_dda_matrix_e(knorm*r,alpha*knorm^3/4/pi,verbose)
-    #retrun inverse of DDA matrix
-    return invert_system(A,solver,verbose)
-end
-
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-@doc raw"""
-     solve_DDA_e(kr,alpha_dl,input_field::Function;solver="LAPACK",verbose=true)
-
-Builds and solves the DDA equations with dimensionless input under a given input field, i.e.
-```math
-\vec{E}_{i}=\vec{E}_{0}(\vec{r}_{i})+,\sum^N_{j\neqj}G_e(\vec{r}_i,\vec{r}_j)\alpha_j\vec{E}_j
-\end{equation}
-```
-for a group of ``N`` only electric dipoles and returns the polarizations and incident fields.
-
-#Arguments
-- `kr`: two dimensional float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
-- `alpha_dl`: three dimensional complex array of size ``N\times 3\times 3``containing the dimensionless polarisability ``3\times 3`` tensor of each dipole, or one dimenstional array of size ``N`` containing the scalar polarizability of each dipole.
-- `input_field`: function taking one dimensionless position vector of length 3, i.e. of the form `field(kr)`, and that output a complex array of length 3 which compute the input field ``E_0`` elvaluated at this position. Can be for example a plane wave or a point source.
-- `solver`: string that contains the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output informations to the standard output during running or not. By default set to `true`.
-#Outputs
-- `p`: two dimensional complex array of size ``N\times 3`` containing the polarizations ``p`` of each dipoles (in units of the electric field!).
-- `e_inc`: two dimensional complex array of size ``N\times 3`` containing the incident fields ``E_inc`` on every dipole.
-"""
-function solve_DDA_e(kr,alpha_dl,input_field::Function;solver="LAPACK",verbose=true)
+function solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
@@ -328,310 +196,59 @@ function solve_DDA_e(kr,alpha_dl,input_field::Function;solver="LAPACK",verbose=t
         println("number of dipoles: ",n)
     end
     #generate the matrix
-    A=load_dda_matrix_e(kr,alpha_dl,verbose)
-    #computing input fields
-    if verbose
-        println("loading input fields")
-    end
-    #
-    E=zeros(ComplexF64,3*n)
-    #
-    for j in 1:n
-        pl=input_field(kr[j,:])
-        E[3*(j-1)+1]=pl[1]
-        E[3*(j-1)+2]=pl[2]
-        E[3*(j-1)+3]=pl[3]
-    end
-    #copy of the input fields
-    E2=copy(E)
-    #
-    E=solve_system(A,E,solver,verbose)
-    #Computing dipoles moments
-    if verbose
-        println("computing the polarisations")
-    end
-    p=zeros(ComplexF64,(n,3))
-    e_inc=zeros(ComplexF64,(n,3))
-    if length(alpha_dl)==n
-        for i=1:n
-            p[i,:]=alpha_dl[i]*[E[3*(i-1)+1],E[3*(i-1)+2],E[3*(i-1)+3]]
-            e_inc[i,:]=[E2[3*(i-1)+1],E2[3*(i-1)+2],E2[3*(i-1)+3]]
-        end
+    A=load_dda_matrix_e(kr,alpha_e_dl,verbose)
+    #solving the system
+    if input_field===nothing
+        E=solve_system(A,Matrix{ComplexF64}(I,3*n,3*n),solver,verbose)
+        return E
     else
-        for i=1:n
-            p[i,:]=alpha_dl[i,:,:]*[E[3*(i-1)+1],E[3*(i-1)+2],E[3*(i-1)+3]]
-            e_inc[i,:]=[E2[3*(i-1)+1],E2[3*(i-1)+2],E2[3*(i-1)+3]]
+        if ndims(input_field)==2
+            E=solve_system(A,reshape(transpose(input_field),3*n),solver,verbose)
+        elseif ndims(input_field)==3
+            E=zeros(ComplexF64,3*n,length(input_field[:,1,1]))
+            for i=1:length(input_field[:,1,1])
+                E[:,1]=reshape(input_field[i,:,:],3*n)
+            end
         end
     end
-    #return polarisations and incident fields
-    return p, e_inc
-end
-
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-@doc raw"""
-     solve_DDA_e(kr,alpha_dl;solver="JULIA",verbose=true)
-
-Similar to `solve_DDA_e(kr,alpha_dl,input_field::Function;solver="LAPACK",verbose=true)`, but without input field. Return then the inverse of the DDA Matrix.
-
-#Arguments
-- `kr`: two dimensional float array of size ``N\times 3`` containing the dimentionless positions ``k\vec{r}`` of each dipole.
-- `alpha_dl`: three dimensional complex array of size ``N\times 3\times 3``containing the dimensionless polarisability ``3\times 3`` tensor of each dipole, or one dimenstional array of size ``N`` containing the scalar polarizability of each dipole.
-- `solver`: string that contains the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output informations to the standard output during running or not. By default set to `true`.
-#Output
-- ``3N\times 3N`` inverse of the DDA matrix.
-"""
-function solve_DDA_e(kr,alpha_dl;solver="JULIA",verbose=true)
-    #number of point dipoles
-    n=length(kr[:,1])
-    #logging
-    if verbose
-        println()
-        println("number of dipoles: ",n)
+    #reshaping
+    if ndims(input_field)==2
+        e_inc=transpose(reshape(E,3,n))
+    elseif ndims(input_field)==3
+        e_inc=zeros(ComplexF64,length(input_field[:,1,1]))
+        for i=1:length(input_field[:,1,1])
+            e_inc[i,:,:]=transpose(reshape(E[i,:],3,n))
+        end
     end
-    #generate the matrix
-    A=load_dda_matrix_e(kr,alpha_dl,verbose)
-    #retrun inverse of DDA matrix
-    return invert_system(A,solver,verbose)
+    return e_inc
 end
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
 
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
+
 @doc raw"""
-     solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;solver="LAPACK",verbose=true)
+    solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;input_field=nothing,solver="CPU",verbose=true)
 
-Builds and solves the DDA equations under a given input field, i.e.
-```math
-\begin{align}
-\vec{E}_{i} & =\vec{E}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100a}\\
-\vec{H}_{i} & =\vec{H}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}-i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100b}
-\end{align}
-```
-for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident fields on every particle.
+Builds and solves the DDA equations with dimensionless inputs under a given input field for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident fields on every particle.
 
-#Arguments
-- `knorm`: the wavenumber of the input field.
-- `r`: a two-dimensional float array of size ``N\times 3`` containing the positions ``\vec{r}`` of all the dipoles.
-- `alpha_e`: a three-dimensional complex array of size ``N\times 3\times 3``containing the electric polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `alpha_m`: a three-dimensional complex array of size ``N\times 3\times 3``containing the magnetic polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `input_field`: a function taking the wavenumber and one position vector of length 3, i.e. of the form `field(knorm,r)`, and that output a complex array of length 3 which computes the input fields ``E_0`` and ``H_0`` evaluated at this position. Can be for example a plane wave or a point source.
-- `solver`: a string that five the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
+# Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
+- `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. It can also be a 3D array of size ``N_f\times N\times 3``, allowing to solve the problem for several input fields without re-inverting the matrix. This is a keyword argument. If ```input_field=nothing`` (default value), the output of the function will be the inverse of the DDA matrix.
+- `solver`:string that contains the name of the solver that need to be used. For this, check the `DDACore.solve_system` function documentation. By default set to "CPU".
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
-#Outputs
-- `p`: a two-dimensional complex array of size ``N\times 3`` containing the electric polarizations ``p`` moments of all the electric dipoles.
-- `m`: a two-dimensional complex array of size ``N\times 3`` containing the magnetic polarizations ``m`` moments of all the magnetic dipoles.
-- `e_inc`: a two-dimensional complex array of size ``N\times 3`` containing the incident electric fields ``E_inc`` on all the particles.
-- `h_inc`: a two-dimensional complex array of size ``N\times 3`` containing the incident magnetic fields ``H_inc`` on all the particles.
-- `e_inp`: a two-dimensional complex array of size ``N\times 3`` containing the input electric fields ``E_inc`` on all the particles.
-- `h_inp`: a two-dimensional complex array of size ``N\times 3`` containing the input magnetic fields ``H_inc`` on all the particles.
+
+# Outputs
+Depending on the value of `input field`, it can be:
+
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole, if `input_field` is a 2D array.
+- `phi_inc`: 3D complex array of size ``N_f\times N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole for each input field, if `input_field` is a 3D array.
+- `Ainv`: complex matrix of size "6N\times 6N", if `input_field=nothing`.
 """
-function solve_DDA_e_m(knorm,r,alpha_e,alpha_m,input_field::Function;solver="LAPACK",verbose=true)
-    #number of point dipoles
-    n=length(r[:,1])
-    #logging
-    if verbose
-        println()
-        println("number of dipoles: ",n)
-    end
-    #loading matrix
-    A=load_dda_matrix_e_m(knorm*r,alpha_e*knorm^3/4/pi,alpha_m*knorm^3/4/pi,verbose)
-    #logging
-    if verbose
-        println("loading input fields")
-    end
-    #compute incident fields
-    phi=zeros(ComplexF64,6*n)
-    for j in 1:n
-        E0,H0=input_field(knorm,r[j,:])
-        phi[6*(j-1)+1:6*(j-1)+3]=E0
-        phi[6*(j-1)+4:6*(j-1)+6]=H0
-    end
-    #copy
-    phi2=copy(phi)
-    #solve
-    phi=solve_system(A,phi,solver,verbose)
-
-    if verbose
-        println("computing the polarisations and incident fields")
-    end
-
-    p=zeros(ComplexF64,(n,3))
-    m=zeros(ComplexF64,(n,3))
-
-    e_inc=zeros(ComplexF64,(n,3))
-    h_inc=zeros(ComplexF64,(n,3))
-
-    e_inp=zeros(ComplexF64,(n,3))
-    h_inp=zeros(ComplexF64,(n,3))
-
-    if length(alpha_m)==n
-        for j=1:n
-            p[j,:]=alpha_e[j]*phi[6*(j-1)+1:6*(j-1)+3]
-            m[j,:]=alpha_m[j]*phi[6*(j-1)+4:6*(j-1)+6]
-            e_inc[j,:]=phi[6*(j-1)+1:6*(j-1)+3]
-            h_inc[j,:]=phi[6*(j-1)+4:6*(j-1)+6]
-            e_inp[j,:]=phi2[6*(j-1)+1:6*(j-1)+3]
-            h_inp[j,:]=phi2[6*(j-1)+4:6*(j-1)+6]
-        end
-    else
-        for j=1:n
-            p[j,:]=alpha_e[j,:,:]*phi[6*(j-1)+1:6*(j-1)+3]
-            m[j,:]=alpha_m[j,:,:]*phi[6*(j-1)+4:6*(j-1)+6]
-            e_inc[j,:]=phi[6*(j-1)+1:6*(j-1)+3]
-            h_inc[j,:]=phi[6*(j-1)+4:6*(j-1)+6]
-            e_inp[j,:]=phi2[6*(j-1)+1:6*(j-1)+3]
-            h_inp[j,:]=phi2[6*(j-1)+4:6*(j-1)+6]
-        end
-    end
-    #return polarisations and incident fields
-    return p,m,e_inc,h_inc,e_inp,h_inp
-end
-
-@doc raw"""
-     solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="LAPACK",verbose=true)
-
-Builds and solves the DDA equations under a given input field, i.e.
-```math
-\begin{align}
-\vec{E}_{i} & =\vec{E}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100a}\\
-\vec{H}_{i} & =\vec{H}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}-i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100b}
-\end{align}
-```
-for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident fields on every particle.
-
-#Arguments
-- `knorm`: the wavenumber of the input field.
-- `r`: a two-dimensional float array of size ``N\times 3`` containing the positions ``\vec{r}`` of all the dipoles.
-- `alpha_e`: a three-dimensional complex array of size ``N\times 3\times 3``containing the electric polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `alpha_m`: a three-dimensional complex array of size ``N\times 3\times 3``containing the magnetic polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `input_field`: a function taking the wavenumber and one position vector of length 3, i.e. of the form `field(knorm,r)`, and that output a complex array of length 3 which computes the input fields ``E_0`` and ``H_0`` evaluated at this position. Can be for example a plane wave or a point source.
-- `solver`: a string that five the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
-#Outputs
-- ``6N\times 6N`` inverse of the DDA matrix
-"""
-function solve_DDA_e_m(knorm,r,alpha_e,alpha_m;solver="JULIA",verbose=true)
-    #number of point dipoles
-    n=length(r[:,1])
-    #logging
-    if verbose
-        println()
-        println("number of dipoles: ",n)
-    end
-    #loading matrix
-    A=load_dda_matrix_e_m(knorm*r,alpha_e*knorm^3/4/pi,alpha_m*knorm^3/4/pi,verbose)
-    return invert_system(A,solver,verbose)
-end
-
-@doc raw"""
-     solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl,input_field::Function;solver="AUTO",verbose=true)
-
-Builds and solves the DDA equations with dimensionless inputs under a given input field, i.e.
-```math
-\begin{align}
-\vec{E}_{i} & =\vec{E}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100a}\\
-\vec{H}_{i} & =\vec{H}_{0}\left(\vec{r}_{i}\right)+\sum_{j\ne i}-i\mathbb{G}_{M}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{E}^{(j)}\vec{E}_{j}+\mathbb{G}_{E}\left(\vec{r}_{i},\vec{r}_{j}\right)\alpha_{M}^{(j)}\vec{H}_{j}\label{eq:100b}
-\end{align}
-```
-for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident fields on every particle.
-
-#Arguments
-- `kr`: a two-dimensional float array of size ``N\times 3`` containing the dimensionless positions ``k\vec{r}`` of all the dipoles.
-- `alpha_e_dl`: a three-dimensional complex array of size ``N\times 3\times 3``containing the dimensionless electric polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `alpha_m_dl`: a three-dimensional complex array of size ``N\times 3\times 3``containing the dimesnionless magnetic polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `input_field`: a function taking the dimensionless position vector of length 3, i.e. of the form `field(kr)`, and that output two complex array of length 3 which computes the input fields ``E_0`` and ``H_0`` evaluated at this position. Can be for example a plane wave or a point source.
-- `solver`: a string that five the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
-#Outputs
-- `p`: a two-dimensional complex array of size ``N\times 3`` containing the electric polarizations ``p`` moments of all the electric dipoles (in units of the electric field).
-- `m`: a two-dimensional complex array of size ``N\times 3`` containing the magnetic polarizations ``m`` moments of all the magnetic dipoles (in units of the electric field).
-- `e_inc`: a two-dimensional complex array of size ``N\times 3`` containing the incident electric fields ``E_inc`` on all the particles (in units of the electric field).
-- `h_inc`: a two-dimensional complex array of size ``N\times 3`` containing the incident magnetic fields ``H_inc`` on all the particles (in units of the electric field).
-- `e_inp`: a two-dimensional complex array of size ``N\times 3`` containing the input electric fields ``E_inc`` on all the particles (in units of the electric field).
-- `h_inp`: a two-dimensional complex array of size ``N\times 3`` containing the input magnetic fields ``H_inc`` on all the particles (in units of the electric field).
-"""
-function solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl,input_field::Function;solver="AUTO",verbose=true)
-    #number of point dipoles
-    n=length(kr[:,1])
-
-    #logging
-    if verbose
-        println()
-        println("number of dipoles: ",n)
-    end
-    #loading matrix
-    A=load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
-    #logging
-    if verbose
-        println("loading input fields")
-    end
-    #compute incident fields
-    phi=zeros(ComplexF64,6*n)
-    for j in 1:n
-        E0,H0=input_field(kr[j,:])
-        phi[6*(j-1)+1:6*(j-1)+3]=E0
-        phi[6*(j-1)+4:6*(j-1)+6]=H0
-    end
-    #copy
-    phi2=copy(phi)
-    #solve
-    phi=solve_system(A,phi,solver,verbose)
-
-    if verbose
-        println("computing the polarisations and incident fields")
-    end
-
-    p=zeros(ComplexF64,(n,3))
-    m=zeros(ComplexF64,(n,3))
-
-    e_inc=zeros(ComplexF64,(n,3))
-    h_inc=zeros(ComplexF64,(n,3))
-
-    e_inp=zeros(ComplexF64,(n,3))
-    h_inp=zeros(ComplexF64,(n,3))
-
-    if length(alpha_m_dl)==n
-        for j=1:n
-            p[j,:]=alpha_e_dl[j]*phi[6*(j-1)+1:6*(j-1)+3]
-            m[j,:]=alpha_m_dl[j]*phi[6*(j-1)+4:6*(j-1)+6]
-            e_inc[j,:]=phi[6*(j-1)+1:6*(j-1)+3]
-            h_inc[j,:]=phi[6*(j-1)+4:6*(j-1)+6]
-            e_inp[j,:]=phi2[6*(j-1)+1:6*(j-1)+3]
-            h_inp[j,:]=phi2[6*(j-1)+4:6*(j-1)+6]
-        end
-    else
-        for j=1:n
-            p[j,:]=alpha_e_dl[j,:,:]*phi[6*(j-1)+1:6*(j-1)+3]
-            m[j,:]=alpha_m_dl[j,:,:]*phi[6*(j-1)+4:6*(j-1)+6]
-            e_inc[j,:]=phi[6*(j-1)+1:6*(j-1)+3]
-            h_inc[j,:]=phi[6*(j-1)+4:6*(j-1)+6]
-            e_inp[j,:]=phi2[6*(j-1)+1:6*(j-1)+3]
-            h_inp[j,:]=phi2[6*(j-1)+4:6*(j-1)+6]
-        end
-    end
-    #return polarisations and incident fields
-    return p,m,e_inc,h_inc,e_inp,h_inp
-end
-
-@doc raw"""
-     solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;solver="AUTO",verbose=true)
-
-Similar to `solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl,input_field::Function;solver="AUTO",verbose=true)`, but without input field. Return then the inverse of the DDA Matrix.
-#Arguments
-- `kr`: a two-dimensional float array of size ``N\times 3`` containing the dimensionless positions ``k\vec{r}`` of all the dipoles.
-- `alpha_e_dl`: a three-dimensional complex array of size ``N\times 3\times 3``containing the dimensionless electric polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `alpha_m_dl`: a three-dimensional complex array of size ``N\times 3\times 3``containing the dimesnionless magnetic polarisability ``3\times 3`` tensor of every dipole, or one dimensional array of size ``N`` containing the scalar polarizability of every dipole.
-- `solver`: a string that five the name of the solver that need to be used. For this, check the correponding section on the home page. By default set to `"LAPACK"`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
-#Outputs
-- ``6N\times 6N`` inverse of the DDA matrix
-"""
-function solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;solver="AUTO",verbose=true)
+function solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;input_field=nothing,solver="CPU",verbose=true)
     #number of point dipoles
     n=length(kr[:,1])
     #logging
@@ -641,18 +258,78 @@ function solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;solver="AUTO",verbose=true)
     end
     #loading matrix
     A=load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
+    #solving the system
+    if input_field===nothing
+        E=solve_system(A,Matrix{ComplexF64}(I,6*n,6*n),solver,verbose)
+        return E
+    else
+        if ndims(input_field)==2
+            E=solve_system(A,reshape(transpose(input_field),6*n),solver,verbose)
+        elseif ndims(input_field)==3
+            phi=zeros(ComplexF64,6*n,length(input_field[:,1,1]))
+            for i=1:length(input_field[:,1,1])
+                phi[:,1]=reshape(input_field[i,:,:],6*n)
+            end
+        end
+    end
+    #reshaping
+    if ndims(input_field)==2
+        phi_inc=transpose(reshape(E,6,n))
+    elseif ndims(input_field)==3
+        phi_inc=zeros(ComplexF64,length(input_field[:,1,1]))
+        for i=1:length(input_field[:,1,1])
+            phi_inc[i,:,:]=transpose(reshape(E[i,:],6,n))
+        end
+    end
+    return phi_inc
+end
+
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
+
+
+@doc raw"""
+    function solve_DDA_e_m(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
+
+Same as `solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;input_field=nothing,solver="CPU",verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
+"""
+function solve_DDA_e_m(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
+    #number of point dipoles
+    n=length(kr[:,1])
     #logging
     if verbose
-        println("loading input fields")
+        println()
+        println("number of dipoles: ",n)
     end
-    #compute incident fields
-    phi=zeros(ComplexF64,6*n)
-    for j in 1:n
-        E0,H0=input_field(kr[j,:])
-        phi[6*(j-1)+1:6*(j-1)+3]=E0
-        phi[6*(j-1)+4:6*(j-1)+6]=H0
+    #loading matrix
+    A=load_dda_matrix_e_m(kr,alpha_dl,verbose)
+    #solving the system
+    if input_field===nothing
+        E=solve_system(A,Matrix{ComplexF64}(I,6*n,6*n),solver,verbose)
+        return E
+    else
+        if ndims(input_field)==2
+            E=solve_system(A,reshape(transpose(input_field),6*n),solver,verbose)
+        elseif ndims(input_field)==3
+            phi=zeros(ComplexF64,6*n,length(input_field[:,1,1]))
+            for i=1:length(input_field[:,1,1])
+                phi[:,1]=reshape(input_field[i,:,:],6*n)
+            end
+        end
     end
-    #solve
-    return invert_matrix(matrix,solver,verbose)
+    #reshaping
+    if ndims(input_field)==2
+        phi_inc=transpose(reshape(E,6,n))
+    elseif ndims(input_field)==3
+        phi_inc=zeros(ComplexF64,length(input_field[:,1,1]))
+        for i=1:length(input_field[:,1,1])
+            phi_inc[i,:,:]=transpose(reshape(E[i,:],6,n))
+        end
+    end
+    return phi_inc
 end
+
+
 end

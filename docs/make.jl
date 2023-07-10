@@ -4,6 +4,7 @@ push!(LOAD_PATH,"../src/")
 
 include("../src/CoupledElectricMagneticDipoles.jl")
 
+
 using Documenter
 using Base
 
@@ -13,21 +14,20 @@ makedocs(
          modules  = [CoupledElectricMagneticDipoles],
          pages=[
                 "Home" => "index.md"
-                "Theory" => "theory.md"
                 "Modules" => [
-                "GreenTensors" => "green.md"
                 "DDACore" =>"ddacore.md"
                 "Alphas" => "alphas.md"
-                "PostProcessing" => "postprocessing.md"
                 "InputFields" => "input_fields.md"
+                "PostProcessing" => "postprocessing.md"
+                "Forces" => "forces.md"
+                "GreenTensors" => "green.md"
                 "MieCoeff" =>"miecoeff.md"
                 "Geometries" =>"geometries.md"
                 ]
                 "Examples"=> [
-                    "Silicon Sphere" => "examples.md"
+                    "PS Sphere" => "example_PS_sphere.md"
+                    "Yagi-Uda Antenna" => "example_yagi_uda.md"
+                    "LDOS Silver Particle" => "example_ldos_silver_np.md"
+                    "Optical Trap"=> "example_force_gaussbeam_PS_sphere.md"
                 ]
                ])
-
-deploydocs(
-    repo="https://github.com/augustinmuster/CoupledElectricMagneticDipoles.wiki.git",
-)
