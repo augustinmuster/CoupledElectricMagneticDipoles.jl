@@ -55,11 +55,18 @@ function force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dyG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
     dzG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
     p = zeros(ComplexF64,n_particles*6,)
+    fx_interf = zeros(ComplexF64,n_particles,)
+    fy_interf = zeros(ComplexF64,n_particles,)
+    fz_interf = zeros(ComplexF64,n_particles,)
 
     alpha_e_dl,alpha_m_dl=Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
     for i=1:n_particles
-        p[6*(i-1)+1:6*(i-1)+6] = [alpha_e_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+3];alpha_m_dl[i]*e_inc[6*(i-1)+4:6*(i-1)+6]]
+        p_i = [alpha_e_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+3];alpha_m_dl[i]*e_inc[6*(i-1)+4:6*(i-1)+6]]
+        p[6*(i-1)+1:6*(i-1)+6] = copy(p_i)
+        fx_interf[i] = - (p_i[2]*conj(p_i[6]) - p_i[3]*conj(p_i[5]))/3
+        fy_interf[i] = - (p_i[3]*conj(p_i[4]) - p_i[1]*conj(p_i[6]))/3
+        fz_interf[i] = - (p_i[1]*conj(p_i[5]) - p_i[2]*conj(p_i[4]))/3
         for j=1:i-1
             dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
             dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe*alpha_e_dl[j] im*dxGm*alpha_m_dl[j]; -im*dxGm*alpha_e_dl[j] dxGe*alpha_m_dl[j]]
@@ -82,9 +89,9 @@ function force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dye_inc = transpose(reshape(dye_inc,6,n_particles))
     dze_inc = transpose(reshape(dze_inc,6,n_particles))
 
-    fx = sum(p.*dxe_inc,dims=2)/2
-    fy = sum(p.*dye_inc,dims=2)/2
-    fz = sum(p.*dze_inc,dims=2)/2
+    fx = sum(p.*dxe_inc,dims=2)/2 + fx_interf
+    fy = sum(p.*dye_inc,dims=2)/2 + fy_interf
+    fz = sum(p.*dze_inc,dims=2)/2 + fz_interf
     if length(fz) == 1
         return real(fx[1]), real(fy[1]), real(fz[1])
     end
@@ -119,12 +126,19 @@ function force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dxG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
     dyG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
     dzG_alp = zeros(ComplexF64,n_particles*6,n_particles*6)
-    p = zeros(ComplexF64,n_particles*6,)
+    p = zeros(ComplexF64,n_particles,6)
+    fx = zeros(ComplexF64,n_particles,)
+    fy = zeros(ComplexF64,n_particles,)
+    fz = zeros(ComplexF64,n_particles,)
 
     alpha_dl=Alphas.dispatch_e_m(alpha_dl,n_particles)
 
     for i=1:n_particles
-        p[6*(i-1)+1:6*(i-1)+6] = alpha_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+6]
+        p_i = alpha_dl[i]*e_inc[6*(i-1)+1:6*(i-1)+6]
+        p[i,:] = conj(p_i)
+        fx[i] = - (p_i[2]*conj(p_i[6]) - p_i[3]*conj(p_i[5]))/3
+        fy[i] = - (p_i[3]*conj(p_i[4]) - p_i[1]*conj(p_i[6]))/3
+        fz[i] = - (p_i[1]*conj(p_i[5]) - p_i[2]*conj(p_i[4]))/3
         for j=1:i-1
             dxGe, dxGm = GreenTensors.dxG_em_renorm(kr[i,:],kr[j,:])
             dxG_alp[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=[dxGe im*dxGm; -im*dxGm dxGe]*alpha_dl[j]
@@ -142,14 +156,13 @@ function force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     dye_inc = dye_0 + dyG_alp*e_inc
     dze_inc = dze_0 + dzG_alp*e_inc
 
-    p = conj(transpose(reshape(p,6,n_particles)))
     dxe_inc = transpose(reshape(dxe_inc,6,n_particles))
     dye_inc = transpose(reshape(dye_inc,6,n_particles))
     dze_inc = transpose(reshape(dze_inc,6,n_particles))
 
-    fx = sum(p.*dxe_inc,dims=2)/2
-    fy = sum(p.*dye_inc,dims=2)/2
-    fz = sum(p.*dze_inc,dims=2)/2
+    fx = sum(p.*dxe_inc,dims=2)/2 + fx
+    fy = sum(p.*dye_inc,dims=2)/2 + fy
+    fz = sum(p.*dze_inc,dims=2)/2 + fz
     if length(fz) == 1
         return real(fx[1]), real(fy[1]), real(fz[1])
     end
