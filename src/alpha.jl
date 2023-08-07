@@ -63,12 +63,11 @@ end
 
 @doc raw"""
     alpha_e_m_mie(vac_knorm,a,eps,eps_h)
-Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with radius `a` and of dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm`` is the wavenumber in the medium.
+Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
 Outputs two dimensionless scalars that are respectively the electric and the magnetic polarizability.
 """
-function alpha_e_m_mie(knorm,a,eps,eps_h)
-    a1=MieCoeff.mie_an(knorm, a, eps, eps_h, 1)
-    b1=MieCoeff.mie_bn(knorm, a, eps, eps_h, 1)
+function alpha_e_m_mie(ka,eps,eps_h;mu=1,mu_h=1)
+    a1,b1=MieCoeff.mie_ab1(ka, eps, eps_h; mu, mu_h)
     alpha_e=im*1.5*a1
     alpha_m=im*1.5*b1
     return alpha_e,alpha_m
