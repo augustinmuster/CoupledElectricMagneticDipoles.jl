@@ -154,10 +154,10 @@ function load_dda_matrix_e_m(kr,alpha_dl,verbose)
             a_dda[4:6,4:6]=-Ge
             a_dda[1:3,4:6]=-im*Gm
             a_dda[4:6,1:3]=+im*Gm
-            A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda*alpha_tensor[j,:,:])
+            A[6*(i-1)+1:6*(i-1)+6,6*(j-1)+1:6*(j-1)+6]=copy(a_dda*alpha_tensor[j])
             a_dda[1:3,4:6]=-a_dda[1:3,4:6]
             a_dda[4:6,1:3]=-a_dda[4:6,1:3]
-            A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda*alpha_tensor[i,:,:])
+            A[6*(j-1)+1:6*(j-1)+6,6*(i-1)+1:6*(i-1)+6]=copy(a_dda*alpha_tensor[i])
         end
     end
     return A

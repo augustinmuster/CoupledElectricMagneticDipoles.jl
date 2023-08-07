@@ -18,6 +18,7 @@ The output is a ``N\times 3`` complex array representing the electric field.
 function plane_wave_e(krf;khat=[0,0,1],e0=[1,0,0])
     n=length(krf[:,1])
     E0=zeros(ComplexF64,n,3)
+    khat = khat/norm(khat)
     for i=1:n
         E0[i,:]=exp(im*dot(khat,krf[i,:]))*e0
     end
@@ -34,6 +35,7 @@ The output is a ``N\times 6`` complex array representing the electric and magnet
 function plane_wave_e_m(krf;khat=[0,0,1],e0=[1,0,0])
     n=length(krf[:,1])
     phi=zeros(ComplexF64,n,6)
+    khat = khat/norm(khat)
     for i=1:n
         phi[i,1:3]=exp(im*dot(khat,krf[i,:]))*e0
         phi[i,4:6]=cross(khat,phi[i,1:3])
@@ -559,11 +561,11 @@ function d_point_dipole_e_m(krf, krd, dip; e0=1)
         println("dip should be an integer (between 1 and 6) or a vector of length 6")
     end
     for i = 1:n_r0  
-        dxGe, dxGm = GreenTensors.dxG_em_renorm(krf[i,:],krd[1,:])   
+        dxGe, dxGm = GreenTensors.dxG_em_renorm(krf[i,:],krd)   
         dxG_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [dxGe im*dxGm; -im*dxGm dxGe]
-        dyGe, dyGm = GreenTensors.dyG_em_renorm(krf[i,:],krd[1,:])   
+        dyGe, dyGm = GreenTensors.dyG_em_renorm(krf[i,:],krd)   
         dyG_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [dyGe im*dyGm; -im*dyGm dyGe]
-        dzGe, dzGm = GreenTensors.dzG_em_renorm(krf[i,:],krd[1,:])   
+        dzGe, dzGm = GreenTensors.dzG_em_renorm(krf[i,:],krd)   
         dzG_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [dzGe im*dzGm; -im*dzGm dzGe]
     end
     dxe_dipole = dxG_tensor*dip*e0
@@ -597,11 +599,11 @@ function d_point_dipole_e(krf, krd, dip; e0=1)
         println("dip should be an integer (between 1 and 3) or a vector of length 3")
     end
     for i = 1:n_r0  
-        dxGe = GreenTensors.dxG_e_renorm(krf[i,:],krd[1,:])   
+        dxGe = GreenTensors.dxG_e_renorm(krf[i,:],krd)   
         dxG_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = dxGe
-        dyGe = GreenTensors.dyG_e_renorm(krf[i,:],krd[1,:])   
+        dyGe = GreenTensors.dyG_e_renorm(krf[i,:],krd)   
         dyG_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = dyGe
-        dzGe = GreenTensors.dzG_e_renorm(krf[i,:],krd[1,:])   
+        dzGe = GreenTensors.dzG_e_renorm(krf[i,:],krd)   
         dzG_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = dzGe
     end
     dxe_dipole = dxG_tensor*dip*e0
