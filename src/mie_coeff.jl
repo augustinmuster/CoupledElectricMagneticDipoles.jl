@@ -37,42 +37,57 @@ function diff_xi(n, x)
 end
 
 @doc raw"""
-    mie_an(knorm, a, eps, eps_h, n)
+    mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 
-Computes the `n`-th mie coefficient ``a_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm` is wavenumber in the medium. 
+Computes the `n`-th mie coefficient ``a_n`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
 Retruns a complex scalar.
 """
-function mie_an(knorm, a, eps, eps_h,n)
-
-    mt = sqrt(eps)/sqrt(eps_h)
-    alpha = knorm * a 
-    beta = knorm * a *mt
-
-
-    return (mt * diff_psi(n, alpha) * psi(n, beta) - psi(n, alpha) * diff_psi(n,beta)) / (mt * diff_xi(n, alpha) * psi(n, beta) - xi(n, alpha) * diff_psi(n, beta))
+function mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
+    mt = sqrt(eps*mu)/sqrt(eps_h*mu_h)
+    alpha = ka 
+    beta = ka *mt
+    return (mu_h*mt * diff_psi(n, alpha) * psi(n, beta) - mu*psi(n, alpha) * diff_psi(n,beta)) / (mu_h*mt * diff_xi(n, alpha) *psi(n, beta) - mu*xi(n, alpha) * diff_psi(n, beta))
 end
 
 @doc raw"""
-    mie_bn(knorm, a, eps, eps_h, n)
+    mie_bn(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 
-Computes the `n`-th mie coefficient ``b_n`` of a sphere of radius `a` with dielectric constant `eps`, in a medium with dielectric constant `eps_h`. `knorm` is wavenumber in the medium.
+Computes the `n`-th mie coefficient ``b_n`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
 Returns a complex scalar. 
 """
-function mie_bn(knorm, a, eps, eps_h, n)
-    mt = sqrt(eps)/sqrt(eps_h)
-    alpha = knorm * a 
-    beta = knorm * a * mt
-
-    return (mt * psi(n, alpha) * diff_psi(n, beta) - diff_psi(n, alpha) * psi(n,beta)) / (mt * xi(n, alpha) * diff_psi(n, beta) - diff_xi(n, alpha) * psi(n, beta))
+function mie_bn(ka, eps, eps_h; mu=1, mu_h=1, n=1)
+    mt = sqrt(eps*mu)/sqrt(eps_h*mu_h)
+    alpha = ka 
+    beta = ka * mt
+    return (mu_h*mt * psi(n, alpha) * diff_psi(n, beta) - mu*diff_psi(n, alpha) * psi(n,beta)) / (mu_h*mt* xi(n, alpha) * diff_psi(n, beta) - mu*diff_xi(n, alpha) * psi(n, beta))
 end
 
 @doc raw"""
-    mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
+    mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
 
-Computes the scattering cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
+Computes the first mie coefficient ``a_1`` and ``b_1`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
+Returns a tupler with two complex scalar, ``a_1`` and ``b_1``, respectively. 
+"""
+function mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
+    mt = sqrt(eps*mu)/sqrt(eps_h*mu_h)
+    alpha = ka 
+    beta = ka *mt
+    t1 = (sin(alpha) - sin(alpha) / alpha^2 + cos(alpha) / alpha) * (sin(beta) / beta - cos(beta))
+    t2 = (sin(beta) - sin(beta) / beta^2 + cos(beta) / beta) * (sin(alpha) / alpha - cos(alpha))
+    t3 = (sin(alpha) - sin(alpha) / alpha^2 + cos(alpha) / alpha + im*(-cos(alpha) + cos(alpha) / alpha^2 + sin(alpha) / alpha)) * (sin(beta) / beta - cos(beta))
+    t4 = ((sin(alpha) / alpha - cos(alpha)) + im*(-cos(alpha) / alpha - sin(alpha))) * (sin(beta) - sin(beta) / beta^2 + cos(beta) / beta)
+    a1 = (mu_h*mt * t1 - mu * t2) / (mu_h*mt * t3 - mu * t4)
+    b1 = (mu_h*mt * t2 - mu * t1) / (mu_h*mt * t4 - mu * t3)
+    return a1, b1
+end
+
+@doc raw"""
+    mie_scattering(ka,eps,eps_h;mu=1, mu_h=1, cutoff=20)
+
+Computes the scattering efficiency ``Q_{sca}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
 
 ```math
-C_{sca} =\frac{2\pi}{k^2}\sum^{\infty}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2\right)
+Q_{sca} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2\right)
 ```
 
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
@@ -80,56 +95,57 @@ The infinite sum is computed only for terms under the `cutoff` variable (by defa
 Returns a float with units of surface.
 
 """
-function mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
+function mie_scattering(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
     sum=0
     for i=1:cutoff
-        sum=sum+(2*i+1)*(abs2(mie_an(knorm, a, eps, eps_h, i))+abs2(mie_bn(knorm, a, eps, eps_h, i)))
+        sum=sum+(2*i+1)*(abs2(mie_an(ka, eps, eps_h; mu, mu_h, n=i))+abs2(mie_bn(ka, eps, eps_h; mu, mu_h, n=i)))
     end
-    return 2*pi/(knorm)^2*sum
+    return 2/(ka)^2*sum
 end
 
 @doc raw"""
-    mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
+    mie_extinction(ka,eps,eps_h;cutoff=20)
 
-Computes the extinction cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
+Computes the extinction efficiency ``Q_{ext}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
 
 ```math
-C_{ext} =\frac{2\pi}{k^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
+Q_{ext} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
 ```
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
 Returns a float with units of surface.
 
 """
-function mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
+function mie_extinction(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
     sum=0
     for i=1:cutoff
-        sum=sum+(2*i+1)*real(mie_an(knorm, a, eps, eps_h, i)+mie_bn(knorm, a, eps, eps_h, i))
+        sum=sum+(2*i+1)*real(mie_an(ka, eps, eps_h; mu, mu_h, n=i)+mie_bn(ka, eps, eps_h; mu, mu_h, n=i))
     end
-    return 2*pi/(knorm)^2*sum
+    return 2/(ka)^2*sum
 end
 
 
 @doc raw"""
-    mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
+    mie_absorption(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
 
-Computes the extinction cross section ``C_{sca}`` of a sphere of radius `a` with dielectric constant `eps` in a medium with dielectric constant `eps_h`. `knorm` is the wavenumber in the medium. For this, we use:
+Computes the extinction efficiency ``Q_{abs}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
 
 ```math
-C_{abs} =C_{ext}-C_{sca}
+Q_{abs} =Q_{ext}-Q_{sca}
 ```
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
 Returns a float with units of surface.
 
 """
-function mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
+function mie_absorption(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
     sum=0
     for i=1:cutoff
-        an=mie_an(knorm, a, eps, eps_h, i)
-        bn=mie_bn(knorm, a, eps, eps_h, i)
+        an=mie_an(ka, eps, eps_h; mu, mu_h, n=i)
+        bn=mie_bn(ka, eps, eps_h; mu, mu_h, n=i)
         sum=sum+(2*i+1)*(real(an+bn)-(abs2(an))+abs2(bn))
     end
-    return 2*pi/(knorm)^2*sum
+    return 2/(ka)^2*sum
 end
+
 end

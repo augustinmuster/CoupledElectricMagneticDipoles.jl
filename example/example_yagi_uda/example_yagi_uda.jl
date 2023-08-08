@@ -51,15 +51,16 @@ as[1]=a_refl
 lambdas=LinRange(1200e-9,1600e-9,100)
 knorms=2*pi./lambdas
 a=230e-9
+ka = knorms*a
 eps=12
 #scattering cross sections
-mie_sca=MieCoeff.mie_scattering_cross_section.(knorms,a,eps,1,cutoff=20)
-dipole_sca=(6*pi)./knorms.^2 .*(abs2.(MieCoeff.mie_an.(knorms, a, eps, 1, 1)).+abs2.(MieCoeff.mie_bn.(knorms, a, eps, 1, 1)))
+mie_sca=MieCoeff.mie_scattering.(ka,eps,1,cutoff=20)
+dipole_sca=(6*pi)./knorms.^2 .*(abs2.(MieCoeff.mie_an.(ka, eps, 1, n=1)).+abs2.(MieCoeff.mie_bn.(ka, eps, 1, n=1)))
 #plotting
 fig1,ax1=plt.subplots()
 ax1.set_xlabel(L"\lambda\ (nm)")
 ax1.set_ylabel(L"Q_{sca}")
-ax1.plot(lambdas.*1e9,mie_sca./(pi*a^2),color="black",label="Mie")
+ax1.plot(lambdas.*1e9,mie_sca,color="black",label="Mie")
 ax1.plot(lambdas.*1e9,dipole_sca./(pi*a^2),color="red",label="Dipoles")
 fig1.savefig("mie_dipole_qsca.svg")
 #------------------------------------------------------------
@@ -71,7 +72,7 @@ knorm=2*pi/lambda
 alpha_e=zeros(ComplexF64,N_dir+1)
 alpha_m=zeros(ComplexF64,N_dir+1)
 for i=1:N_dir+1 
-    alpha_e[i],alpha_m[i]=Alphas.alpha_e_m_mie(knorm,as[i],eps,1)
+    alpha_e[i],alpha_m[i]=Alphas.alpha_e_m_mie(knorm*as[i],eps,1)
 end
 println(alpha_m)
 #computes the input input_field
