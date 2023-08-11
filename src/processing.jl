@@ -157,7 +157,7 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input
     sum_ext=0.
     sum_abs=0.
     #compute cross sections
-    Threads.@threads for i=1:n
+    for i=1:n
         sum_ext=sum_ext+imag(dot(e_inp[i,:],p[i,:])+dot(h_inp[i,:],m[i,:]))
         sum_abs=sum_abs+ (imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))+imag(dot(h_inc[i,:],m[i,:]))-2/3*dot(m[i,:],m[i,:])
         if (explicit_scattering)
@@ -202,7 +202,7 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_dl,input_field;explic
     sum_ext=0.
     sum_abs=0.
     #compute cross sections
-    Threads.@threads for i=1:n
+    for i=1:n
         sum_ext=sum_ext+imag(dot(e_inp[i,:],p[i,:])+dot(h_inp[i,:],m[i,:]))
         sum_abs=sum_abs+ (imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))+imag(dot(h_inc[i,:],m[i,:]))-2/3*dot(m[i,:],m[i,:])
         if (explicit_scattering)
@@ -551,7 +551,7 @@ function field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, phi_inc, krf; verbose=true)
     alp_e, alp_m = Alphas.dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
 
     G_tensor_fr = zeros(ComplexF64,n_r0*6,n_particles*6)
-    Threads.@threads for i = 1:n_particles
+    for i = 1:n_particles
         for j = 1:n_r0
             Ge, Gm = GreenTensors.G_em_renorm(krf[j,:],kr[i,:])   
             G_tensor_fr[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] im*Gm*alp_m[i]; -im*Gm*alp_e[i] Ge*alp_m[i]]
@@ -577,7 +577,7 @@ function field_sca_e_m(kr, alpha_dl, phi_inc, krf; verbose=true)
     alp = Alphas.dispatch_e_m(alpha_dl,n_particles)
 
     G_tensor_fr = zeros(ComplexF64,n_r0*6,n_particles*6)
-    Threads.@threads for i = 1:n_particles
+    for i = 1:n_particles
         for j = 1:n_r0
             Ge, Gm = GreenTensors.G_em_renorm(krf[j,:],kr[i,:])   
             G_tensor_fr[6 * (j-1) + 1:6 * (j-1) + 6 , 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge im*Gm; -im*Gm Ge]*alp[i]
@@ -613,7 +613,7 @@ function field_sca_e(kr, alpha_e_dl, e_inc, krf; verbose=true)
     alp_e = Alphas.dispatch_e(alpha_e_dl,n_particles)
 
     G_tensor_fr = zeros(ComplexF64,n_r0*3,n_particles*3)
-    Threads.@threads for i = 1:n_particles
+    for i = 1:n_particles
         for j = 1:n_r0
             Ge = GreenTensors.G_e_renorm(krf[j,:],kr[i,:])   
             G_tensor_fr[3 * (j-1) + 1:3 * (j-1) + 3 , 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
@@ -783,7 +783,7 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
 
     if dip === nothing
         LDOS = zeros(n_dpos,2)
-        Threads.@threads for j=1:n_dpos
+        for j=1:n_dpos
             for i=1:n_particles
                 Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
@@ -805,7 +805,7 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
             dip = zeros(6)
             println("dip should be an integer (between 1 and 6) or a vector of length 6")
         end
-        Threads.@threads for j=1:n_dpos
+        for j=1:n_dpos
             for i=1:n_particles
                 Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
@@ -840,7 +840,7 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing, verbose=true)
 
     if dip === nothing
         LDOS = zeros(n_dpos,2)
-        Threads.@threads for j=1:n_dpos
+        for j=1:n_dpos
             for i=1:n_particles
                 Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
@@ -862,7 +862,7 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing, verbose=true)
             dip = zeros(6)
             println("dip should be an integer (between 1 and 6) or a vector of length 6")
         end
-        Threads.@threads for j=1:n_dpos
+        for j=1:n_dpos
             for i=1:n_particles
                 Ge, Gm = GreenTensors.G_em_renorm(kr[i,:],krd[j,:])        
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
@@ -908,7 +908,7 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
 
     LDOS = zeros(n_dpos)
     if dip == nothing
-        Threads.@threads for j=1:n_dpos
+         for j=1:n_dpos
             for i=1:n_particles
                 Ge = GreenTensors.G_e_renorm(kr[i,:],krd[j,:])        
                 G_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = Ge 
@@ -928,7 +928,7 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
             dip = zeros(3)
             println("dip should be an integer (between 1 and 3) or a vector of length 3")
         end
-        Threads.@threads for j=1:n_dpos
+        for j=1:n_dpos
             for i=1:n_particles
                 Ge = GreenTensors.G_e_renorm(kr[i,:],krd[j,:])        
                 G_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = Ge
