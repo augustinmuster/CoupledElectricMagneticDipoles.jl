@@ -71,7 +71,7 @@ function load_dda_matrix_e(kr,alpha_e_dl,verbose)
     #dispatch alphas
     alpha_e_dl=Alphas.dispatch_e(alpha_e_dl,n)
     #load matrix
-    Threads.@threads for j in 1:n
+    for j in 1:n
         for k=1:j-1
             G=GreenTensors.G_e_renorm(kr[j,:],kr[k,:])
             A[3*(j-1)+1:3*(j-1)+3,3*(k-1)+1:3*(k-1)+3]=copy(-G*alpha_e_dl[k])

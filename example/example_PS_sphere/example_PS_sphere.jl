@@ -61,7 +61,7 @@ end
 
 
 #scattering cross section from the Mie theory
-res_mie=MieCoeff.mie_scattering_cross_section.(2 .*pi./lambdas,a,eps,eps_h;cutoff=50)
+res_mie=MieCoeff.mie_scattering.(2 .*pi./lambdas*a,eps,eps_h;cutoff=50)
 
 #plotting the cross sections using matplotlib
 fig1,ax1=plt.subplots(2,sharex=true)
@@ -72,7 +72,7 @@ ax1[2].set_xlabel(L"\lambda_0/a")
 #plot
 cst=pi*a^2
 ax1[1].plot(lambdas0./a,res[:,3]./cst,color="black",label="DDA, N="*string(n),marker="o")
-ax1[1].plot(lambdas0./a,res_mie./cst,color="red",label="Mie",marker="o")
+ax1[1].plot(lambdas0./a,res_mie,color="red",label="Mie",marker="o")
 ax1[2].plot(lambdas0./a,(res[:,1].-res[:,2].-res[:,3])./res[:,1],color="black",marker="o")
 #legend and save
 ax1[1].legend()

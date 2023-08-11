@@ -86,7 +86,7 @@ function compute_cross_sections_e(knorm,kr,e_inc,alpha_e_dl,input_field;explicit
     end
     alpha_e_dl=Alphas.dispatch_e(alpha_e_dl,n)
     #compute_cross sections
-    Threads.@threads for j=1:n
+    for j=1:n
         #extinction
         sumext=sumext+imag(dot(input_field[j,:],alpha_e_dl[j]*e_inc[j,:]))
         #absorption
@@ -94,7 +94,7 @@ function compute_cross_sections_e(knorm,kr,e_inc,alpha_e_dl,input_field;explicit
         #scattering
     end
     if explicit_scattering
-        Threads.@threads for j=1:n
+        for j=1:n
             sumsca=sumsca+dot(alpha_e_dl[j]*e_inc[j,:],(knorm/6/pi)*alpha_e_dl[j]*e_inc[j,:])
             for k=1:j-1
                 G=imag(knorm/4/pi*GreenTensors.G_e_renorm(kr[j,:],kr[k,:]))
