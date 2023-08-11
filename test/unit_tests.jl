@@ -21,7 +21,7 @@ if TEST_GREENTENSORS
     ###########################
     println("")
     println("*************************")
-    println("Testing GreenTensors")
+    println("Testing")
     println("*************************")
     println("")
     #***********************
@@ -38,14 +38,14 @@ if TEST_GREENTENSORS
     x2=[2,3,4]*1e-6
     knorm=1e9
     #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
+    num=(G_m(x1bis,x2,knorm)-G_m(x1,x2,knorm))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_m([x+2*h,2,3]*1e-6,x2,knorm)+8*GreenTensors.G_m([x+h,2,3]*1e-6,x2,knorm)-8*GreenTensors.G_m([x-h,2,3]*1e-6,x2,knorm)+GreenTensors.G_m([x-2*h,2,3]*1e-6,x2,knorm)
+    num2=-G_m([x+2*h,2,3]*1e-6,x2,knorm)+8*G_m([x+h,2,3]*1e-6,x2,knorm)-8*G_m([x-h,2,3]*1e-6,x2,knorm)+G_m([x-2*h,2,3]*1e-6,x2,knorm)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dxG_m(x1,x2,knorm)
+    func=dxG_m(x1,x2,knorm)
 
-    print("testing the function for the x-derivative of the magnetic green tensor: ")
+    println("testing the function for the x-derivative of the magnetic green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -59,8 +59,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed ")
-
+    println("test passed ;) ")
+    println("")
 
 
     #***********************
@@ -77,14 +77,14 @@ if TEST_GREENTENSORS
     x2=[7,8,9]*1e-6
     knorm=1e9
     #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
+    num=(G_m(x1bis,x2,knorm)-G_m(x1,x2,knorm))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_m([1,x+2*h,3]*1e-6,x2,knorm)+8*GreenTensors.G_m([1,x+h,3]*1e-6,x2,knorm)-8*GreenTensors.G_m([1,x-h,3]*1e-6,x2,knorm)+GreenTensors.G_m([1,x-2*h,3]*1e-6,x2,knorm)
+    num2=-G_m([1,x+2*h,3]*1e-6,x2,knorm)+8*G_m([1,x+h,3]*1e-6,x2,knorm)-8*G_m([1,x-h,3]*1e-6,x2,knorm)+G_m([1,x-2*h,3]*1e-6,x2,knorm)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dyG_m(x1,x2,knorm)
-
-    print("testing the function for the y-derivative of the magnetic green tensor: ")
+    func=dyG_m(x1,x2,knorm)
+    println("")
+    println("testing the function for the y-derivative of the magnetic green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -98,7 +98,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
+    println("test passed ;) ")
+    println("")
 
     #***********************
     #TEST THE Z DERIVATIVE OF THE MAGNETIC GREEN TENSOR
@@ -112,16 +113,15 @@ if TEST_GREENTENSORS
     x1bis=[1,2,x+h]*1e-6
     #
     x2=[7,8,9]*1e-6
-    knorm=1e9
     #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
+    num=(G_m_renorm(x1bis,x2)-G_m_renorm(x1,x2))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_m([1,2,x+2*h]*1e-6,x2,knorm)+8*GreenTensors.G_m([1,2,x+h]*1e-6,x2,knorm)-8*GreenTensors.G_m([1,2,x-h]*1e-6,x2,knorm)+GreenTensors.G_m([1,2,x-2*h]*1e-6,x2,knorm)
+    num2=-G_m_renorm([1,2,x+2*h]*1e-6,x2)+8*G_m_renorm([1,2,x+h]*1e-6,x2)-8*G_m_renorm([1,2,x-h]*1e-6,x2)+G_m_renorm([1,2,x-2*h]*1e-6,x2)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dzG_m(x1,x2,knorm)
-
-    print("testing the function for the z-derivative of the magnetic green tensor: ")
+    func=dzG_m_renorm(x1,x2)
+    println("")
+    println("testing the function for the z-derivative of the magnetic green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -135,8 +135,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
-
+    println("test passed ;) ")
+    println("")
 
     #***********************
     #TEST THE X DERIVATIVE OF THE ELECTRIC GREEN TENSOR
@@ -150,16 +150,15 @@ if TEST_GREENTENSORS
     x1bis=[x+h,2,3]*1e-6
     #
     x2=[2,3,4]*1e-6
-    knorm=1e9
     #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
+    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_e([x+2*h,2,3]*1e-6,x2,knorm)+8*GreenTensors.G_e([x+h,2,3]*1e-6,x2,knorm)-8*GreenTensors.G_e([x-h,2,3]*1e-6,x2,knorm)+GreenTensors.G_e([x-2*h,2,3]*1e-6,x2,knorm)
+    num2=-G_e_renorm([x+2*h,2,3]*1e-6,x2)+8*G_e_renorm([x+h,2,3]*1e-6,x2)-8*G_e_renorm([x-h,2,3]*1e-6,x2)+G_e_renorm([x-2*h,2,3]*1e-6,x2)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dxG_e(x1,x2,knorm)
+    func=dxG_e_renorm(x1,x2)
 
-    print("testing the function for the x-derivative of the electric green tensor: ")
+    println("testing the function for the x-derivative of the electric green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -173,7 +172,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
+    println("test passed ;) ")
+    println("")
 
 
     #***********************
@@ -188,16 +188,15 @@ if TEST_GREENTENSORS
     x1bis=[1,x+h,3]*1e-6
     #
     x2=[7,8,9]*1e-6
-    knorm=1e9
     #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
+    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_e([1,x+2*h,3]*1e-6,x2,knorm)+8*GreenTensors.G_e([1,x+h,3]*1e-6,x2,knorm)-8*GreenTensors.G_e([1,x-h,3]*1e-6,x2,knorm)+GreenTensors.G_e([1,x-2*h,3]*1e-6,x2,knorm)
+    num2=-G_e_renorm([1,x+2*h,3]*1e-6,x2)+8*G_e_renorm([1,x+h,3]*1e-6,x2)-8*G_e_renorm([1,x-h,3]*1e-6,x2)+G_e_renorm([1,x-2*h,3]*1e-6,x2)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dyG_e(x1,x2,knorm)
-
-    print("testing the function for the y-derivative of the electric green tensor: ")
+    func=dyG_e_renorm(x1,x2)
+    println("")
+    println("testing the function for the y-derivative of the electric green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -211,7 +210,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
+    println("test passed ;) ")
+    println("")
 
     #***********************
     #TEST THE Z DERIVATIVE OF THE ELECTRIC GREEN TENSOR
@@ -225,16 +225,15 @@ if TEST_GREENTENSORS
     x1bis=[1,2,x+h]*1e-6
     #
     x2=[7,8,9]*1e-6
-    knorm=1e9
     #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
+    num=(G_e_renorm(x1bis,x2)-G_e_renorm(x1,x2))/(h*1e-6)
     #numerical highest order
-    num2=-GreenTensors.G_e([1,2,x+2*h]*1e-6,x2,knorm)+8*GreenTensors.G_e([1,2,x+h]*1e-6,x2,knorm)-8*GreenTensors.G_e([1,2,x-h]*1e-6,x2,knorm)+GreenTensors.G_e([1,2,x-2*h]*1e-6,x2,knorm)
+    num2=-G_e_renorm([1,2,x+2*h]*1e-6,x2)+8*G_e_renorm([1,2,x+h]*1e-6,x2)-8*G_e_renorm([1,2,x-h]*1e-6,x2)+G_e_renorm([1,2,x-2*h]*1e-6,x2)
     num2=num2/12/h/1e-6
     #analytical one
-    func=GreenTensors.dzG_e(x1,x2,knorm)
-
-    print("testing the function for the z-derivative of the electric green tensor: ")
+    func=dzG_e_renorm(x1,x2)
+    println("")
+    println("testing the function for the z-derivative of the electric green tensor...")
     #unit test
     @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
     @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
@@ -248,7 +247,8 @@ if TEST_GREENTENSORS
     @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
     @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
     @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
+    println("test passed ;) ")
+    println("")
 end
 
 if TEST_DDACORE

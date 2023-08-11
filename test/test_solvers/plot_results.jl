@@ -5,19 +5,14 @@ using LaTeXStrings
 using DelimitedFiles
 @pyimport matplotlib.pyplot as plt
 
-data=readdlm("results.dat")
+data=readdlm("results_solving.dat")
 
-plt.plot(data[:,1],data[:,2],label="Auto CPU")
-plt.plot(data[:,1],data[:,3],label="CPU1")
-plt.plot(data[:,1],data[:,4],label="CPU2")
-plt.plot(data[:,1],data[:,5],label="CPU3")
-plt.plot(data[:,1],data[:,6],label="CPU4")
-plt.plot(data[:,1],data[:,7],label="CPU5")
-plt.plot(data[:,1],data[:,8],label="GPU")
+plt.plot([2^i for i=2:14],data[2:end,1],label="CPU LAPACK")
+plt.plot([2^i for i=2:14],data[2:end,2],label="GPU CUSOLVER")
 plt.xscale("log")
 plt.yscale("log")
-plt.xlabel("Number of Dipoles")
-plt.ylabel("Solving Time (s)")
+plt.xlabel(L"N")
+plt.ylabel(L"t\ \ (s)")
 plt.tight_layout()
 plt.legend()
 plt.show()

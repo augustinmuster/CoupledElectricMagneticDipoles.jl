@@ -1,0 +1,14 @@
+- `knorm`: wavenumber in the medium.
+- `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `alpha_dl`: 6x6 complex dimensionless electric and magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
+- `input_field`: 2D complex array of size ``N\times 3`` containing the electric input field ``\mathbf{E}_0(\mathbf{r}_i)`` at the position of each dipole.
+- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole.
+- `explicit_scattering`: boolean that says whether to compute scattering cross section explicitely (`true`) or to deduce it from the optical theorem (`false`). By default set to `true`.
+- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` where the diffrential scattering cross section is computed.
+- `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
+

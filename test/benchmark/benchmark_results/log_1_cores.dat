@@ -1,0 +1,1087 @@
+##################################################
+##################################################
+N=128
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  5.467 ms … 9.434 ms  ┊ GC (min … max): 0.00% … 8.68%
+ Time  (median):     6.389 ms             ┊ GC (median):    6.27%
+ Time  (mean ± σ):   6.653 ms ± 1.479 ms  ┊ GC (mean ± σ):  6.08% ± 6.32%
+
+  █            █                                             
+  █▁▇▁▁▁▁▁▁▁▁▁▁█▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▇ ▁
+  5.47 ms        Histogram: frequency by time       9.43 ms <
+
+ Memory estimate: 23.46 MiB, allocs estimate: 138187.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  15.788 ms … 21.787 ms  ┊ GC (min … max):  7.15% … 13.60%
+ Time  (median):     17.719 ms              ┊ GC (median):     9.82%
+ Time  (mean ± σ):   17.819 ms ±  2.098 ms  ┊ GC (mean ± σ):  10.90% ±  4.48%
+
+  █                      ▃                                     
+  █▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▇▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▇ ▁
+  15.8 ms         Histogram: frequency by time        21.8 ms <
+
+ Memory estimate: 68.04 MiB, allocs estimate: 438919.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  9.305 ms …   9.731 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     9.375 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   9.418 ms ± 125.733 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █ ██   ██ █       █   █ █                                 █  
+  █▁██▁▁▁██▁█▁▁▁▁▁▁▁█▁▁▁█▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  9.31 ms         Histogram: frequency by time        9.73 ms <
+
+ Memory estimate: 2.27 MiB, allocs estimate: 5.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  5.076 ms …  5.271 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     5.187 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   5.182 ms ± 62.317 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █  █                    █   █  █  █     █  █     █       █  
+  █▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁█▁▁█▁▁█▁▁▁▁▁█▁▁█▁▁▁▁▁█▁▁▁▁▁▁▁█ ▁
+  5.08 ms        Histogram: frequency by time        5.27 ms <
+
+ Memory estimate: 2.27 MiB, allocs estimate: 160.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  71.505 ms …  74.102 ms  ┊ GC (min … max): 0.00% … 0.69%
+ Time  (median):     73.177 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   73.031 ms ± 837.799 μs  ┊ GC (mean ± σ):  0.14% ± 0.30%
+
+  █    █                        █     ██  ██      █     █    █  
+  █▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁██▁▁██▁▁▁▁▁▁█▁▁▁▁▁█▁▁▁▁█ ▁
+  71.5 ms         Histogram: frequency by time         74.1 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 8.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  13.684 ms …  15.947 ms  ┊ GC (min … max): 0.00% … 3.21%
+ Time  (median):     15.360 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   14.985 ms ± 907.888 μs  ┊ GC (mean ± σ):  0.69% ± 1.36%
+
+  █▁                                         ▁█▁ ▁          ▁▁  
+  ██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁███▁█▁▁▁▁▁▁▁▁▁▁██ ▁
+  13.7 ms         Histogram: frequency by time         15.9 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 163.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  9.522 ms …   9.963 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     9.915 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   9.841 ms ± 167.358 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  ▁▁                                           ▁   ▁  ▁█  █ ▁  
+  ██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁█▁▁██▁▁█▁█ ▁
+  9.52 ms         Histogram: frequency by time        9.96 ms <
+
+ Memory estimate: 2.27 MiB, allocs estimate: 5.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  4.727 ms …   5.241 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     5.107 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   5.055 ms ± 156.341 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+                                             █                 
+  ▇▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▇▁▁▇▇▁▁▁▁▁▁▁▁▇ ▁
+  4.73 ms         Histogram: frequency by time        5.24 ms <
+
+ Memory estimate: 2.27 MiB, allocs estimate: 160.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  73.338 ms …  76.025 ms  ┊ GC (min … max): 0.00% … 0.68%
+ Time  (median):     75.113 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   74.641 ms ± 990.962 μs  ┊ GC (mean ± σ):  0.14% ± 0.29%
+
+  ▁  ▁▁     ▁                            ▁█▁         ▁       ▁  
+  █▁▁██▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁███▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█ ▁
+  73.3 ms         Histogram: frequency by time           76 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 8.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  13.615 ms …  15.944 ms  ┊ GC (min … max): 0.00% … 3.24%
+ Time  (median):     15.345 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   14.950 ms ± 919.881 μs  ┊ GC (mean ± σ):  0.69% ± 1.36%
+
+  █ ▁                                        ▁██           ▁ ▁  
+  █▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁███▁▁▁▁▁▁▁▁▁▁▁█▁█ ▁
+  13.6 ms         Histogram: frequency by time         15.9 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 163.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  6.276 ms … 10.905 ms  ┊ GC (min … max): 0.00% … 11.27%
+ Time  (median):     7.618 ms              ┊ GC (median):    7.71%
+ Time  (mean ± σ):   7.722 ms ±  1.658 ms  ┊ GC (mean ± σ):  7.81% ±  7.93%
+
+  █               █                                           
+  █▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁█▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▇ ▁
+  6.28 ms        Histogram: frequency by time        10.9 ms <
+
+ Memory estimate: 24.48 MiB, allocs estimate: 188361.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  20.526 ms … 27.179 ms  ┊ GC (min … max):  7.97% … 6.48%
+ Time  (median):     22.034 ms              ┊ GC (median):    11.37%
+ Time  (mean ± σ):   22.059 ms ±  1.974 ms  ┊ GC (mean ± σ):  11.26% ± 3.72%
+
+  █              ▃                                             
+  █▇▁▁▁▁▁▁▁▁▁▁▇▇▁█▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  20.5 ms         Histogram: frequency by time        27.2 ms <
+
+ Memory estimate: 67.58 MiB, allocs estimate: 806236.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  3.796 ms …   5.084 ms  ┊ GC (min … max): 0.00% … 20.02%
+ Time  (median):     4.255 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   4.226 ms ± 361.126 μs  ┊ GC (mean ± σ):  2.41% ±  6.33%
+
+  ▁ ▁ ▁               ██▁▁                                  ▁  
+  █▁█▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  3.8 ms          Histogram: frequency by time        5.08 ms <
+
+ Memory estimate: 4.54 MiB, allocs estimate: 15403.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  22.862 ms … 25.574 ms  ┊ GC (min … max): 0.00% … 4.18%
+ Time  (median):     24.786 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   24.342 ms ±  1.319 ms  ┊ GC (mean ± σ):  1.28% ± 2.01%
+
+  █                                                        ▃█  
+  █▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██ ▁
+  22.9 ms         Histogram: frequency by time        25.6 ms <
+
+ Memory estimate: 17.13 MiB, allocs estimate: 58947.##################################################
+##################################################
+N=256
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  24.453 ms … 31.870 ms  ┊ GC (min … max):  9.62% … 7.43%
+ Time  (median):     24.757 ms              ┊ GC (median):    10.14%
+ Time  (mean ± σ):   25.553 ms ±  2.254 ms  ┊ GC (mean ± σ):   9.83% ± 0.94%
+
+   ▁█                                                          
+  ▆██▁▆▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆ ▁
+  24.5 ms         Histogram: frequency by time        31.9 ms <
+
+ Memory estimate: 94.18 MiB, allocs estimate: 554891.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):   78.162 ms … 187.421 ms  ┊ GC (min … max):  9.79% … 45.19%
+ Time  (median):      84.888 ms               ┊ GC (median):    15.20%
+ Time  (mean ± σ):   111.843 ms ±  43.533 ms  ┊ GC (mean ± σ):  28.61% ± 17.26%
+
+  ██ █                ▁                     ▁          ▁      ▁  
+  ██▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁█ ▁
+  78.2 ms          Histogram: frequency by time          187 ms <
+
+ Memory estimate: 273.09 MiB, allocs estimate: 1762567.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  71.566 ms …  74.221 ms  ┊ GC (min … max): 0.00% … 0.81%
+ Time  (median):     73.417 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   73.111 ms ± 936.356 μs  ┊ GC (mean ± σ):  0.16% ± 0.34%
+
+                                           █                    
+  ▇▁▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▇▁▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▇ ▁
+  71.6 ms         Histogram: frequency by time         74.2 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 8.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  13.744 ms …  16.120 ms  ┊ GC (min … max): 0.00% … 3.79%
+ Time  (median):     15.382 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   15.044 ms ± 934.852 μs  ┊ GC (mean ± σ):  0.81% ± 1.59%
+
+  █                                                             
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▇▁▇▇▇▁▁▁▁▁▁▁▁▁▁▁▁▁▇▇ ▁
+  13.7 ms         Histogram: frequency by time         16.1 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 163.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  577.684 ms … 582.115 ms  ┊ GC (min … max): 0.00% … 0.63%
+ Time  (median):     578.973 ms               ┊ GC (median):    0.19%
+ Time  (mean ± σ):   579.561 ms ±   1.732 ms  ┊ GC (mean ± σ):  0.29% ± 0.32%
+
+  █ █ █  █    █         █                     █    █    █     █  
+  █▁█▁█▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁█▁▁▁▁▁█ ▁
+  578 ms           Histogram: frequency by time          582 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 10.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  55.502 ms … 58.928 ms  ┊ GC (min … max): 0.00% … 6.31%
+ Time  (median):     56.464 ms              ┊ GC (median):    1.79%
+ Time  (mean ± σ):   57.047 ms ±  1.577 ms  ┊ GC (mean ± σ):  2.85% ± 3.02%
+
+  ▁▁█▁                         ▁                        ▁ █ ▁  
+  ████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁█ ▁
+  55.5 ms         Histogram: frequency by time        58.9 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 165.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  71.299 ms … 73.856 ms  ┊ GC (min … max): 0.00% … 0.79%
+ Time  (median):     73.186 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   72.696 ms ±  1.002 ms  ┊ GC (mean ± σ):  0.16% ± 0.33%
+
+  ▁   ▁ ▁      ▁                            ▁  █  ▁       ▁ ▁  
+  █▁▁▁█▁█▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁▁█▁▁▁▁▁▁▁█▁█ ▁
+  71.3 ms         Histogram: frequency by time        73.9 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 8.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  13.702 ms …  16.069 ms  ┊ GC (min … max): 0.00% … 3.82%
+ Time  (median):     15.406 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   15.031 ms ± 940.982 μs  ┊ GC (mean ± σ):  0.81% ± 1.60%
+
+  █                                         ▃▃               ▃  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  13.7 ms         Histogram: frequency by time         16.1 ms <
+
+ Memory estimate: 9.03 MiB, allocs estimate: 163.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  575.607 ms … 602.180 ms  ┊ GC (min … max): 0.00% … 0.37%
+ Time  (median):     578.811 ms               ┊ GC (median):    0.19%
+ Time  (mean ± σ):   580.853 ms ±   7.786 ms  ┊ GC (mean ± σ):  0.30% ± 0.32%
+
+  █▁    ▁█▁ ▁     ▁                                           ▁  
+  ██▁▁▁▁███▁█▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  576 ms           Histogram: frequency by time          602 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 10.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  55.729 ms … 59.170 ms  ┊ GC (min … max): 0.00% … 6.22%
+ Time  (median):     56.756 ms              ┊ GC (median):    1.77%
+ Time  (mean ± σ):   57.281 ms ±  1.508 ms  ┊ GC (mean ± σ):  2.82% ± 2.99%
+
+  ██ ██   █                  █                       █ █  █ █  
+  ██▁██▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁▁█▁█ ▁
+  55.7 ms         Histogram: frequency by time        59.2 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 165.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  27.656 ms … 35.710 ms  ┊ GC (min … max): 9.06% … 7.14%
+ Time  (median):     27.985 ms              ┊ GC (median):    9.14%
+ Time  (mean ± σ):   28.912 ms ±  2.448 ms  ┊ GC (mean ± σ):  9.62% ± 1.82%
+
+  █▃                                                           
+  ██▇▁▇▁▁▁▁▁▇▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  27.7 ms         Histogram: frequency by time        35.7 ms <
+
+ Memory estimate: 97.95 MiB, allocs estimate: 753545.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  86.951 ms … 94.354 ms  ┊ GC (min … max): 11.78% … 10.97%
+ Time  (median):     87.365 ms              ┊ GC (median):    11.70%
+ Time  (mean ± σ):   88.145 ms ±  2.257 ms  ┊ GC (mean ± σ):  11.82% ±  0.58%
+
+  █  ▃                                                         
+  █▇▁█▇▁▁▇▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  87 ms           Histogram: frequency by time        94.4 ms <
+
+ Memory estimate: 270.91 MiB, allocs estimate: 3234462.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  13.790 ms … 17.324 ms  ┊ GC (min … max): 0.00% … 5.56%
+ Time  (median):     15.111 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   15.217 ms ±  1.483 ms  ┊ GC (mean ± σ):  1.23% ± 2.32%
+
+  █                                        ▁                   
+  █▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▆▆▁▁▁▁▁▁▁▁▁▁▁▆ ▁
+  13.8 ms         Histogram: frequency by time        17.3 ms <
+
+ Memory estimate: 13.58 MiB, allocs estimate: 30765.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  103.212 ms … 107.539 ms  ┊ GC (min … max): 0.00% … 3.81%
+ Time  (median):     105.965 ms               ┊ GC (median):    2.40%
+ Time  (mean ± σ):   105.882 ms ±   1.121 ms  ┊ GC (mean ± σ):  2.13% ± 1.04%
+
+  ▁                           ▁       █▁ ▁ ▁ ▁     ▁          ▁  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁██▁█▁█▁█▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█ ▁
+  103 ms           Histogram: frequency by time          108 ms <
+
+ Memory estimate: 52.25 MiB, allocs estimate: 117827.##################################################
+##################################################
+N=512
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  118.228 ms … 242.794 ms  ┊ GC (min … max):  9.03% … 38.82%
+ Time  (median):     140.894 ms               ┊ GC (median):    13.11%
+ Time  (mean ± σ):   159.182 ms ±  45.428 ms  ┊ GC (mean ± σ):  23.55% ± 13.87%
+
+  ▁▁    ▁▁ ▁  █                    ▁                     ▁    ▁  
+  ██▁▁▁▁██▁█▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁█ ▁
+  118 ms           Histogram: frequency by time          243 ms <
+
+ Memory estimate: 377.36 MiB, allocs estimate: 2223883.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  420.300 ms … 616.161 ms  ┊ GC (min … max): 12.23% … 33.90%
+ Time  (median):     533.304 ms               ┊ GC (median):    25.27%
+ Time  (mean ± σ):   511.051 ms ±  67.200 ms  ┊ GC (mean ± σ):  23.32% ± 10.51%
+
+                                     █                           
+  ▇▁▇▁▁▁▁▇▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▇ ▁
+  420 ms           Histogram: frequency by time          616 ms <
+
+ Memory estimate: 1.07 GiB, allocs estimate: 7064071.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  578.125 ms … 582.815 ms  ┊ GC (min … max): 0.00% … 0.64%
+ Time  (median):     579.351 ms               ┊ GC (median):    0.19%
+ Time  (mean ± σ):   580.293 ms ±   1.801 ms  ┊ GC (mean ± σ):  0.29% ± 0.32%
+
+  ▁        ▁▁▁ ▁    ▁                          ▁     ▁        █  
+  █▁▁▁▁▁▁▁▁███▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁█▁▁▁▁▁▁▁▁█ ▁
+  578 ms           Histogram: frequency by time          583 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 10.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  55.420 ms … 59.097 ms  ┊ GC (min … max): 0.00% … 6.08%
+ Time  (median):     56.531 ms              ┊ GC (median):    1.80%
+ Time  (mean ± σ):   57.058 ms ±  1.612 ms  ┊ GC (mean ± σ):  2.85% ± 3.02%
+
+  ▁ ▁█▁                          ▁                   ▁ █    ▁  
+  █▁███▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁▁▁▁█ ▁
+  55.4 ms         Histogram: frequency by time        59.1 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 165.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 7 samples with 1 evaluation.
+ Range (min … max):  4.466 s …   4.531 s  ┊ GC (min … max): 0.01% … 1.56%
+ Time  (median):     4.487 s              ┊ GC (median):    0.15%
+ Time  (mean ± σ):   4.490 s ± 26.937 ms  ┊ GC (mean ± σ):  0.54% ± 0.63%
+
+  █ ▁               ▁▁                             ▁      ▁  
+  █▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁█ ▁
+  4.47 s         Histogram: frequency by time        4.53 s <
+
+ Memory estimate: 144.12 MiB, allocs estimate: 11.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  257.026 ms … 330.069 ms  ┊ GC (min … max): 0.17% … 22.28%
+ Time  (median):     263.832 ms               ┊ GC (median):    2.64%
+ Time  (mean ± σ):   276.280 ms ±  25.975 ms  ┊ GC (mean ± σ):  7.10% ±  7.82%
+
+       █                                                         
+  ▅▁▁▁▁█▅▁▁▁▁▁▁▁▅▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▅▁▁▁▁▁▁▁▁▅ ▁
+  257 ms           Histogram: frequency by time          330 ms <
+
+ Memory estimate: 144.10 MiB, allocs estimate: 165.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  568.255 ms … 594.356 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     573.395 ms               ┊ GC (median):    0.18%
+ Time  (mean ± σ):   577.283 ms ±   8.677 ms  ┊ GC (mean ± σ):  0.30% ± 0.33%
+
+  ▁  ▁   ▁   █▁         ▁           ▁            ▁            ▁  
+  █▁▁█▁▁▁█▁▁▁██▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  568 ms           Histogram: frequency by time          594 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 10.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  55.709 ms … 59.189 ms  ┊ GC (min … max): 0.00% … 6.25%
+ Time  (median):     56.463 ms              ┊ GC (median):    1.82%
+ Time  (mean ± σ):   57.150 ms ±  1.561 ms  ┊ GC (mean ± σ):  2.88% ± 3.05%
+
+  █▃                                                ▃          
+  ██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▇▁▁▇ ▁
+  55.7 ms         Histogram: frequency by time        59.2 ms <
+
+ Memory estimate: 36.06 MiB, allocs estimate: 165.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 7 samples with 1 evaluation.
+ Range (min … max):  4.537 s …   4.633 s  ┊ GC (min … max): 0.15% … 1.31%
+ Time  (median):     4.558 s              ┊ GC (median):    0.15%
+ Time  (mean ± σ):   4.573 s ± 36.718 ms  ┊ GC (mean ± σ):  0.53% ± 0.63%
+
+  █  █  █     █            █                █             █  
+  █▁▁█▁▁█▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  4.54 s         Histogram: frequency by time        4.63 s <
+
+ Memory estimate: 144.12 MiB, allocs estimate: 11.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  255.706 ms … 326.088 ms  ┊ GC (min … max): 0.16% … 21.60%
+ Time  (median):     261.429 ms               ┊ GC (median):    2.58%
+ Time  (mean ± σ):   273.807 ms ±  25.151 ms  ┊ GC (mean ± σ):  6.87% ±  7.60%
+
+      █                                                          
+  ▄▁▁▁█▁▁▁▁▁▁▁▁▁▄▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▄▁▁▁▁▁▁▁▁▄ ▁
+  256 ms           Histogram: frequency by time          326 ms <
+
+ Memory estimate: 144.10 MiB, allocs estimate: 165.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  113.136 ms … 120.401 ms  ┊ GC (min … max): 10.41% … 8.76%
+ Time  (median):     113.740 ms               ┊ GC (median):    10.37%
+ Time  (mean ± σ):   114.416 ms ±   2.152 ms  ┊ GC (mean ± σ):  10.26% ± 0.54%
+
+  ▁█ ▁▁▁ ▁ ▁  ▁                                               ▁  
+  ██▁███▁█▁█▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  113 ms           Histogram: frequency by time          120 ms <
+
+ Memory estimate: 391.91 MiB, allocs estimate: 3014411.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  352.262 ms … 367.628 ms  ┊ GC (min … max): 12.37% … 13.22%
+ Time  (median):     358.533 ms               ┊ GC (median):    12.97%
+ Time  (mean ± σ):   358.501 ms ±   4.546 ms  ┊ GC (mean ± σ):  12.81% ±  0.67%
+
+  ▁ ▁        ▁         █      ▁▁     ▁▁                       ▁  
+  █▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁██▁▁▁▁▁██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  352 ms           Histogram: frequency by time          368 ms <
+
+ Memory estimate: 1.06 GiB, allocs estimate: 12956964.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  68.904 ms … 72.746 ms  ┊ GC (min … max): 0.00% … 5.72%
+ Time  (median):     71.124 ms              ┊ GC (median):    2.23%
+ Time  (mean ± σ):   71.078 ms ±  1.495 ms  ┊ GC (mean ± σ):  2.75% ± 2.72%
+
+  ▁       █          ▁           ▁    ▁                  ▁█ ▁  
+  █▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▁█ ▁
+  68.9 ms         Histogram: frequency by time        72.7 ms <
+
+ Memory estimate: 45.15 MiB, allocs estimate: 61485.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  419.835 ms … 493.108 ms  ┊ GC (min … max): 1.79% … 14.95%
+ Time  (median):     422.445 ms               ┊ GC (median):    1.81%
+ Time  (mean ± σ):   435.936 ms ±  26.562 ms  ┊ GC (mean ± σ):  4.62% ±  5.23%
+
+  ▃█                                                             
+  ██▇▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  420 ms           Histogram: frequency by time          493 ms <
+
+ Memory estimate: 176.48 MiB, allocs estimate: 235587.##################################################
+##################################################
+N=1024
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  626.976 ms … 808.176 ms  ┊ GC (min … max): 11.64% … 28.56%
+ Time  (median):     704.123 ms               ┊ GC (median):    17.54%
+ Time  (mean ± σ):   712.780 ms ±  63.699 ms  ┊ GC (mean ± σ):  19.20% ±  6.61%
+
+  ▁      ▁   ▁   █                    █              ▁▁       ▁  
+  █▁▁▁▁▁▁█▁▁▁█▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▁▁▁▁▁▁▁█ ▁
+  627 ms           Histogram: frequency by time          808 ms <
+
+ Memory estimate: 1.48 GiB, allocs estimate: 8904204.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.850 s …   2.062 s  ┊ GC (min … max): 12.45% … 19.11%
+ Time  (median):     1.965 s              ┊ GC (median):    15.01%
+ Time  (mean ± σ):   1.963 s ± 76.987 ms  ┊ GC (mean ± σ):  15.91% ±  2.98%
+
+  ▁       ▁ ▁       ▁       ▁       ▁▁                  █ ▁  
+  █▁▁▁▁▁▁▁█▁█▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█▁▁▁▁▁▁▁██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█ ▁
+  1.85 s         Histogram: frequency by time        2.06 s <
+
+ Memory estimate: 4.28 GiB, allocs estimate: 28283912.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 7 samples with 1 evaluation.
+ Range (min … max):  4.549 s …   4.640 s  ┊ GC (min … max): 0.01% … 1.54%
+ Time  (median):     4.570 s              ┊ GC (median):    0.21%
+ Time  (mean ± σ):   4.584 s ± 32.784 ms  ┊ GC (mean ± σ):  0.55% ± 0.63%
+
+  █     █    ██          █                  █             █  
+  █▁▁▁▁▁█▁▁▁▁██▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  4.55 s         Histogram: frequency by time        4.64 s <
+
+ Memory estimate: 144.12 MiB, allocs estimate: 11.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  257.127 ms … 329.136 ms  ┊ GC (min … max): 0.15% … 22.04%
+ Time  (median):     263.005 ms               ┊ GC (median):    2.61%
+ Time  (mean ± σ):   275.647 ms ±  25.804 ms  ┊ GC (mean ± σ):  7.02% ±  7.75%
+
+      █▁                                                         
+  ▆▁▁▁██▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▆ ▁
+  257 ms           Histogram: frequency by time          329 ms <
+
+ Memory estimate: 144.10 MiB, allocs estimate: 165.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 36.104 s (0.00% GC) to evaluate,
+ with a memory estimate of 576.23 MiB, over 11 allocations.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.480 s …   1.565 s  ┊ GC (min … max): 0.03% … 5.72%
+ Time  (median):     1.510 s              ┊ GC (median):    1.72%
+ Time  (mean ± σ):   1.515 s ± 25.505 ms  ┊ GC (mean ± σ):  2.38% ± 1.73%
+
+                      █                                      
+  ▆▁▁▁▁▁▁▁▁▁▁▁▁▁▆▁▆▆▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▆ ▁
+  1.48 s         Histogram: frequency by time        1.57 s <
+
+ Memory estimate: 576.20 MiB, allocs estimate: 165.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 7 samples with 1 evaluation.
+ Range (min … max):  4.545 s …   4.658 s  ┊ GC (min … max): 0.01% … 1.34%
+ Time  (median):     4.568 s              ┊ GC (median):    0.16%
+ Time  (mean ± σ):   4.582 s ± 41.631 ms  ┊ GC (mean ± σ):  0.53% ± 0.63%
+
+  █ █    █   █ █                       █                  █  
+  █▁█▁▁▁▁█▁▁▁█▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  4.55 s         Histogram: frequency by time        4.66 s <
+
+ Memory estimate: 144.12 MiB, allocs estimate: 11.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  256.395 ms … 326.420 ms  ┊ GC (min … max): 0.15% … 21.63%
+ Time  (median):     261.961 ms               ┊ GC (median):    2.60%
+ Time  (mean ± σ):   274.255 ms ±  25.195 ms  ┊ GC (mean ± σ):  6.90% ±  7.62%
+
+      █                                                          
+  ▄▁▁▁█▁▁▁▁▁▁▁▁▄▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▄▁▁▁▁▁▁▁▄ ▁
+  256 ms           Histogram: frequency by time          326 ms <
+
+ Memory estimate: 144.10 MiB, allocs estimate: 165.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 36.044 s (0.00% GC) to evaluate,
+ with a memory estimate of 576.23 MiB, over 11 allocations.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.491 s …   1.573 s  ┊ GC (min … max): 0.03% … 5.91%
+ Time  (median):     1.514 s              ┊ GC (median):    1.76%
+ Time  (mean ± σ):   1.522 s ± 25.163 ms  ┊ GC (mean ± σ):  2.45% ± 1.78%
+
+  ▁          ▁ ▁ ██  ▁                             ▁      ▁  
+  █▁▁▁▁▁▁▁▁▁▁█▁█▁██▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁█ ▁
+  1.49 s         Histogram: frequency by time        1.57 s <
+
+ Memory estimate: 576.20 MiB, allocs estimate: 166.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  450.825 ms … 463.384 ms  ┊ GC (min … max):  9.78% … 10.62%
+ Time  (median):     455.436 ms               ┊ GC (median):     9.93%
+ Time  (mean ± σ):   456.570 ms ±   5.439 ms  ┊ GC (mean ± σ):  10.19% ±  0.54%
+
+  █▁   ▁        ▁               ▁                      ▁ ▁▁   ▁  
+  ██▁▁▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁██▁▁▁█ ▁
+  451 ms           Histogram: frequency by time          463 ms <
+
+ Memory estimate: 1.53 GiB, allocs estimate: 12058124.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.408 s …  1.416 s  ┊ GC (min … max): 12.21% … 12.09%
+ Time  (median):     1.410 s             ┊ GC (median):    12.16%
+ Time  (mean ± σ):   1.411 s ± 2.324 ms  ┊ GC (mean ± σ):  12.17% ±  0.07%
+
+  █     █   █   ████    █  █                             █  
+  █▁▁▁▁▁█▁▁▁█▁▁▁████▁▁▁▁█▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  1.41 s        Histogram: frequency by time        1.42 s <
+
+ Memory estimate: 4.24 GiB, allocs estimate: 51866149.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  284.038 ms … 354.914 ms  ┊ GC (min … max): 0.15% … 20.39%
+ Time  (median):     286.774 ms               ┊ GC (median):    2.55%
+ Time  (mean ± σ):   299.931 ms ±  25.776 ms  ┊ GC (mean ± σ):  6.53% ±  7.13%
+
+   █                                                             
+  ▆█▆▆▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▆ ▁
+  284 ms           Histogram: frequency by time          355 ms <
+
+ Memory estimate: 162.30 MiB, allocs estimate: 122926.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.687 s …   1.780 s  ┊ GC (min … max): 0.12% … 5.36%
+ Time  (median):     1.714 s              ┊ GC (median):    1.66%
+ Time  (mean ± σ):   1.722 s ± 31.084 ms  ┊ GC (mean ± σ):  2.25% ± 1.57%
+
+  █    ██  █     █  █     ██                        █     █  
+  █▁▁▁▁██▁▁█▁▁▁▁▁█▁▁█▁▁▁▁▁██▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁█ ▁
+  1.69 s         Histogram: frequency by time        1.78 s <
+
+ Memory estimate: 640.95 MiB, allocs estimate: 471108.##################################################
+##################################################
+N=2048
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  2.757 s …   2.959 s  ┊ GC (min … max): 12.98% … 17.52%
+ Time  (median):     2.906 s              ┊ GC (median):    16.77%
+ Time  (mean ± σ):   2.865 s ± 86.873 ms  ┊ GC (mean ± σ):  15.27% ±  2.28%
+
+  ███    █                                █  █  █  █     ██  
+  ███▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁▁█▁▁█▁▁▁▁▁██ ▁
+  2.76 s         Histogram: frequency by time        2.96 s <
+
+ Memory estimate: 5.90 GiB, allocs estimate: 35634189.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 6 samples with 1 evaluation.
+ Range (min … max):  4.723 s … 7.855 s  ┊ GC (min … max): 13.35% … 13.94%
+ Time  (median):     4.791 s            ┊ GC (median):    13.88%
+ Time  (mean ± σ):   5.318 s ± 1.247 s  ┊ GC (mean ± σ):  13.72% ±  0.26%
+
+  █                                                        
+  █▇▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  4.72 s        Histogram: frequency by time       7.86 s <
+
+ Memory estimate: 17.12 GiB, allocs estimate: 113190922.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 36.091 s (0.00% GC) to evaluate,
+ with a memory estimate of 576.23 MiB, over 11 allocations.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.478 s …   1.568 s  ┊ GC (min … max): 0.03% … 5.78%
+ Time  (median):     1.504 s              ┊ GC (median):    1.75%
+ Time  (mean ± σ):   1.514 s ± 27.495 ms  ┊ GC (mean ± σ):  2.41% ± 1.74%
+
+                 ██                                          
+  ▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▇ ▁
+  1.48 s         Histogram: frequency by time        1.57 s <
+
+ Memory estimate: 576.20 MiB, allocs estimate: 165.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 293.584 s (0.00% GC) to evaluate,
+ with a memory estimate of 2.25 GiB, over 11 allocations.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 3 samples with 1 evaluation.
+ Range (min … max):  10.128 s …  10.289 s  ┊ GC (min … max): 0.00% … 0.88%
+ Time  (median):     10.283 s              ┊ GC (median):    0.88%
+ Time  (mean ± σ):   10.233 s ± 91.029 ms  ┊ GC (mean ± σ):  0.63% ± 0.54%
+
+  █                                                      █ █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█ ▁
+  10.1 s         Histogram: frequency by time         10.3 s <
+
+ Memory estimate: 2.25 GiB, allocs estimate: 166.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 36.178 s (0.00% GC) to evaluate,
+ with a memory estimate of 576.23 MiB, over 11 allocations.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.482 s …   1.588 s  ┊ GC (min … max): 0.03% … 5.97%
+ Time  (median):     1.508 s              ┊ GC (median):    1.73%
+ Time  (mean ± σ):   1.521 s ± 31.569 ms  ┊ GC (mean ± σ):  2.44% ± 1.79%
+
+               █▁                                            
+  ▆▁▁▁▁▁▁▁▁▁▁▁▁██▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▆ ▁
+  1.48 s         Histogram: frequency by time        1.59 s <
+
+ Memory estimate: 576.20 MiB, allocs estimate: 165.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 291.186 s (0.00% GC) to evaluate,
+ with a memory estimate of 2.25 GiB, over 11 allocations.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 3 samples with 1 evaluation.
+ Range (min … max):  10.117 s …  10.221 s  ┊ GC (min … max): 0.00% … 0.98%
+ Time  (median):     10.206 s              ┊ GC (median):    0.87%
+ Time  (mean ± σ):   10.181 s ± 56.099 ms  ┊ GC (mean ± σ):  0.62% ± 0.53%
+
+  █                                                █       █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█ ▁
+  10.1 s         Histogram: frequency by time         10.2 s <
+
+ Memory estimate: 2.25 GiB, allocs estimate: 165.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.807 s …   1.866 s  ┊ GC (min … max):  9.73% … 10.52%
+ Time  (median):     1.817 s              ┊ GC (median):    10.14%
+ Time  (mean ± σ):   1.823 s ± 17.274 ms  ┊ GC (mean ± σ):  10.13% ±  0.28%
+
+            █                                                
+  ▇▁▁▁▁▇▁▇▇▇█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇ ▁
+  1.81 s         Histogram: frequency by time        1.87 s <
+
+ Memory estimate: 6.12 GiB, allocs estimate: 48233485.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 6 samples with 1 evaluation.
+ Range (min … max):  5.643 s …   5.741 s  ┊ GC (min … max): 12.25% … 12.99%
+ Time  (median):     5.680 s              ┊ GC (median):    12.45%
+ Time  (mean ± σ):   5.683 s ± 35.499 ms  ┊ GC (mean ± σ):  12.51% ±  0.27%
+
+  █       █    █               █  █                       █  
+  █▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  5.64 s         Histogram: frequency by time        5.74 s <
+
+ Memory estimate: 16.96 GiB, allocs estimate: 207541289.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (min … max):  1.142 s …   1.239 s  ┊ GC (min … max): 0.04% … 6.81%
+ Time  (median):     1.182 s              ┊ GC (median):    2.36%
+ Time  (mean ± σ):   1.185 s ± 30.749 ms  ┊ GC (mean ± σ):  3.23% ± 2.28%
+
+                         █                                ▃  
+  ▇▁▁▁▁▁▁▁▁▁▁▁▁▇▇▇▁▁▁▁▁▁▁█▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  1.14 s         Histogram: frequency by time        1.24 s <
+
+ Memory estimate: 612.60 MiB, allocs estimate: 245807.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 5 samples with 1 evaluation.
+ Range (min … max):  6.818 s …   7.050 s  ┊ GC (min … max): 0.03% … 1.35%
+ Time  (median):     6.938 s              ┊ GC (median):    1.50%
+ Time  (mean ± σ):   6.929 s ± 84.316 ms  ┊ GC (mean ± σ):  1.47% ± 0.90%
+
+  █                 █          █ █                        █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  6.82 s         Histogram: frequency by time        7.05 s <
+
+ Memory estimate: 2.38 GiB, allocs estimate: 942150.##################################################
+##################################################
+N=4096
+##################################################
+##################################################
+
+
+
+##################################################
+DDACore Module
+##################################################
+*********************
+load_dda_matrix_e
+*********************
+BenchmarkTools.Trial: 4 samples with 1 evaluation.
+ Range (min … max):  7.082 s … 11.705 s  ┊ GC (min … max): 10.50% … 13.66%
+ Time  (median):     7.319 s             ┊ GC (median):    10.75%
+ Time  (mean ± σ):   8.356 s ±  2.237 s  ┊ GC (mean ± σ):  11.72% ±  1.52%
+
+  ██  █                                                  █  
+  ██▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  7.08 s        Histogram: frequency by time        11.7 s <
+
+ Memory estimate: 23.62 GiB, allocs estimate: 142571534.
+*********************
+load_dda_matrix_e_m
+*********************
+BenchmarkTools.Trial: 2 samples with 1 evaluation.
+ Range (min … max):  18.698 s …   19.125 s  ┊ GC (min … max): 11.06% … 11.42%
+ Time  (median):     18.912 s               ┊ GC (median):    11.24%
+ Time  (mean ± σ):   18.912 s ± 301.571 ms  ┊ GC (mean ± σ):  11.24% ±  0.25%
+
+  █                                                         █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  18.7 s          Histogram: frequency by time         19.1 s <
+
+ Memory estimate: 68.49 GiB, allocs estimate: 452874251.
+*********************
+solve equations e CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 293.559 s (0.00% GC) to evaluate,
+ with a memory estimate of 2.25 GiB, over 11 allocations.
+*********************
+solve equations e GPU
+*********************
+BenchmarkTools.Trial: 3 samples with 1 evaluation.
+ Range (min … max):  10.130 s …  10.233 s  ┊ GC (min … max): 0.00% … 0.90%
+ Time  (median):     10.228 s              ┊ GC (median):    0.90%
+ Time  (mean ± σ):   10.197 s ± 57.744 ms  ┊ GC (mean ± σ):  0.63% ± 0.54%
+
+  █                                                     █  █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█ ▁
+  10.1 s         Histogram: frequency by time         10.2 s <
+
+ Memory estimate: 2.25 GiB, allocs estimate: 165.
+*********************
+solve equations e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 2338.048 s (0.00% GC) to evaluate,
+ with a memory estimate of 9.00 GiB, over 11 allocations.
+*********************
+solve equations e m GPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 75.896 s (0.00% GC) to evaluate,
+ with a memory estimate of 9.00 GiB, over 284 allocations.
+*********************
+invert matrix e CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 293.561 s (0.00% GC) to evaluate,
+ with a memory estimate of 2.25 GiB, over 11 allocations.
+*********************
+invert matrix e GPU
+*********************
+BenchmarkTools.Trial: 3 samples with 1 evaluation.
+ Range (min … max):  10.123 s …  10.233 s  ┊ GC (min … max): 0.00% … 0.99%
+ Time  (median):     10.205 s              ┊ GC (median):    0.89%
+ Time  (mean ± σ):   10.187 s ± 57.148 ms  ┊ GC (mean ± σ):  0.63% ± 0.54%
+
+  █                                         █              █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  10.1 s         Histogram: frequency by time         10.2 s <
+
+ Memory estimate: 2.25 GiB, allocs estimate: 165.
+*********************
+invert matrix e m CPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 2309.985 s (0.00% GC) to evaluate,
+ with a memory estimate of 9.00 GiB, over 11 allocations.
+*********************
+invert ,matrix e m GPU
+*********************
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 76.064 s (0.00% GC) to evaluate,
+ with a memory estimate of 9.00 GiB, over 284 allocations.##################################################
+PostProcessing Module
+##################################################
+
+*********************
+Cross sections e
+*********************
+BenchmarkTools.Trial: 5 samples with 1 evaluation.
+ Range (min … max):  7.150 s …   7.273 s  ┊ GC (min … max):  9.74% … 10.07%
+ Time  (median):     7.201 s              ┊ GC (median):    10.01%
+ Time  (mean ± σ):   7.206 s ± 47.227 ms  ┊ GC (mean ± σ):   9.98% ±  0.18%
+
+  █            █         █           █                    █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  7.15 s         Histogram: frequency by time        7.27 s <
+
+ Memory estimate: 24.50 GiB, allocs estimate: 192935950.
+*********************
+Cross sections e m
+*********************
+BenchmarkTools.Trial: 2 samples with 1 evaluation.
+ Range (min … max):  22.376 s …   22.704 s  ┊ GC (min … max): 12.18% … 12.49%
+ Time  (median):     22.540 s               ┊ GC (median):    12.33%
+ Time  (mean ± σ):   22.540 s ± 231.816 ms  ┊ GC (mean ± σ):  12.33% ±  0.22%
+
+  █                                                         █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  22.4 s          Histogram: frequency by time         22.7 s <
+
+ Memory estimate: 67.87 GiB, allocs estimate: 830318634.
+*********************
+LDOS e
+*********************
+BenchmarkTools.Trial: 7 samples with 1 evaluation.
+ Range (min … max):  4.656 s …   4.792 s  ┊ GC (min … max): 0.05% … 3.31%
+ Time  (median):     4.731 s              ┊ GC (median):    1.95%
+ Time  (mean ± σ):   4.738 s ± 46.031 ms  ┊ GC (mean ± σ):  2.07% ± 1.05%
+
+  █                        █    ██            █       █   █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁██▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█▁▁▁█ ▁
+  4.66 s         Histogram: frequency by time        4.79 s <
+
+ Memory estimate: 2.32 GiB, allocs estimate: 491568.
+*********************
+LDOS e m
+*********************
+BenchmarkTools.Trial: 2 samples with 1 evaluation.
+ Range (min … max):  27.446 s …  27.552 s  ┊ GC (min … max): 1.31% … 0.50%
+ Time  (median):     27.499 s              ┊ GC (median):    0.90%
+ Time  (mean ± σ):   27.499 s ± 75.132 ms  ┊ GC (mean ± σ):  0.90% ± 0.57%
+
+  █                                                        █  
+  █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  27.4 s         Histogram: frequency by time         27.6 s <
+
+ Memory estimate: 9.25 GiB, allocs estimate: 1884231.
