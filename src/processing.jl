@@ -1,6 +1,6 @@
 module PostProcessing
 
-export compute_dipole_moment, compute_cross_sections_e, compute_cross_sections_e_m, poynting_vector, diff_scattering_cross_section_e, diff_scattering_cross_section_e_m, diff_emitted_power_e, diff_emitted_power_e,field_sca_e, field_sca_e_m,  far_field_sca_e, far_field_sca_e_m, ldos_e. ldos_e_m
+export compute_dipole_moment, compute_cross_sections_e, compute_cross_sections_e_m, poynting_vector, diff_scattering_cross_section_e, diff_scattering_cross_section_e_m, diff_emitted_power_e, diff_emitted_power_e,field_sca_e, field_sca_e_m,  far_field_sca_e, far_field_sca_e_m, ldos_e, ldos_e_m
 ###########################
 # IMPORTS
 ###########################
