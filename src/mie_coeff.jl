@@ -1,4 +1,5 @@
 module MieCoeff
+export mie_an, mie_bn, mie_ab1,mie_scattering, mie_extinction, mie_absorbtion
 #imports
 using Base
 using LinearAlgebra

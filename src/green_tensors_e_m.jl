@@ -1,12 +1,14 @@
 module GreenTensors
+
+export G_em_renorm, G_em_far_field_renorm, G_em_renorm, G_m_renorm, G_e_renorm, dxG_e_renorm, dy_G_e_renorm, dz_G_e_renorm, dxG_m_renorm, dy_G_m_renorm, dz_G_m_renorm, dxG_em_renorm, dy_G_em_renorm, dz_G_em_renorm,denormalize_G_e,denormalize_G_m
+
+
 #***********************
 #imports
 #***********************
 using Base
 using LinearAlgebra
 using Test
-#if you want to test the funcitons
-testing=false
 
 @doc raw"""
     G_em_renorm(kr1,kr2)

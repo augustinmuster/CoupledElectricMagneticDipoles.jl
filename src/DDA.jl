@@ -1,14 +1,14 @@
 module DDACore
+
+export solve_DDA_e,solve_DDA_e_m,solve_system,load_dda_matrix_e,load_dda_matrix_e_m
 ###########################
 # IMPORTS
 ###########################
 using Base
-using DelimitedFiles
 using LinearAlgebra
 using CUDA
-using Test
-include("green_tensors_e_m.jl")
-include("alpha.jl")
+using ..GreenTensors
+using ..Alphas
 ########################################################################################################################################
 # FUNCTIONS
 ########################################################################################################################################

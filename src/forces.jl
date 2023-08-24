@@ -1,11 +1,14 @@
 module Forces
+
+export force_e, force_e_m
+
 ###########################
 # IMPORTS
 ###########################
 using Base
 using LinearAlgebra
-include("green_tensors_e_m.jl")
-include("alpha.jl")
+using ..GreenTensors
+using ..Alphas
 ###########################
 # FUNCTIONS
 ###########################

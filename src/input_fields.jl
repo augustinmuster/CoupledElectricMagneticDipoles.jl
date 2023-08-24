@@ -1,4 +1,7 @@
 module InputFields
+
+export plane_wave_e, plane_wave_e_m, point_dipole_e, point_dipole_e_m, gauss_beam_e, ghermite_beam_e, glaguerre_beam_e, gauss_beam_e_m, ghermite_beam_e_m, glaguerre_beam_e_m, d_plane_wave_e, d_plane_wave_e_m, d_point_dipole_e, d_point_dipole_e_m, d_gauss_beam_e, d_gauss_beam_e_m
+
 ###########################
 # IMPORTS
 #######m####################

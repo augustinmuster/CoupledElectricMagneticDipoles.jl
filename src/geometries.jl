@@ -1,4 +1,7 @@
 module Geometries
+
+export discretize_sphere, discretize_cube
+
 ###########################
 # imports
 ###########################
