@@ -7,6 +7,5 @@ module CoupledElectricMagneticDipoles
     include("input_fields.jl")
     include("processing.jl")
     include("geometries.jl") 
-    include("forces.jl") 
-    include("alpha.jl")      
+    include("forces.jl")   
 end
