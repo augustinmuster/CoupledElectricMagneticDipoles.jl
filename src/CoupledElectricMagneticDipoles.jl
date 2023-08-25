@@ -1,5 +1,5 @@
 module CoupledElectricMagneticDipoles
-    export Alphas, InputFields, DDACore, PostProcessing, Force, MieCoeff, GreenTensors, Geometries
+    export Alphas, InputFields, DDACore, PostProcessing, Forces, MieCoeff, GreenTensors, Geometries
     include("mie_coeff.jl")
     include("alpha.jl")
     include("green_tensors_e_m.jl")
