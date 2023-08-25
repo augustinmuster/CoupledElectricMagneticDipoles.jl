@@ -8,7 +8,6 @@ export G_em_renorm, G_em_far_field_renorm, G_em_renorm, G_m_renorm, G_e_renorm, 
 #***********************
 using Base
 using LinearAlgebra
-using Test
 
 @doc raw"""
     G_em_renorm(kr1,kr2)
