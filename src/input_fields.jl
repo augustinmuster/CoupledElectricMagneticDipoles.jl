@@ -236,8 +236,9 @@ function ghermite_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^(n+m)*kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*(im*kx)^n*(im*ky)^m
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_hermite = (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)*f_gauss
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_hermite
             Er_x = Q*factor
             Er_z = - kx*factor
             Hr_x = -kx*ky*factor
@@ -299,12 +300,10 @@ function glaguerre_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_xy = 0
-            for p = 0:m
-                f_xy = f_xy + binomial(m,p)*(im*kx)^(m-p)*(-1*ky)^p 
-            end
-            f_kp = kbw0^(2*n+m)*exp(im*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*(im*(Q-1))^n*f_xy
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_laguerre = laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)*f_gauss
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_laguerre
+
             Er_x = Q*factor
             Er_z = - kx*factor
             Hr_x = -kx*ky*factor
@@ -386,6 +385,29 @@ function gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
 end
 
 @doc raw"""
+    hermite_e_pol(x,n)
+
+Computes probabilist's Hermite polynomials.
+
+# Arguments
+- `x`: float with the argument.
+- `n`: int with the order.
+
+# Outputs
+- `hp`: probabilist's Hermite polynomials of argument ``x`` and order ``n``.
+"""
+function hermite_e_pol(x,n)
+    if n == 0
+        hp = 1
+    elseif n ==1
+        hp = x
+    else
+        hp = x*hermite_e_pol(x,n-1) - (n-1)*hermite_e_pol(x,n-2)
+    end
+    return hp
+end
+
+@doc raw"""
     ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
 
 Computes the electric field distribution of a Hermite-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
@@ -410,7 +432,7 @@ function ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
         kmax = 1
     end
     n_rf = length(krf[:,1])
-    e_hermite = zeros(ComplexF64,n_rf,6)
+    e_hermite = zeros(ComplexF64,n_rf,3)
     for i = 1:n_rf
         kr = krf[i,:]
         GB(QT, GB_QT) = begin
@@ -420,8 +442,10 @@ function ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^(n+m)*kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*(im*kx)^n*(im*ky)^m
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_hermite = (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)*f_gauss
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_hermite
+
             Er_x = Q*factor
             Er_z = - kx*factor
 
@@ -437,6 +461,30 @@ function ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
         e_hermite[i,:] = E
     end
     return e_hermite*e0
+end
+
+@doc raw"""
+    laguerre_pol(x,n,a)
+
+Computes generalized Laguerre polynomials.
+
+# Arguments
+- `x`: float with the argument.
+- `n`: int with the order.
+- `a`: int with the second order.
+
+# Outputs
+- `lp`: generalized Laguerre polynomials of argument ``x`` and order ``n`` and ``a``.
+"""
+function laguerre_pol(x,n,a)
+    if n == 0
+        lp = 1
+    elseif n ==1
+        lp = 1 + a - x
+    else
+        lp = ((2*n - 1 + a - x)*laguerre_pol(x,n-1,a) - (n - 1 + a)*laguerre_pol(x,n-2,a))/n
+    end
+    return lp
 end
 
 @doc raw"""
@@ -464,7 +512,7 @@ function glaguerre_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3)
         kmax = 1
     end
     n_rf = length(krf[:,1])
-    e_laguerre = zeros(ComplexF64,n_rf,6)
+    e_laguerre = zeros(ComplexF64,n_rf,3)
     for i = 1:n_rf
         kr = krf[i,:]
         GB(QT, GB_QT) = begin
@@ -474,12 +522,9 @@ function glaguerre_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3)
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_xy = 0
-            for p = 0:m
-                f_xy = f_xy + binomial(m,p)*(im*kx)^(m-p)*(-1*ky)^p 
-            end
-            f_kp = kbw0^(2*n+m)*exp(im*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*(im*(Q-1))^n*f_xy
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_laguerre = laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)*f_gauss
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_laguerre
             Er_x = Q*factor
             Er_z = - kx*factor
 
@@ -814,5 +859,113 @@ function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     end
     return dxe_gauss*e0, dye_gauss*e0, dze_gauss*e0
 end
+
+@doc raw"""
+    ghermite_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
+
+Computes the integral of the field amplitude (|E|^2) of the Hermite-Gaussian beam. 
+
+# Arguments
+- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
+- `n`: non-negative int with the radial order of the beam.
+- `m`: int with the azimuthal order of the beam.
+- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+
+# Outputs
+- `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
+"""
+function ghermite_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
+    if kmax===nothing
+        kmax = 1
+    elseif kmax>1
+        kmax = 1
+    end
+    function field_amp(kxy)
+        krx = kxy[1]
+        kry = kxy[2]
+        GB(QT, GB_QT) = begin
+            Q = QT[1]
+            theta = QT[2]
+            kp = sqrt(1 - Q^2)
+            kx = kp*cos(theta)
+            ky = kp*sin(theta)
+    
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_hermite = (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)*f_gauss
+            factor = exp(im*(kx*krx + ky*kry))*f_hermite
+            Er_x = Q*factor
+            Er_z = - kx*factor
+    
+            GB_QT[1] = real(Er_x)
+            GB_QT[2] = real(Er_z)
+        end
+        QT0 = [0, 0]
+        QT1 = [kmax, 2*pi]
+        (Eg, erEg) = hcubature(2, GB, QT0, QT1, maxevals = maxe)
+        ampliude = abs2(Eg[1]) + abs2(Eg[2])
+        return ampliude
+    end
+    kxy_inf = [-kbw0*int_size, -kbw0*int_size]
+    kxy_sup = [kbw0*int_size, kbw0*int_size]
+    (int_amplitude, erEg) = hcubature(field_amp, kxy_inf, kxy_sup, maxevals = maxe)
+    return int_amplitude
+end
+
+@doc raw"""
+    glaguerre_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
+
+Computes the integral of the field amplitude (|E|^2) of the Laguerre-Gaussian beam. 
+
+# Arguments
+- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
+- `n`: non-negative int with the radial order of the beam.
+- `m`: int with the azimuthal order of the beam.
+- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+
+# Outputs
+- `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
+"""
+function glaguerre_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
+    if kmax===nothing
+        kmax = 1
+    elseif kmax>1
+        kmax = 1
+    end
+    function field_amp(kxy)
+        krx = kxy[1]
+        kry = kxy[2]
+        phi = atan(kry,krx)
+        GB(QT, GB_QT) = begin
+            Q = QT[1]
+            theta = QT[2]
+            kp = sqrt(1 - Q^2)
+            kx = kp*cos(theta)
+            ky = kp*sin(theta)
+
+            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
+            f_laguerre = laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)*f_gauss
+            factor = exp(im*(kx*krx + ky*kry))*f_laguerre
+            Er_x = Q*factor
+            Er_z = - kx*factor
+    
+            GB_QT[1] = real(Er_x*exp(-im*m*phi))
+            GB_QT[2] = real(Er_z*exp(-im*m*phi))
+        end
+        QT0 = [0, 0]
+        QT1 = [kmax, 2*pi]
+        (Eg, erEg) = hcubature(2, GB, QT0, QT1, maxevals = maxe)
+        ampliude = abs2(Eg[1]) + abs2(Eg[2])
+        return ampliude
+    end
+    kxy_inf = [-kbw0*int_size, -kbw0*int_size]
+    kxy_sup = [kbw0*int_size, kbw0*int_size]
+    (int_amplitude, erEg) = hcubature(field_amp, kxy_inf, kxy_sup, maxevals = maxe)
+    return int_amplitude
+end
+
 
 end
