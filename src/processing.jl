@@ -171,11 +171,11 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input
         end
 
     end
-    cst=2*pi/knorm^2/dot(e_inp[1,1:3],e_inp[1,1:3])
+    cst=2*pi/knorm^2/real(dot(e_inp[1,1:3],e_inp[1,1:3]))
     if (explicit_scattering)
-        return [2*pi/knorm cst*sum_ext cst*sum_abs 2*cst*sum_sca]
+        return [cst*real(sum_ext) cst*real(sum_abs) 2*cst*real(sum_sca)]
     else
-        return [2*pi/knorm cst*real(sum_ext) cst*real(sum_abs) real(sum_ext-sum_abs)]
+        return [cst*real(sum_ext) cst*real(sum_abs) real(sum_ext-sum_abs)]
     end
 
 end
@@ -216,11 +216,11 @@ function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_dl,input_field;explic
         end
 
     end
-    cst=2*pi/knorm^2/dot(e_inp[1,1:3],e_inp[1,1:3])
+    cst=2*pi/knorm^2/real(dot(e_inp[1,1:3],e_inp[1,1:3]))
     if (explicit_scattering)
-        return [2*pi/knorm cst*sum_ext cst*sum_abs 2*cst*sum_sca]
+        return [cst*real(sum_ext) cst*real(sum_abs) 2*cst*real(sum_sca)]
     else
-        return [2*pi/knorm cst*real(sum_ext) cst*real(sum_abs) real(sum_ext-sum_abs)]
+        return [cst*real(sum_ext) cst*real(sum_abs) real(sum_ext-sum_abs)]
     end
 
 end
@@ -234,6 +234,7 @@ Outputs a 1D float array of length 3.
 function poynting_vector(phi)
     return 0.5*real(cross(phi[1:3],conj(phi[4:6])))
 end
+
 
 @doc raw"""
     diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,ur;verbose=true)
@@ -944,6 +945,133 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
         LDOS = LDOS[1]
     end
     return LDOS
+end
+
+
+@doc raw"""
+    rad_ldos_e(kr,krd,p,dip;verbose=true)
+Computes the radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+# Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
+- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
+- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
+- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+# Outputs
+- 1D float array containing the normalized radiative LDOS at everey position of `krd`.
+"""
+function rad_ldos_e(kr,krd,p,dip;verbose=true)
+    #adding the source to the list of dipoles
+    p=vcat(p,transpose(dip))
+    kr=vcat(kr,krd)
+    #logging
+    if verbose
+        println("computing radiative LDOS...")
+    end
+    #define sum variables
+    sum_sca=0
+    #compute rad LDOS
+    n=length(p[:,1])
+    for i=1:n
+        sum_sca=sum_sca+dot(p[i,:],p[i,:])
+        for j=(i+1):n
+            sum_sca=sum_sca+3*real(transpose(p[j,:])*(imag(GreenTensors.G_e_renorm(kr[j,:],kr[i,:]))*conj(p[i,:])))
+        end
+    end
+    return real(sum_sca)/norm(dip)
+end
+
+
+@doc raw"""
+    rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
+Computes the radiative part of the LDOS of a system of electric and magnetic dipoles with a point dipole source.
+# Arguments
+- `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
+- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
+- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `m`: 2D complex array of size``Nd\times 3``containing the magnetic dipole moments of the dipoles.
+- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
+- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+# Outputs
+- 1D float array containing the normalized radiative LDOS at everey position of `krd`.
+"""
+function rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
+    #adding the source to the list of dipoles
+    p=vcat(p,reshape(dip[1:3],1,3))
+    m=vcat(m,reshape(dip[4:6],1,3))
+    kr=vcat(kr,krd)
+    #logging
+    if verbose
+        println("computing total radiated power...")
+    end
+    #define sum variables
+    sum_sca=0
+    #compute rad LDOS
+    n=length(p[:,1])
+    for i=1:n
+        sum_sca=sum_sca+dot(p[i,:],p[i,:])+dot(m[i,:],m[i,:])
+        for j=(i+1):n
+            sum_sca=sum_sca+3*(real(transpose(p[j,:])*(imag(GreenTensors.G_e_renorm(kr[j,:],kr[i,:]))*conj(p[i,:])) + transpose(m[j,:])*(imag(GreenTensors.G_e_renorm(kr[j,:],kr[i,:]))*conj(m[i,:]))))
+            sum_sca=sum_sca+3*(imag(-transpose(conj(p[i,:]))*imag(GreenTensors.G_m_renorm(kr[i,:],kr[j,:]))*m[j,:]    +   transpose(conj(p[j,:]))*imag(GreenTensors.G_m_renorm(kr[i,:],kr[j,:]))*m[i,:]))
+        end
+    end
+    return real(sum_sca)/(norm(dip[1:3])^2+norm(dip[4:6])^2)
+end
+
+@doc raw"""
+    nonrad_ldos_e(p,e_inc,dip;verbose=true)
+Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+# Arguments
+- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
+- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+# Outputs
+- 1D float array containing the normalized non-radiative LDOS at everey position of `krd`.
+"""
+function nonrad_ldos_e(p,e_inc,dip;verbose=true)
+    #logging
+    if verbose
+        println("computing non-radiative LDOS...")
+    end
+    #define sum variables
+    sum_abs=0
+    #compute power
+    n=length(p[:,1])
+    for i=1:n
+        sum_abs=sum_abs+(imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))
+    end
+    return 1.5*real(sum_abs)/norm(dip)^2
+end
+
+@doc raw"""
+    nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
+Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+# Arguments
+- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `m`: 2D complex array of size``Nd\times 3``containing the magnetic dipole moments of the dipoles.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
+- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+# Outputs
+- 1D float array containing the normalized non-radiative LDOS at everey position of `krd`.
+"""
+function nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
+    #logging
+    if verbose
+        println("computing non-radiative LDOS...")
+    end
+    #redefine things
+    e_inc=phi_inc[:,1:3]
+    h_inc=phi_inc[:,4:6]
+    #define sum variables
+    sum_abs=0
+    #compute power
+    n=length(p[:,1])
+    for i=1:n
+        sum_abs=sum_abs+(imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))+imag(dot(h_inc[i,:],m[i,:]))-2/3*dot(m[i,:],m[i,:])
+    end
+    return 1.5*real(sum_abs)/(norm(dip[1:3])^2+norm(dip[4:6])^2)
 end
 
 end
