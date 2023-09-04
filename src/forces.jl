@@ -9,6 +9,7 @@ using Base
 using LinearAlgebra
 using ..GreenTensors
 using ..Alphas
+using ..InputFields
 ###########################
 # FUNCTIONS
 ###########################
@@ -250,5 +251,29 @@ function force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     return real(fx[:,1]), real(fy[:,1]), real(fz[:,1])
 end
 
+function force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,kind="hermite",paraxial=true,kmax = nothing)
+    c_const = 3e8/sqrt(eps_h)
+    if paraxial
+        if kind == "hermite"
+            factor_nm = 2^(n+m)*factorial(n)*factorial(m)
+        elseif kind == "laguerre"
+            factor_nm = factorial(n+m)/factorial(n)
+        else
+            error("kind must be hermite or laguerre")
+        end
+        return force_factor = 16*power/(c_const*kbw0^2)/factor_nm
+    else
+        if kind == "hermite"
+            factor_nm = InputFields.ghermite_amp(kbw0,n,m; kmax = kmax)
+        elseif kind == "laguerre"
+            factor_nm = InputFields.glaguerre_amp(kbw0,n,m; kmax = kmax)
+        else
+            error("kind must be hermite or laguerre")
+        end
+        return force_factor = 8*pi*power/c_const/factor_nm
+    end
 
 end
+
+end
+
