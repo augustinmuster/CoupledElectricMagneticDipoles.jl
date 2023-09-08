@@ -1,34 +1,25 @@
-using DelimitedFiles
 using LaTeXStrings
 using LinearAlgebra
 using Lebedev
-include("../../src/green_tensors_e_m.jl")
-include("../../src/processing.jl")
-include("../../src/DDA.jl")
-include("../../src/mie_coeff.jl")
-include("../../src/input_fields.jl")
-include("../../src/alpha.jl")
-include("../../src/geometries.jl")
-include("../../src/forces.jl")
+include("../../src/CoupledElectricMagneticDipoles.jl")
+using .CoupledElectricMagneticDipoles
 
 using PyCall
 @pyimport matplotlib.pyplot as plt
 
-# definition of functions to calculate the forces using the Maxwell stress tensor
+# Definition of functions to calculate the forces using the Maxwell stress tensor
+
+#function for calcualting the Maxwell stress tensor
 function maxwell_stress_tensor(phi)
-"""
-function for calcualting the Maxwell stress tensor
-"""
     e = phi[1:3]
     h = phi[4:6]
     i3 = Matrix{ComplexF64}(I,3,3)
     mst = e*e' + h*h'- 1/2*i3*(e'*e + h'*h)
     return 1/2*real(mst)
 end
+
+#Function for calcualting the electric and magnetic field scattered the essamble of electric dipolar particles.
 function field_sca_e_em(kr, alpha_e_dl, phi_inc, krf)
-"""
-function for calcualting the electric and magnetic field scattered the essamble of electric dipolar particles.
-"""
     n_particles = length(kr[:,1]) 
     n_r0 = length(krf[:,1]) 
 
@@ -46,9 +37,8 @@ function for calcualting the electric and magnetic field scattered the essamble 
     return transpose(reshape(field_r,6,n_r0))       
 end
 
-function forces_gaussbeam(kr,alpha_e_dl,Ainv,kdis,kbw0; l_order=11, r_factor = 1.1)
 #=
-function for calculating the forces in a dipolar system when the incident field is a "x" polarized electric Gaussian beam propagating along the z-axis
+Function for calculating the forces in a dipolar system when the incident field is a "x" polarized electric Gaussian beam propagating along the z-axis
 with focus at "- kdis" (instead of moving the particle, the focus of the Gaussian beam is moved).
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
@@ -65,6 +55,7 @@ with focus at "- kdis" (instead of moving the particle, the focus of the Gaussia
 - `fz`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.
 - `force_mst`: float of Size ``3`` with the value of the sum of the forces along x, y, z- axis calculated by integrating the Maxwell stress tensor.
 =#
+function forces_gaussbeam(kr,alpha_e_dl,Ainv,kdis,kbw0; l_order=11, r_factor = 1.1)
     if r_factor < 1
         r_factor = 1.1
     end
@@ -82,9 +73,9 @@ with focus at "- kdis" (instead of moving the particle, the focus of the Gaussia
     krf = kr .+ kdis
     # evaluation of the Gaussian beam and its derivatives
     # the function "InputFields.gauss_beam_e" can be simply used for getting only the electric field of the Gaussian Beam, but the magnetic components are needed for the Maxwell stress tensor
-    e_0inc = InputFields.gauss_beam_e_m(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e_m(krf,kbw0)
     e_0inc_e = e_0inc[:,1:3]
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces using the dipole approximation (arrays with the value of the forces in each particle/dipole)
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc_e, dxe_0inc, dye_0inc, dze_0inc)
 
@@ -97,7 +88,7 @@ with focus at "- kdis" (instead of moving the particle, the focus of the Gaussia
     # possitions where the Gaussian beam is calculated (instead of moving the particle and sphere that surround them, the focus of the Gaussian beam is moved)
     krf_l = krl .+ kdis
     # evaluation of the Gaussian beam
-    e_0inc_l = InputFields.gauss_beam_e_m(krf_l,kbw0)
+    e_0inc_l = InputFields.gaussian_beam_e_m(krf_l,kbw0)
     # evaluation of the field (electric and magnetic) scattered by the (only electric) particles. 
     e_sca_r = field_sca_e_em(kr, alpha, e_inc, krl)
     # total field
@@ -195,19 +186,6 @@ for i=1:ndis
     global force[i,3] = sum(fz)
     global force_mst[i,3] = force_i[3]
 end
-
-#=
-# save data
-fout=open("dis.dat","w")
-writedlm(fout,dis)
-close(fout)
-fout=open("force_101.dat","w")
-writedlm(fout,force)
-close(fout)
-fout=open("force_mst_lebedev53.dat","w")
-writedlm(fout,force_mst)
-close(fout)
-=#
 
 # converse forces in Newtons
 # laser intensity (10 mW)

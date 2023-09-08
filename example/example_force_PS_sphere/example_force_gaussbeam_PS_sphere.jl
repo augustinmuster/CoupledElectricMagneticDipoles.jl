@@ -1,14 +1,6 @@
-using DelimitedFiles
 using LaTeXStrings
-#using LinearAlgebra
-include("../../src/green_tensors_e_m.jl")
-include("../../src/processing.jl")
-include("../../src/DDA.jl")
-include("../../src/mie_coeff.jl")
-include("../../src/input_fields.jl")
-include("../../src/alpha.jl")
-include("../../src/geometries.jl")
-include("../../src/forces.jl")
+include("../../src/CoupledElectricMagneticDipoles.jl")
+using .CoupledElectricMagneticDipoles
 
 using PyCall
 @pyimport matplotlib.pyplot as plt
@@ -67,8 +59,8 @@ for i=1:ndis
     # forces along the x-axis when the particle is moving along the same axis (with y = z = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [dis[i] 0 0])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces 
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,1] = sum(fx)
@@ -76,8 +68,8 @@ for i=1:ndis
     # forces along the y-axis when the particle is moving along the same axis (with z = x = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 dis[i] 0])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces 
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,2] = sum(fy)
@@ -85,30 +77,17 @@ for i=1:ndis
     # forces along the z-axis when the particle is moving along the same axis (with x = y = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 0 dis[i]])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,3] = sum(fz)
 end
 
-#=
-# save data
-fout=open("dis.dat","w")
-writedlm(fout,dis)
-close(fout)
-fout=open("force.dat","w")
-writedlm(fout,force)
-close(fout)
-=#
-
 # converse forces in Newtons
-# laser intensity (10 mW)
+# laser intensity in SI (10 mW)
 power = 10e-3
-# speed of light in the media
-c_const = 3e8/sqrt(eps_h)
-# factor for getting the forces in Newtons using the paraxial approximation for the Gaussian beam
-factor = 16*power/c_const/kbw0^2
+factor = Forces.force_factor_gaussianbeams(kbw0,power,eps_h)
 # force in Newtons
 force = force*factor
 

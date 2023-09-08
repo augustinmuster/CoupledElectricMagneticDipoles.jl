@@ -56,7 +56,7 @@ Computes the electric and magnetic fields emitted by a point dipole.
 - `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
 - `krd`: 1D float array of size 3 containing the dimensionless position ``k\mathbf{r_d}`` where source is located.
 - `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or complex array of size 6 with the desired dipole moment of the dipole.  
-- `e0`: scalar with the modulus of the dipole moment. 
+- `e0`: float with the modulus of the dipole moment. 
 
 # Outputs
 - `phi_dipole`: 2D ``N\times 6``complex array with the electromagnetic fields at each position.
@@ -138,253 +138,6 @@ function besselj2(z)
 end
 
 @doc raw"""
-    gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
-
-Computes the electromagnetic field distribution of a Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E with ZH and H with -E. 
-
-# Arguments
-- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `e0`: scalar with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-
-# Outputs
-- `phi_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
-"""
-function gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
-    if kmax===nothing
-        kmax = 1
-    elseif kmax>1
-        kmax = 1
-    end
-    n_rf = length(krf[:,1])
-    phi_gauss = zeros(ComplexF64,n_rf,6)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(k_i, GB_Q) = begin
-            Q = k_i[1]
-            kp = sqrt(1 - Q^2)
-            krp = sqrt(kr[1]^2 + kr[2]^2)
-            phi = atan(kr[2],kr[1])
-
-            bj0 = besselj0(kp*krp)
-            bj1 = besselj1(kp*krp)
-            bj2 = besselj2(kp*krp)
-
-            factor = exp(im*Q*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(2)
-            Er_x = Q*factor*bj0
-            Er_z = - im*kp*factor*bj1*cos(phi)
-            Hr_x = factor*1/2*kp^2*bj2*sin(2*phi)
-            Hr_y = factor*(-1/2*kp^2*bj2*cos(2*phi) + (1/2*kp^2 + Q^2)*bj0  )
-            Hr_z = - kp*Q*factor*im*bj1*sin(phi)
-
-            GB_Q[1] = real(Er_x)
-            GB_Q[2] = imag(Er_x)
-            GB_Q[3] = real(Er_z)
-            GB_Q[4] = imag(Er_z)
-            GB_Q[5] = real(Hr_x)
-            GB_Q[6] = imag(Hr_x)
-            GB_Q[7] = real(Hr_y)
-            GB_Q[8] = imag(Hr_y)
-            GB_Q[9] = real(Hr_z)
-            GB_Q[10] = imag(Hr_z)
-        end
-        Q0 = [0]
-        Q1 = [kmax]
-        (EHg, erEg) = hcubature(10, GB, Q0, Q1, maxevals = maxe)
-        E = [EHg[1] + im*EHg[2], 0, EHg[3] + im*EHg[4]]
-        ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
-        phi_gauss[i,:] = [E; ZH]
-    end
-    return phi_gauss*e0
-end
-
-@doc raw"""
-    ghermite_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
-
-Computes the electromagnetic field distribution of a Gaussian-Hermite beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E with ZH and H with -E. 
-
-# Arguments
-- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `n`: int with the order of the beam.
-- `m`: int with the degree of the beam.
-- `e0`: scalar with the modulus of the electric field (see theory for more details). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-
-# Outputs
-- `phi_hermite`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
-"""
-function ghermite_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
-    if kmax===nothing
-        kmax = 1
-    elseif kmax>1
-        kmax = 1
-    end
-    n_rf = length(krf[:,1])
-    phi_hermite = zeros(ComplexF64,n_rf,6)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(QT, GB_QT) = begin
-            Q = QT[1]
-            theta = QT[2]
-            kp = sqrt(1 - Q^2)
-            kx = kp*cos(theta)
-            ky = kp*sin(theta)
-
-            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
-            f_hermite = (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)*f_gauss
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_hermite
-            Er_x = Q*factor
-            Er_z = - kx*factor
-            Hr_x = -kx*ky*factor
-            Hr_y = (kx^2 + Q^2)*factor
-            Hr_z = - ky*Q*factor
-
-            GB_QT[1] = real(Er_x)
-            GB_QT[2] = imag(Er_x)
-            GB_QT[3] = real(Er_z)
-            GB_QT[4] = imag(Er_z)
-            GB_QT[5] = real(Hr_x)
-            GB_QT[6] = imag(Hr_x)
-            GB_QT[7] = real(Hr_y)
-            GB_QT[8] = imag(Hr_y)
-            GB_QT[9] = real(Hr_z)
-            GB_QT[10] = imag(Hr_z)
-        end
-        QT0 = [0, 0]
-        QT1 = [kmax, 2*pi]
-        (EHg, erEg) = hcubature(10, GB, QT0, QT1, maxevals = maxe)
-        E = [EHg[1] + im*EHg[2], 0, EHg[3] + im*EHg[4]]
-        ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
-        phi_hermite[i,:] = [E; ZH]
-    end
-    return phi_hermite*e0
-end
-
-@doc raw"""
-    glaguerre_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
-Computes the electromagnetic field distribution of a Laguerre-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the .xy-plane. Also, for a polarized magnetic field, exchange E with HZ and HZ with -E. 
-
-# Arguments
-- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `n`: non-negative int with the radial order of the beam.
-- `m`: int with the azimuthal order of the beam.
-- `e0`: scalar with the modulus of the electric field (see theory for more details). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-
-# Outputs
-- `phi_laguerre`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
-"""
-function glaguerre_beam_e_m(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3))
-    if kmax===nothing
-        kmax = 1
-    elseif kmax>1
-        kmax = 1
-    end
-    n_rf = length(krf[:,1])
-    phi_laguerre = zeros(ComplexF64,n_rf,6)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(QT, GB_QT) = begin
-            Q = QT[1]
-            theta = QT[2]
-            kp = sqrt(1 - Q^2)
-            kx = kp*cos(theta)
-            ky = kp*sin(theta)
-
-            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
-            f_laguerre = laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)*f_gauss
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_laguerre
-
-            Er_x = Q*factor
-            Er_z = - kx*factor
-            Hr_x = -kx*ky*factor
-            Hr_y = (kx^2 + Q^2)*factor
-            Hr_z = - ky*Q*factor
-
-            GB_QT[1] = real(Er_x)
-            GB_QT[2] = imag(Er_x)
-            GB_QT[3] = real(Er_z)
-            GB_QT[4] = imag(Er_z)
-            GB_QT[5] = real(Hr_x)
-            GB_QT[6] = imag(Hr_x)
-            GB_QT[7] = real(Hr_y)
-            GB_QT[8] = imag(Hr_y)
-            GB_QT[9] = real(Hr_z)
-            GB_QT[10] = imag(Hr_z)
-        end
-        QT0 = [0, 0]
-        QT1 = [kmax, 2*pi]
-        (EHg, erEg) = hcubature(10, GB, QT0, QT1, maxevals = maxe)
-        E = [EHg[1] + im*EHg[2], 0, EHg[3] + im*EHg[4]]
-        ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
-        phi_laguerre[i,:] = [E; ZH]
-    end
-    return phi_laguerre*e0
-end
-
-@doc raw"""
-    gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
-Computes the electric field distribution of a Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the xy-plane. 
-
-# Arguments
-- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `e0`: scalar with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-
-# Outputs
-- `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
-"""
-function gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
-    if kmax===nothing
-        kmax = 1
-    elseif kmax>1
-        kmax = 1
-    end
-    n_rf = length(krf[:,1])
-    e_gauss = zeros(ComplexF64,n_rf,3)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(k_i, GB_Q) = begin
-            Q = k_i[1]
-            kp = sqrt(1 - Q^2)
-            krp = sqrt(kr[1]^2 + kr[2]^2)
-            phi = atan(kr[2],kr[1])
-
-            bj0 = besselj0(kp*krp)
-            bj1 = besselj1(kp*krp)
-            bj2 = besselj2(kp*krp)
-
-            factor = exp(im*Q*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(2)
-            Er_x = Q*factor*bj0
-            Er_z = - im*kp*factor*bj1*cos(phi)
-
-            GB_Q[1] = real(Er_x)
-            GB_Q[2] = imag(Er_x)
-            GB_Q[3] = real(Er_z)
-            GB_Q[4] = imag(Er_z)
-        end
-        Q0 = [0]
-        Q1 = [kmax]
-        (Eg, erEg) = hcubature(4, GB, Q0, Q1, maxevals = maxe)
-        E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
-        e_gauss[i,:] = E
-    end
-    return e_gauss*e0
-end
-
-@doc raw"""
     hermite_e_pol(x,n)
 
 Computes probabilist's Hermite polynomials.
@@ -407,61 +160,6 @@ function hermite_e_pol(x,n)
     return hp
 end
 
-@doc raw"""
-    ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
-
-Computes the electric field distribution of a Hermite-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the xy-plane. 
-
-# Arguments
-- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `n`: int with the order of the beam.
-- `m`: int with the degree of the beam.
-- `e0`: scalar with the modulus of the electric field (see theory for more details). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-
-# Outputs
-- `eh_hermite`: 2D complex array of size ``N\times 6`` with the value of the field ateach position.
-"""
-function ghermite_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
-    if kmax===nothing
-        kmax = 1
-    elseif kmax>1
-        kmax = 1
-    end
-    n_rf = length(krf[:,1])
-    e_hermite = zeros(ComplexF64,n_rf,3)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(QT, GB_QT) = begin
-            Q = QT[1]
-            theta = QT[2]
-            kp = sqrt(1 - Q^2)
-            kx = kp*cos(theta)
-            ky = kp*sin(theta)
-
-            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
-            f_hermite = (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)*f_gauss
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_hermite
-
-            Er_x = Q*factor
-            Er_z = - kx*factor
-
-            GB_QT[1] = real(Er_x)
-            GB_QT[2] = imag(Er_x)
-            GB_QT[3] = real(Er_z)
-            GB_QT[4] = imag(Er_z)
-        end
-        QT0 = [0, 0]
-        QT1 = [kmax, 2*pi]
-        (Eg, erEg) = hcubature(4, GB, QT0, QT1, maxevals = maxe)
-        E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
-        e_hermite[i,:] = E
-    end
-    return e_hermite*e0
-end
 
 @doc raw"""
     laguerre_pol(x,n,a)
@@ -488,58 +186,223 @@ function laguerre_pol(x,n,a)
 end
 
 @doc raw"""
-    glaguerre_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe=Int(5e3))
+    create_f_gauss_kind(kbw0,n,m,kind)
 
-Computes the electric field distribution of a Laguerre-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
-For another polarization just rotate the field in the xy-plane. 
+Create the function to calculate the fourier transform components for the spefic beam (gaussian, hermite-gaussian or legendre-gaussian) used in the functions that calculates the field and the derivaties.
+
+# Arguments
+- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
+- `n`: int with the order of the beam.
+- `m`: int with the degree of the beam.
+- `kind`: string with the kind of beam ("hermite" or "laguerre").
+
+# Outputs
+- `lp`: generalized Laguerre polynomials of argument ``x`` and order ``n`` and ``a``.
+"""
+function create_f_gauss_kind(kbw0,n,m,kind)
+    return function(kx,ky,kp,theta)
+        if n == 0 && m == 0
+            return 1
+        elseif kind == "hermite"
+            return (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)
+        elseif kind == "laguerre"
+            return laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)
+        end
+    end
+end
+
+@doc raw"""
+    gaussian_beam_e_m(krf, kbw0,n,m; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
+
+Computes the electromagnetic field distribution of a Gaussian, Hermite-Gaussian and Laguerre-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
+By default, the Gaussian beam profile is calculated.
+For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E with ZH and H with -E. 
 
 # Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
-- `n`: non-negative int with the radial order of the beam.
-- `m`: int with the azimuthal order of the beam.
-- `e0`: scalar with the modulus of the electric field (see theory for more details). 
+- `n`: int with the order of the beam.
+- `m`: int with the degree of the beam.
+- `kind`: string with the kind of beam ("hermite" or "laguerre"). 
+- `e0`: float with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
 - `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
 - `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
 
 # Outputs
-- `eh_laguerre`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
+- `phi_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
 """
-function glaguerre_beam_e(krf, kbw0,n,m; e0 = 1, kmax = nothing, maxe = Int(5e3))
+function gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = 1
     elseif kmax>1
         kmax = 1
     end
     n_rf = length(krf[:,1])
-    e_laguerre = zeros(ComplexF64,n_rf,3)
-    for i = 1:n_rf
-        kr = krf[i,:]
-        GB(QT, GB_QT) = begin
-            Q = QT[1]
-            theta = QT[2]
-            kp = sqrt(1 - Q^2)
-            kx = kp*cos(theta)
-            ky = kp*sin(theta)
-
-            f_gauss = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)
-            f_laguerre = laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)*f_gauss
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_laguerre
-            Er_x = Q*factor
-            Er_z = - kx*factor
-
-            GB_QT[1] = real(Er_x)
-            GB_QT[2] = imag(Er_x)
-            GB_QT[3] = real(Er_z)
-            GB_QT[4] = imag(Er_z)
+    phi_gauss = zeros(ComplexF64,n_rf,6)
+    if n == 0 && m == 0
+        for i = 1:n_rf
+            kr = krf[i,:]
+            GB(k_i, GB_Q) = begin
+                Q = k_i[1]
+                kp = sqrt(1 - Q^2)
+                krp = sqrt(kr[1]^2 + kr[2]^2)
+                phi = atan(kr[2],kr[1])
+    
+                bj0 = besselj0(kp*krp)
+                bj1 = besselj1(kp*krp)
+                bj2 = besselj2(kp*krp)
+    
+                factor = exp(im*Q*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(2)
+                Er_x = Q*factor*bj0
+                Er_z = - im*kp*factor*bj1*cos(phi)
+                Hr_x = factor*1/2*kp^2*bj2*sin(2*phi)
+                Hr_y = factor*(-1/2*kp^2*bj2*cos(2*phi) + (1/2*kp^2 + Q^2)*bj0  )
+                Hr_z = - kp*Q*factor*im*bj1*sin(phi)
+    
+                GB_Q[1] = real(Er_x)
+                GB_Q[2] = imag(Er_x)
+                GB_Q[3] = real(Er_z)
+                GB_Q[4] = imag(Er_z)
+                GB_Q[5] = real(Hr_x)
+                GB_Q[6] = imag(Hr_x)
+                GB_Q[7] = real(Hr_y)
+                GB_Q[8] = imag(Hr_y)
+                GB_Q[9] = real(Hr_z)
+                GB_Q[10] = imag(Hr_z)
+            end
+            Q0 = [0]
+            Q1 = [kmax]
+            (EHg, erEg) = hcubature(10, GB, Q0, Q1, maxevals = maxe)
+            E = [EHg[1] + im*EHg[2], 0, EHg[3] + im*EHg[4]]
+            ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
+            phi_gauss[i,:] = [E; ZH]
         end
-        QT0 = [0, 0]
-        QT1 = [kmax, 2*pi]
-        (Eg, erEg) = hcubature(4, GB, QT0, QT1, maxevals = maxe)
-        E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
-        e_laguerre[i,:] = E
+    else
+        f_gauss_kind = create_f_gauss_kind(kbw0,n,m,kind)
+        for i = 1:n_rf
+            kr = krf[i,:]
+            GB(QT, GB_QT) = begin
+                Q = QT[1]
+                theta = QT[2]
+                kp = sqrt(1 - Q^2)
+                kx = kp*cos(theta)
+                ky = kp*sin(theta)
+
+                f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+                factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam
+                Er_x = Q*factor
+                Er_z = - kx*factor
+                Hr_x = -kx*ky*factor
+                Hr_y = (kx^2 + Q^2)*factor
+                Hr_z = - ky*Q*factor
+
+                GB_QT[1] = real(Er_x)
+                GB_QT[2] = imag(Er_x)
+                GB_QT[3] = real(Er_z)
+                GB_QT[4] = imag(Er_z)
+                GB_QT[5] = real(Hr_x)
+                GB_QT[6] = imag(Hr_x)
+                GB_QT[7] = real(Hr_y)
+                GB_QT[8] = imag(Hr_y)
+                GB_QT[9] = real(Hr_z)
+                GB_QT[10] = imag(Hr_z)
+            end
+            QT0 = [0, 0]
+            QT1 = [kmax, 2*pi]
+            (EHg, erEg) = hcubature(10, GB, QT0, QT1, maxevals = maxe)
+            E = [EHg[1] + im*EHg[2], 0, EHg[3] + im*EHg[4]]
+            ZH = [EHg[5] + im*EHg[6], EHg[7] + im*EHg[8], EHg[9] + im*EHg[10]]
+            phi_gauss[i,:] = [E; ZH]
+        end
     end
-    return e_laguerre*e0
+    return phi_gauss*e0
+end
+
+@doc raw"""
+    gaussian_beam_e(krf, kbw0,n,m; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
+
+Computes the electric field distribution of a Gaussian, Hermite-Gaussian and Laguerre-Gaussian beam that propagates along the z-axis and where the electric field is polarized along the x-axis (polarized electric).
+By default, the Gaussian beam profile is calculated.
+For another polarization just rotate the field in the xy-plane. Also, for a polarized magnetic field, exchange E with ZH and H with -E. 
+
+# Arguments
+- `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
+- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
+- `n`: int with the order of the beam.
+- `m`: int with the degree of the beam.
+- `kind`: string with the kind of beam ("hermite" or "laguerre"). 
+- `e0`: float with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
+- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+
+# Outputs
+- `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
+"""
+function gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
+    if kmax===nothing
+        kmax = 1
+    elseif kmax>1
+        kmax = 1
+    end
+    n_rf = length(krf[:,1])
+    e_gauss = zeros(ComplexF64,n_rf,3)
+    if n == 0 && m == 0
+        for i = 1:n_rf
+            kr = krf[i,:]
+            GB(k_i, GB_Q) = begin
+                Q = k_i[1]
+                kp = sqrt(1 - Q^2)
+                krp = sqrt(kr[1]^2 + kr[2]^2)
+                phi = atan(kr[2],kr[1])
+    
+                bj0 = besselj0(kp*krp)
+                bj1 = besselj1(kp*krp)
+                bj2 = besselj2(kp*krp)
+    
+                factor = exp(im*Q*kr[3])*kbw0^2*exp(-kbw0^2*kp^2/4)/(2)
+                Er_x = Q*factor*bj0
+                Er_z = - im*kp*factor*bj1*cos(phi)
+    
+                GB_Q[1] = real(Er_x)
+                GB_Q[2] = imag(Er_x)
+                GB_Q[3] = real(Er_z)
+                GB_Q[4] = imag(Er_z)
+            end
+            Q0 = [0]
+            Q1 = [kmax]
+            (Eg, erEg) = hcubature(4, GB, Q0, Q1, maxevals = maxe)
+            E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
+            e_gauss[i,:] = E
+        end
+    else
+        f_gauss_kind = create_f_gauss_kind(kbw0,n,m,kind)
+        for i = 1:n_rf
+            kr = krf[i,:]
+            GB(QT, GB_QT) = begin
+                Q = QT[1]
+                theta = QT[2]
+                kp = sqrt(1 - Q^2)
+                kx = kp*cos(theta)
+                ky = kp*sin(theta)
+
+                f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+                factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam
+                Er_x = Q*factor
+                Er_z = - kx*factor
+
+                GB_QT[1] = real(Er_x)
+                GB_QT[2] = imag(Er_x)
+                GB_QT[3] = real(Er_z)
+                GB_QT[4] = imag(Er_z)
+            end
+            QT0 = [0, 0]
+            QT1 = [kmax, 2*pi]
+            (Eg, erEg) = hcubature(4, GB, QT0, QT1, maxevals = maxe)
+            E = [Eg[1] + im*Eg[2], 0, Eg[3] + im*Eg[4]]
+            e_gauss[i,:] = E
+        end
+    end
+    return e_gauss*e0
 end
 
 # Derivative of the fields
@@ -665,11 +528,11 @@ function d_point_dipole_e(krf, krd, dip; e0=1)
 end
 
 @doc raw"""
-    d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
-Computes the derivatives of an electromagnetic field generated with `gauss_beam_e_m` (the arguments are the same).
+    d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
+Computes the derivatives of an electromagnetic field generated with `gaussian_beam_e_m` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 6` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
-function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
+function d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = 1
     elseif kmax>1
@@ -679,6 +542,7 @@ function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     dxeh_gauss = zeros(ComplexF64,n_rf,6)
     dyeh_gauss = zeros(ComplexF64,n_rf,6)
     dzeh_gauss = zeros(ComplexF64,n_rf,6)
+    f_gauss_kind = create_f_gauss_kind(kbw0,n,m,kind)
     for i = 1:n_rf
         kr = krf[i,:]
         dxGB(QT, dxGB_QT) = begin
@@ -688,8 +552,8 @@ function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*kx
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*kx
             Er_x = Q*factor
             Er_z = - kx*factor
             Hr_x = -kx*ky*factor
@@ -714,8 +578,8 @@ function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*ky
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*ky
             Er_x = Q*factor
             Er_z = - kx*factor
             Hr_x = -kx*ky*factor
@@ -740,8 +604,8 @@ function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*Q
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*Q
             Er_x = Q*factor
             Er_z = - kx*factor
             Hr_x = -kx*ky*factor
@@ -778,11 +642,11 @@ function d_gauss_beam_e_m(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
 end
 
 @doc raw"""
-    d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe = Int(5e3))
-Computes the derivatives of an electric field generated with `gauss_beam_e` (the arguments are the same).
+    d_gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
+Computes the derivatives of an electric field generated with `gaussian_beam_e` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 3`` containing the field derivatives with respect `k*x`, `k*y` and `k*z`.
 """
-function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
+function d_gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
         kmax = 1
     elseif kmax>1
@@ -792,6 +656,7 @@ function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
     dxe_gauss = zeros(ComplexF64,n_rf,3)
     dye_gauss = zeros(ComplexF64,n_rf,3)
     dze_gauss = zeros(ComplexF64,n_rf,3)
+    f_gauss_kind = create_f_gauss_kind(kbw0,n,m,kind)
     for i = 1:n_rf
         kr = krf[i,:]
         dxGB(QT, dxGB_QT) = begin
@@ -801,8 +666,8 @@ function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*kx
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*kx
             Er_x = Q*factor
             Er_z = - kx*factor
 
@@ -818,8 +683,8 @@ function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*ky
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*ky
             Er_x = Q*factor
             Er_z = - kx*factor
 
@@ -835,8 +700,8 @@ function d_gauss_beam_e(krf, kbw0; e0 = 1, kmax = nothing, maxe=Int(5e3))
             kx = kp*cos(theta)
             ky = kp*sin(theta)
 
-            f_kp = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*im*Q
-            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3] ))*f_kp
+            f_beam = kbw0^2*exp(-kbw0^2*kp^2/4)/(4*pi)*f_gauss_kind(kx,ky,kp,theta)
+            factor = exp(im*(kx*kr[1] + ky*kr[2] + Q*kr[3]))*f_beam*im*Q
             Er_x = Q*factor
             Er_z = - kx*factor
 
@@ -863,7 +728,7 @@ end
 @doc raw"""
     ghermite_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
 
-Computes the integral of the field amplitude (|E|^2) of the Hermite-Gaussian beam. 
+Computes the integral of the field amplitude (|E|^2) of the Hermite-Gaussian beam at the focal plane. 
 
 # Arguments
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
@@ -916,7 +781,7 @@ end
 @doc raw"""
     glaguerre_amp(kbw0,n,m; kmax = nothing, maxe=Int(1e4), int_size = 5)
 
-Computes the integral of the field amplitude (|E|^2) of the Laguerre-Gaussian beam. 
+Computes the integral of the field amplitude (|E|^2) of the Laguerre-Gaussian beam at the focal plane. 
 
 # Arguments
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).

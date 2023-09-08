@@ -1,12 +1,8 @@
 using Base
 using DelimitedFiles
 #using LinearAlgebra
-include("../../src/green_tensors_e_m.jl")
-include("../../src/processing.jl")
-include("../../src/DDA.jl")
-include("../../src/mie_coeff.jl")
-include("../../src/input_fields.jl")
-include("../../src/alpha.jl")
+include("../../src/CoupledElectricMagneticDipoles.jl")
+using .CoupledElectricMagneticDipoles
 
 using PyCall
 #@pyimport numpy
@@ -21,14 +17,14 @@ end
 
 # physical properties
 # particle radius
-a = 5e-9 
+a = 5
 # wavelengths
-lamb = [612e-9, 354e-9] 
+lamb = [612, 354] 
 # dielectric constant of the particle
 eps=[-15.04 + im*1.02, -2.03 + im*0.6] 
 # distante between particle and dipole 
 nz = 91 
-z = LinRange(10,100,nz)*1e-9 
+z = LinRange(10,100,nz)
 
 # variables to store the calcualtions
 ldos_z = zeros(nz,2) 
@@ -39,18 +35,17 @@ ldos_x_analytic = zeros(nz,2)
 # ldos calculation at both wavelengths and all distances
 for i=1:2 # loop in wavelength
     # wavevector
-    k = 2*pi/lamb[i] 
+    knorm = 2*pi/lamb[i] 
     # permittivity
     eps_i = eps[i] 
     # calculation of the polarizability
-    alp_0 = 4*pi*a^3*(eps_i - 1)/(eps_i + 2) # static polarizability
-    alp = alp_0/(1 - im*k^3/(6*pi)*alp_0) # radiative correction to the polarizability
-    alp_e_dl = alp*k^3/(4*pi) # dimensionless polarizability
+    alp_0 = Alphas.alpha0_sphere(a,eps_i,1) # static polarizability
+    alp_e_dl = Alphas.alpha_radiative(alp_0,knorm) # dimensionless polarizability with radiative corrections
     for j=1:nz # loop in distance
         # distance
         z_j = z[j] 
         # renormalized distance
-        kz = k*z_j
+        kz = knorm*z_j
         # renormalized position of the particle (at the origin of coordinates) 
         kr = zeros(1,3) 
         # renormalized position of the diple (z-component at kz)
@@ -68,24 +63,24 @@ end
 # plot ldos
 for ind_l = 1:2
     fig,axs=plt.subplots()
-    fig.suptitle("LDOSx lambda = "*string(Int(lamb[ind_l]*1e9))*" nm")
-    axs.plot(z*1e9,ldos_x_analytic[:,ind_l],"--",label="LDOSx analytic")
-    axs.plot(z*1e9,ldos_x[:,ind_l],"o",label="LDOSx DDA")
+    fig.suptitle("LDOSx lambda = "*string(Int(lamb[ind_l]))*" nm")
+    axs.plot(z,ldos_x_analytic[:,ind_l],"--",label="LDOSx analytic")
+    axs.plot(z,ldos_x[:,ind_l],"o",label="LDOSx DDA")
     axs.set_xlabel("z (nm)")
     axs.set_ylabel("LDOS_x")
     axs.set_yscale("log")
     fig.tight_layout()
     axs.legend()
-    plt.savefig("LDOSx"*string(Int(lamb[ind_l]*1e9))*".svg")
+    plt.savefig("LDOSx"*string(Int(lamb[ind_l]))*".svg")
 
     fig,axs=plt.subplots()
-    fig.suptitle("LDOSz lambda = "*string(Int(lamb[ind_l]*1e9))*" nm")
-    axs.plot(z*1e9,ldos_z_analytic[:,ind_l],"--",label="LDOSz analytic")
-    axs.plot(z*1e9,ldos_z[:,ind_l],"o",label="LDOSz DDA")
+    fig.suptitle("LDOSz lambda = "*string(Int(lamb[ind_l]))*" nm")
+    axs.plot(z,ldos_z_analytic[:,ind_l],"--",label="LDOSz analytic")
+    axs.plot(z,ldos_z[:,ind_l],"o",label="LDOSz DDA")
     axs.set_xlabel("z (nm)")
     axs.set_ylabel("LDOS_z")
     axs.set_yscale("log")
     fig.tight_layout()
     axs.legend()
-    plt.savefig("LDOSz"*string(Int(lamb[ind_l]*1e9))*".svg")
+    plt.savefig("LDOSz"*string(Int(lamb[ind_l]))*".svg")
 end

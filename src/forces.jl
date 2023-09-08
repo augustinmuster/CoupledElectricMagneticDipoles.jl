@@ -251,8 +251,30 @@ function force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     return real(fx[:,1]), real(fy[:,1]), real(fz[:,1])
 end
 
-function force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,kind="hermite",paraxial=true,kmax = nothing)
-    c_const = 3e8/sqrt(eps_h)
+@doc raw"""
+    force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,,kind="hermite", e0 = 1, paraxial=true, kmax = nothing, maxe=Int(1e4), int_size = 5)
+
+Computes the proportionality factor to get the forces in unit of Newtons when the forces are calculated using the Gaussian beams (Hermite and Laguerre) implemented in the library. 
+By the fault, the factor is calculated for a Gaussin Beam in the paraxial approximation.
+
+# Arguments
+- `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
+- `power`: float with the power of the beam.
+- `eps_h`: float with the relative permittivity of the the host medium.
+- `n`: non-negative int with the radial order of the beam.
+- `m`: int with the azimuthal order of the beam.
+- `e0`: float with the modulus of the electric field used in the calculation of the beam profile. 
+- `kind`: string with the kind of beam ("hermite" or "laguerre"). 
+- `paraxial`: boolean setting if the calculation is done in the paraxial approximation.
+- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+
+# Outputs
+- `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
+"""
+function force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,kind="hermite", e0 = 1, paraxial=true, kmax = nothing, maxe=Int(1e4), int_size = 5)
+    c_const = 3e8/sqrt(eps_h)/e0^2
     if paraxial
         if kind == "hermite"
             factor_nm = 2^(n+m)*factorial(n)*factorial(m)
@@ -264,9 +286,9 @@ function force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,kind="hermite",para
         return force_factor = 16*power/(c_const*kbw0^2)/factor_nm
     else
         if kind == "hermite"
-            factor_nm = InputFields.ghermite_amp(kbw0,n,m; kmax = kmax)
+            factor_nm = InputFields.ghermite_amp(kbw0,n,m; kmax = kmax, maxe = maxe, int_size = int_size)
         elseif kind == "laguerre"
-            factor_nm = InputFields.glaguerre_amp(kbw0,n,m; kmax = kmax)
+            factor_nm = InputFields.glaguerre_amp(kbw0,n,m; kmax = kmax, maxe = maxe, int_size = int_size)
         else
             error("kind must be hermite or laguerre")
         end
