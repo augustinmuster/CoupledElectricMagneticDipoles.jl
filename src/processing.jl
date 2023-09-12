@@ -951,6 +951,7 @@ end
 @doc raw"""
     rad_ldos_e(kr,krd,p,dip;verbose=true)
 Computes the radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
@@ -985,6 +986,7 @@ end
 @doc raw"""
     rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
 Computes the radiative part of the LDOS of a system of electric and magnetic dipoles with a point dipole source.
+
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
@@ -1021,6 +1023,7 @@ end
 @doc raw"""
     nonrad_ldos_e(p,e_inc,dip;verbose=true)
 Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+
 # Arguments
 - `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
@@ -1047,6 +1050,7 @@ end
 @doc raw"""
     nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
 Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+
 # Arguments
 - `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
 - `m`: 2D complex array of size``Nd\times 3``containing the magnetic dipole moments of the dipoles.

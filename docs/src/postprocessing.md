@@ -1,6 +1,6 @@
 # Post Processing
 
-The PostProcessing modules allows you to process the results of a CEMD calculation. Mostly for:
+The PostProcessing module allows you to process the results of a CEMD calculation. Mostly for:
 
 - Computing cross sections and differential emitted power. 
 - Computing scattered fields.
@@ -75,6 +75,18 @@ CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_e_dl, alpha_m_d
 ```
 ```@docs
 CoupledElectricMagneticDipoles.PostProcessing.ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing; verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.rad_ldos_e(kr,krd,p,dip;verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.nonrad_ldos_e(p,e_inc,dip;verbose=true)
+```
+```@docs
+CoupledElectricMagneticDipoles.PostProcessing.nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
 ```
 ### Utilities Functions
 ```@docs

@@ -41,7 +41,7 @@ end
     mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 
 Computes the `n`-th mie coefficient ``a_n`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
-Retruns a complex scalar.
+Returns a complex scalar.
 """
 function mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
     mt = sqrt(eps*mu)/sqrt(eps_h*mu_h)
@@ -67,7 +67,7 @@ end
     mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
 
 Computes the first mie coefficient ``a_1`` and ``b_1`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
-Returns a tupler with two complex scalar, ``a_1`` and ``b_1``, respectively. 
+Returns a tuple with two complex scalar, ``a_1`` and ``b_1``, respectively. 
 """
 function mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
     mt = sqrt(eps*mu)/sqrt(eps_h*mu_h)
@@ -93,7 +93,7 @@ Q_{sca} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2
 
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
-Returns a float with units of surface.
+Returns a float.
 
 """
 function mie_scattering(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
@@ -114,7 +114,7 @@ Q_{ext} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right
 ```
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
-Returns a float with units of surface.
+Returns a float.
 
 """
 function mie_extinction(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
@@ -136,7 +136,7 @@ Q_{abs} =Q_{ext}-Q_{sca}
 ```
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 
-Returns a float with units of surface.
+Returns a float.
 
 """
 function mie_absorption(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)

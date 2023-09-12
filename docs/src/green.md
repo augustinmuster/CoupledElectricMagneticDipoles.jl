@@ -1,6 +1,6 @@
 # Green Tensors
 
-GreenTensors is aimed to compute the renormalized electric and magnetic green tensors. To learn more about the renormalization and the expressions that are used, see the theory part.
+GreenTensors is a module aimed to compute the renormalized electric and magnetic Green's tensors. To learn more about the renormalization and the expressions that are used, please see the theory part.
 
 ## Functions Documentation
 
