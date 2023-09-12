@@ -31,7 +31,7 @@ end
 
 @doc raw"""
     alpha0_sphere(a,eps,eps_h)
-Computes the quasistatic polarizability of a sphere of radius`a` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
+Computes the quasistatic polarizability of a sphere of radius `a` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
 Outputs a float with units of volume.
 """
 function alpha0_sphere(a,eps,eps_h)
@@ -147,7 +147,7 @@ end
 
 @doc raw"""
     dispatch_e(alpha_e_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i.
 
 # Arguments
 - `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.

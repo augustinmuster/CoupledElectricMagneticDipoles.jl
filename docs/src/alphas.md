@@ -1,6 +1,6 @@
 # Polarizabilities
 
-Alphas is a module to load polarizabilities. In this module, you will find functions to compute electric and magnetic polarizabilities of several objects. The modules also contains some functions to renormalize polarizabilities and to manage  the multiple formats of the polarizabilities (dispatch). The list of functions as well as how to use them is given below. 
+Alphas is a module to load polarizabilities. In this module, you will find functions to compute electric and magnetic polarizabilities of several objects. The modules also contains some functions to renormalize polarizabilities and to manage the multiple formats of the polarizabilities (dispatch). The list of functions as well as how to use them is given below. 
 
 ## Format of the polarizabilities in the DDACore and PostProcessing functions
 The functions of the DDACore and PostProcessing modules come with an automatic dispatch of the format of the polarizability. If we have ``N`` dipoles, it can be:

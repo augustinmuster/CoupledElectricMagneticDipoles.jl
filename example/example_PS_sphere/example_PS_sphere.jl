@@ -1,17 +1,10 @@
 #imports
+using CoupledElectricMagneticDipoles
 using PyCall
 using LaTeXStrings
 using Lebedev
 using LinearAlgebra
 @pyimport matplotlib.pyplot as plt
-@pyimport numpy as np
-include("../../src/DDA.jl")
-include("../../src/geometries.jl")
-include("../../src/processing.jl")
-include("../../src/alpha.jl")
-include("../../src/input_fields.jl")
-include("../../src/mie_coeff.jl")
-
 
 
 ##################### Parameters ########################################
@@ -37,7 +30,7 @@ latt,dx=Geometries.discretize_sphere(a,10)
 n=length(latt[:,1])
 
 
-#createa an array to store results
+#create an array to store results
 res=zeros(Float64,N_lambda,3)
 
 
@@ -51,7 +44,7 @@ for i=1:N_lambda
         eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
         alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
     end
-    #computes input_field, a x-polarized plane-wave propagating along z
+    #computes input_field, an x-polarized plane-wave propagating along z
     input_field=InputFields.plane_wave_e(knorm*latt[:,1:3])
     #solves DDA
     e_inc=DDACore.solve_DDA_e(knorm*latt[:,1:3],alpha,input_field=input_field,solver="CPU")
@@ -89,7 +82,7 @@ for j=1:n
     global  alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
 end
 
-#computes input_field, a x-polarized plane-wave propagating along z
+#computes input_field, an x-polarized plane-wave propagating along z
 input_field=InputFields.plane_wave_e(knorm*latt[:,1:3])
 #solves DDA
 e_inc=DDACore.solve_DDA_e(knorm*latt[:,1:3],alpha,input_field=input_field,solver="CPU")

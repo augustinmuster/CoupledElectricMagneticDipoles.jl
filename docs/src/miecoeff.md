@@ -1,6 +1,6 @@
  # Mie Coefficients
 
- MieCoeff is a small modules to compute Mie Coefficients, mostly to use it to compute polarizabilities. It also contains some useful function to compute cross sections from the Mie theory. 
+MieCoeff is a small module for computing Mie Coefficients. It also contains some useful function to compute cross sections from the Mie theory. 
  
 Expressions are taken in Craig F. Bohren, Donald R. Huffman, *Absorption and Scattering of Light by Small Particles* (1998).
 
@@ -8,21 +8,21 @@ Expressions are taken in Craig F. Bohren, Donald R. Huffman, *Absorption and Sca
 
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_an(vac_knorm, a, eps, eps_h,n)
+CoupledElectricMagneticDipoles.MieCoeff.mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_bn(vac_knorm, a, eps, eps_h, n)
+CoupledElectricMagneticDipoles.MieCoeff.mie_bn(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_scattering_cross_section(knorm,a,eps,eps_h;cutoff=20)
+CoupledElectricMagneticDipoles.MieCoeff.mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_extinction_cross_section(knorm,a,eps,eps_h;cutoff=20)
+CoupledElectricMagneticDipoles.MieCoeff.mie_extinction(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.MieCoeff.mie_absorption_cross_section(knorm,a,eps,eps_h;cutoff=20)
+CoupledElectricMagneticDipoles.MieCoeff.mie_absorption(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)cutoff=20)
 ```

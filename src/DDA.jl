@@ -16,7 +16,7 @@ using ..Alphas
      solve_system(A,b,solver,verbose)
 
 Solves a system of equations of the type ``Ax=b`` using the method `solver` and returns `x`.
-`x` can be a 1D column vector or a 2D matrix. In this second case, the system is going to solve each column of the matrix as a different problem (without re-inverting `A`).
+`x` can be a 1D column vector or a 2D matrix. In this second case, the function is going to solve each column of the matrix as a different problem (without re-inverting `A`).
 The `solver` flag can be set to
 - `CPU`: In this case, the system is solved using LAPACK on the CPU.
 - `GPU`: In this case, the system is solved using CUSOLVE on the GPU (if available).
@@ -56,7 +56,7 @@ end
 @doc raw"""
      load_dda_matrix_e(kr,alpha_e_dl,verbose)
 
-Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``Nx3``) and dimensionless polarisabilities `alpha_e_dl` (see foramt rules in Alphas module).
+Builds the electric only DDA matrix ``A=[I-G\alpha]`` with dimensionless positions `kr` (2D array of size ``Nx3``) and dimensionless polarisabilities `alpha_e_dl` (see foramt rules in the Alphas module documentation).
 Returns ``3N\times 3N`` complex DDA matrix.
 """
 function load_dda_matrix_e(kr,alpha_e_dl,verbose)
@@ -89,7 +89,7 @@ end
 @doc raw"""
      load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
 
-Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (2D array of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (see format rules in the Alphas module).
+Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless positions `kr` (2D array of size ``N\times 3``) and dimensionless electric and magnetic polarisabilities `alpha_e_dl` and  `alpha_m_dl` (see format rules in the Alphas module documentation).
 Returns the ``6N\times 6N`` complex DDA matrix.
 """
 function load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m_dl,verbose)
@@ -130,7 +130,7 @@ end
 @doc raw"""
      load_dda_matrix_e_m(kr,alpha_tensor,verbose)
 
-Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless postitions `kr` (two dimensional arrays of size ``N\times 3``) and dimensionless polarisability `alpha_tensor` (see format rules in the Alphas module).
+Builds the electric and magnetic DDA matrix ``A=[I-G\alpha]`` with dimensionless positions `kr` (two dimensional arrays of size ``N\times 3``) and dimensionless polarisability `alpha_tensor` (see format rules in the Alphas module documentation).
 Return ``6N\times 6N`` complex DDA matrix
 """
 function load_dda_matrix_e_m(kr,alpha_dl,verbose)
@@ -170,7 +170,7 @@ end
 @doc raw"""
     solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
 
-Builds and solves the DDA equations under a given input field for a group of ``N`` only electric dipoles and returns the incident fields on each of the dipoles. 
+Builds and solves the DDA equations under a given input field for a group of ``N`` only electric dipoles and returns the incident field on each of the dipoles. 
 
 # Arguments
 
@@ -181,10 +181,10 @@ Builds and solves the DDA equations under a given input field for a group of ``N
 - `verbose`: whether to output informations to the standard output during running or not. By default set to `true`.
 
 # Outputs
-Depending on the value of `input field`, it can be:
 
+Depending on the value of `input field`, it can be:
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole. if `input_field` is a 2D array.
-- `phi_inc`: 3D complex array of size ``N_f\times N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole for each input field, if `input_field` is a 3D array.
+- `e_inc`: 3D complex array of size ``N_f\times N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole for each input field, if `input_field` is a 3D array.
 - `Ainv`: complex matrix of size "3N\times 3N", if `input_field=nothing`.
 """
 function solve_DDA_e(kr,alpha_e_dl;input_field=nothing,solver="CPU",verbose=true)
@@ -231,7 +231,7 @@ end
 @doc raw"""
     solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;input_field=nothing,solver="CPU",verbose=true)
 
-Builds and solves the DDA equations with dimensionless inputs under a given input field for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident fields on every particle.
+Builds and solves the DDA equations with dimensionless inputs under a given input field for a group of ``N`` electric and magnetic dipoles and return the polarisations of every particle and incident field on every particle.
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
@@ -242,8 +242,8 @@ Builds and solves the DDA equations with dimensionless inputs under a given inpu
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-Depending on the value of `input field`, it can be:
 
+Depending on the value of `input field`, it can be:
 - `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole, if `input_field` is a 2D array.
 - `phi_inc`: 3D complex array of size ``N_f\times N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole for each input field, if `input_field` is a 3D array.
 - `Ainv`: complex matrix of size "6N\times 6N", if `input_field=nothing`.
