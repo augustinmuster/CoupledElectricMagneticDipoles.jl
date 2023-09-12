@@ -21,22 +21,10 @@ CoupledElectricMagneticDipoles.InputFields.point_dipole_e_m
 ```
 ### Gaussian, Hermite-Gaussian and Laguerre-Gaussian Beams
 ```@docs
-CoupledElectricMagneticDipoles.InputFields.gauss_beam_e
+CoupledElectricMagneticDipoles.InputFields.gaussian_beam_e
 ```
 ```@docs
-CoupledElectricMagneticDipoles.InputFields.ghermite_beam_e
-```
-```@docs
-CoupledElectricMagneticDipoles.InputFields.glaguerre_beam_e
-```
-```@docs
-CoupledElectricMagneticDipoles.InputFields.gauss_beam_e_m
-```
-```@docs
-CoupledElectricMagneticDipoles.InputFields.ghermite_beam_e_m
-```
-```@docs
-CoupledElectricMagneticDipoles.InputFields.glaguerre_beam_e_m
+CoupledElectricMagneticDipoles.InputFields.gaussian_beam_e_m
 ```
 ### Derivatives of the Beams
 ```@docs
@@ -52,8 +40,8 @@ CoupledElectricMagneticDipoles.InputFields.d_point_dipole_e
 CoupledElectricMagneticDipoles.InputFields.d_point_dipole_e_m
 ```
 ```@docs
-CoupledElectricMagneticDipoles.InputFields.d_gauss_beam_e
+CoupledElectricMagneticDipoles.InputFields.d_gaussian_beam_e
 ```
 ```@docs
-CoupledElectricMagneticDipoles.InputFields.d_gauss_beam_e_m
+CoupledElectricMagneticDipoles.InputFields.d_gaussian_beam_e_m
 ```

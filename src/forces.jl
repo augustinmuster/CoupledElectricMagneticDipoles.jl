@@ -18,18 +18,18 @@ using ..InputFields
     force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
 Computes the optical forces on a system made out of electric and magnetic dipoles for deterministic input fields. The output force has units of the input
-electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
-the field, the vacuun permittivity and the wavevector are in accordance.
+electric field squared. To get unit of forces, it is necessary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
+the field, the vacuum permittivity and the wavevector are in accordance.
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
-- `e_0`: 2D complex array of size ``N\times 6`` containing the external imput field.
-- `dxe_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*x`` argument of the external imput field.
-- `dye_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*y`` argument of the external imput field.
-- `dze_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*z`` argument of the external imput field.
+- `e_0`: 2D complex array of size ``N\times 6`` containing the external input field.
+- `dxe_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*x`` argument of the external input field.
+- `dye_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*y`` argument of the external input field.
+- `dze_0`: 2D complex array of size ``N\times 6`` containing the derivative respect the ``k*z`` argument of the external input field.
 
 # Outputs
 - `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
@@ -45,7 +45,7 @@ function force_e_m(kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     n_dze_0 = length(dze_0[:,1])
 
     if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
-        println("the dimension of the filed must coincided with the number of particles")
+        println("the dimension of the field must coincide with the number of particles")
         return 0
     end
 
@@ -105,8 +105,8 @@ end
 @doc raw"""
     force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 Same as `force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl, Ainv, e_0, dxe_0, dye_0, dze_0)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
-The output force has units of the input electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, 
-taking care that the units of the field, the vacuun permittivity and the wavevector are in accordance.
+The output force has units of the input electric field squared. To get unit of forces, it is necessary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, 
+taking care that the units of the field, the vacuum permittivity and the wavevector are in accordance.
 """
 function force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 
@@ -117,7 +117,7 @@ function force_e_m(kr,alpha_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     n_dze_0 = length(dze_0[:,1])
 
     if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
-        println("the dimension of the filed must coincided with the number of particles")
+        println("the dimension of the field must coincide with the number of particles")
         return 0
     end
 
@@ -176,17 +176,17 @@ end
 @doc raw"""
     force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
 Computes the optical forces on a system made out of electric dipoles for deterministic input fields. The output force has units of the input
-electric field squared. To get unit of forces, it is neccesary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
-the field, the vacuun permittivity and the wavevector are in accordance.
+electric field squared. To get unit of forces, it is necessary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
+the field, the vacuum permittivity and the wavevector are in accordance.
 
 #Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
-- `e_0`: 2D complex array of size ``N\times 3`` containing the external imput field.
-- `dxe_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*x`` argument of the external imput field.
-- `dye_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*y`` argument of the external imput field.
-- `dze_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*z`` argument of the external imput field.
+- `e_0`: 2D complex array of size ``N\times 3`` containing the external input field.
+- `dxe_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*x`` argument of the external input field.
+- `dye_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*y`` argument of the external input field.
+- `dze_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*z`` argument of the external input field.
 #Outputs
 - `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
 - `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
@@ -201,7 +201,7 @@ function force_e(kr,alpha_e_dl, Ainv, e_0, dxe_0, dye_0, dze_0)
     n_dze_0 = length(dze_0[:,1])
 
     if n_particles != n_e_0 || n_particles != n_dxe_0 || n_e_0 != n_dxe_0 || n_e_0 != n_dye_0 || n_e_0 != n_dze_0
-        println("the dimension of the filed must coincided with the number of particles")
+        println("the dimension of the field must coincide with the number of particles")
         return 0
     end
 
@@ -254,21 +254,21 @@ end
 @doc raw"""
     force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,,kind="hermite", e0 = 1, paraxial=true, kmax = nothing, maxe=Int(1e4), int_size = 5)
 
-Computes the proportionality factor to get the forces in unit of Newtons when the forces are calculated using the Gaussian beams (Hermite and Laguerre) implemented in the library. 
-By the fault, the factor is calculated for a Gaussin Beam in the paraxial approximation.
+Computes the proportionality factor to get the forces in units of Newtons when the forces are calculated using the Gaussian beams (Hermite and Laguerre) implemented in the library. 
+By default, the factor is calculated for a Gaussian Beam in the paraxial approximation.
 
 # Arguments
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
 - `power`: float with the power of the beam.
-- `eps_h`: float with the relative permittivity of the the host medium.
+- `eps_h`: float with the relative permittivity of the host medium.
 - `n`: non-negative int with the radial order of the beam.
 - `m`: int with the azimuthal order of the beam.
 - `e0`: float with the modulus of the electric field used in the calculation of the beam profile. 
 - `kind`: string with the kind of beam ("hermite" or "laguerre"). 
 - `paraxial`: boolean setting if the calculation is done in the paraxial approximation.
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+- `kmax`: float setting the limit of the radial integration (it should be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameter should be adjusted.
 
 # Outputs
 - `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).

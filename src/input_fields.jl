@@ -54,8 +54,8 @@ Computes the electric and magnetic fields emitted by a point dipole.
 # Arguments
 
 - `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `krd`: 1D float array of size 3 containing the dimensionless position ``k\mathbf{r_d}`` where source is located.
-- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or complex array of size 6 with the desired dipole moment of the dipole.  
+- `krd`: 1D float array of size 3 containing the dimensionless position ``k\mathbf{r_d}`` where the source is located.
+- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an electric y-dipole...) or complex array of size 6 with the desired dipole moment of the dipole.  
 - `e0`: float with the modulus of the dipole moment. 
 
 # Outputs
@@ -90,8 +90,8 @@ Computes the electric field emitted by a point dipole.
 
 # Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
-- `krd`: 1D float array of size 3 containing the dimensionless position ``k\mathbf{r_d}`` where source is located.
-- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or complex array of size 6 with the desired dipole moment of the dipole.  
+- `krd`: 1D float array of size 3 containing the dimensionless position ``k\mathbf{r_d}`` where the source is located.
+- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an electric y-dipole...) or complex array of size 6 with the desired dipole moment of the dipole.  
 - `e0`: scalar with the modulus of the dipole moment. 
 
 # Outputs
@@ -111,7 +111,7 @@ function point_dipole_e(krf, krd, dip; e0=1)
         println("dip should be an integer (between 1 and 3) or a vector of length 3")
     end
     for i = 1:n_r0  
-        Ge, Gm = GreenTensors.G_em_renorm(krf[i,:],krd)   
+        Ge = GreenTensors.G_e_renorm(krf[i,:],krd)   
         G_tensor[3 * (i-1) + 1:3 * (i-1) + 3, :] = Ge
     end
     e_dipole = G_tensor*dip*e0
@@ -188,7 +188,7 @@ end
 @doc raw"""
     create_f_gauss_kind(kbw0,n,m,kind)
 
-Create the function to calculate the fourier transform components for the spefic beam (gaussian, hermite-gaussian or legendre-gaussian) used in the functions that calculates the field and the derivaties.
+Create the function to calculate the fourier transform components for the specific beam (gaussian, hermite-gaussian or legendre-gaussian) used in the functions that calculate the field and the derivatives.
 
 # Arguments
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
@@ -207,6 +207,8 @@ function create_f_gauss_kind(kbw0,n,m,kind)
             return (-sqrt(2)*im)^(n+m)*hermite_e_pol(kx*kbw0,n)*hermite_e_pol(ky*kbw0,m)
         elseif kind == "laguerre"
             return laguerre_pol(kp^2*kbw0^2/2,n,m)*exp(im*m*theta)*(-1)^(m+n)*sqrt(2)^(-m)*kbw0^m*kp^m*(im)^(m)
+        else
+            error("kind must be hermite or laguerre")
         end
     end
 end
@@ -225,8 +227,8 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `m`: int with the degree of the beam.
 - `kind`: string with the kind of beam ("hermite" or "laguerre"). 
 - `e0`: float with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `kmax`: float setting the limit of the radial integration (it should be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
 
 # Outputs
 - `phi_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
@@ -332,8 +334,8 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `m`: int with the degree of the beam.
 - `kind`: string with the kind of beam ("hermite" or "laguerre"). 
 - `e0`: float with the modulus of the electric field at the origin of coordinates of the theoretical field (including evanescent waves). 
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `kmax`: float setting the limit of the radial integration (it should be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
 
 # Outputs
 - `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
@@ -734,9 +736,9 @@ Computes the integral of the field amplitude (|E|^2) of the Hermite-Gaussian bea
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
 - `n`: non-negative int with the radial order of the beam.
 - `m`: int with the azimuthal order of the beam.
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+- `kmax`: float setting the limit of the radial integration (it should be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameter should be adjusted.
 
 # Outputs
 - `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
@@ -787,9 +789,9 @@ Computes the integral of the field amplitude (|E|^2) of the Laguerre-Gaussian be
 - `kbw0`: float with the dimensionless beam waist radius (``k\omega_0``, where ``\omega_0`` is the beam waist radius).
 - `n`: non-negative int with the radial order of the beam.
 - `m`: int with the azimuthal order of the beam.
-- `kmax`: float setting the limit of the radial integration (it shoud be `kmax < 1`).
-- `maxe`: maximum number of evaluations in the adapative integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
-- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameters should be ajusted.
+- `kmax`: float setting the limit of the radial integration (it should be `kmax < 1`).
+- `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
+- `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameter should be adjusted.
 
 # Outputs
 - `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
