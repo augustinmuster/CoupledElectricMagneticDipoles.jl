@@ -17,5 +17,5 @@ CoupledElectricMagneticDipoles.Forces.force_e_m(knorm,kr,alpha_e_dl, alpha_m_dl,
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.Forces.orce_factor_gaussianbeams
+CoupledElectricMagneticDipoles.Forces.force_factor_gaussianbeams
 ```

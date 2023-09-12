@@ -1,6 +1,6 @@
 # Electromagentic forces of a Gaussian Beam on a Polystyrene Sphere
 
-This example aims to teach the user how to calculate optical forces, as well as to calculate the field and its derivatives of a tight-focused Gaussian beam. Note that the derivaties are implemented as adimensional. Thus, both the field and the derivatives would have the same units.
+This example aims to teach the user how to calculate optical forces, as well as to calculate the field and its derivatives of a tight-focused Gaussian beam. Note that the derivatives are implemented as adimensional. Thus, both the field and the derivatives would have the same units.
 
 The forces will be calculated along the three axes, x-, y- and z-axis. For example, for the forces along the x-axis, we will take y = z = 0 (and the same for the other axis). Also, with the forces along a given axis, we mean that the input field is a Gaussian beam focus at the origin of coordinates, while the force is calculated as a function of the position of the center of the Polystyrene Sphere. Nonetheless, in order to avoid the recalculation of the DDA matrix, in the calculation the particle is fixed at the center of coordinates, while the focus of the Gaussian Beam is moving.
 
@@ -19,7 +19,6 @@ Let's start by importing CoupledElectricMagneticDipoles.jl. Note that we also us
 using CoupledElectricMagneticDipoles
 using PyCall
 using LaTeXStrings
-#using DelimitedFiles 
 @pyimport matplotlib.pyplot as plt
 
 ```
@@ -68,7 +67,7 @@ Note that in this example `DDACore.solve_DDA_e` has no `input_field argument`. T
 
 ## Setting incoming field and particle position
 
-As an incoming field, we will use a Gaussian Beam with beam waist radius ``bw_0 = \lambda/2``, that in addimensional units is ``knorm*bw_0 = pi``. Also, the forces will be calculated along the three axes, between [-2\lambda, 2\lambda], discretizing the space in 51 points. For convenience, it is better to use an odd number of points in order to take the 0.
+As an incoming field, we will use a Gaussian Beam with beam waist radius ``bw_0 = \lambda/2``, that in adimensional units is ``knorm*bw_0 = pi``. Also, the forces will be calculated along the three axes, between [-2\lambda, 2\lambda], discretizing the space in 51 points. For convenience, it is better to use an odd number of points in order to take the 0.
 
 ```julia
 # parameters of the Gaussian Beam
@@ -95,8 +94,8 @@ for i=1:ndis
     # forces along the x-axis when the particle is moving along the same axis (with y = z = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [dis[i] 0 0])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces 
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,1] = sum(fx)
@@ -104,8 +103,8 @@ for i=1:ndis
     # forces along the y-axis when the particle is moving along the same axis (with z = x = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 dis[i] 0])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces 
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,2] = sum(fy)
@@ -113,21 +112,12 @@ for i=1:ndis
     # forces along the z-axis when the particle is moving along the same axis (with x = y = 0)
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 0 dis[i]])*knorm
-    e_0inc = InputFields.gauss_beam_e(krf,kbw0)
-    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gauss_beam_e(krf,kbw0)
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
     # calculation of forces
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,3] = sum(fz)
 end
-#=
-# save data
-fout=open("dis.dat","w")
-writedlm(fout,dis)
-close(fout)
-fout=open("force.dat","w")
-writedlm(fout,force)
-close(fout)
-=#
 ```
 As it is explained above, for the calculation the Polystyrene Sphere is keeped at the origin of coordinates, while the focus of the derivatives beam is changed. However, (for reciprocity) we interpret the results as the forces on the Polystyrene Sphere as it is moving out the focus. 
 
@@ -135,7 +125,7 @@ To save the data, uncomment the last lines and include "using DelimitedFiles".
 
 ## Expressing forces in Newtons
 
-The output of the function for the forces is adimensional (or more explicitly, the same unit that the square of the external field). In order to express the forces in Newtons it is necessary to multiply by a factor ``\epsilon_0\epsilon_h 4 \pi /k^2`` (a factor ``4 \pi /k^3`` that accounts for the adimensionality of the polarizability and a factor ``k`` since the spatial derivatives of the Green function and of the external field are adimensional). Also, in the calculation of the Gaussian beam field we have set ``E_0 = 1`` (value by default), and the force must be scaled according to the intensity of the beam. Thus, assuming that our laser source has a power of ``P = 10 mW``, we can proceed as follows.
+The output of the function for the forces is adimensional (or more explicitly, the same unit that the square of the external field). In order to express the forces in Newtons it is necessary to multiply by a factor ``\epsilon_0\epsilon_h 4 \pi /k^2`` (a factor ``4 \pi /k^3`` that accounts for the adimensionality of the polarizability and a factor ``k`` since the spatial derivatives of the Green function and of the external field are adimensional), where the field, ``\epsilon_0`` and ``k`` must be in SI units. Also, in the calculation of the Gaussian beam field we have set ``E_0 = 1`` (value by default), and the force must be scaled according to the intensity of the beam. Thus, assuming that our laser source has a power of ``P = 10 mW``, we can proceed as follows.
 
 First, for simplicity let's consider that the intensity distribution at the focus also follows a Gaussian distribution, 
 ``I(x,y,z=0) = I_0 e^{2\frac{x^2 + y^2}{bw_0^2}}``, 
@@ -146,14 +136,13 @@ being ``c`` the speed of light in the medium. Under this approximation (not tota
 Thus, to convert the forces in unit of Newton, the calculated forces must be multiplied by 
 ``\epsilon_0\epsilon_h 4 \pi /k^2 |E_0|^2 = \dfrac{16 P}{c (kwb_0)^2}``.
 
+For the gaussian beams implemented in the librarry (gaussian, hermite and legendre beams), there is a function in the "Force" module called "force_factor_gaussianbeams" that calculates this proportionality factor. Thus, just write:
+
 ```julia
 # converse forces in Newtons
 # laser intensity (10 mW)
 power = 10e-3
-# speed of light in the media
-c_const = 3e8/sqrt(eps_h)
-# factor for getting the forces in Newtons using the paraxial approximation for the Gaussian beam
-factor = 16*power/c_const/kbw0^2
+factor = Forces.force_factor_gaussianbeams(kbw0,power,eps_h)
 # force in Newtons
 force = force*factor
 ```

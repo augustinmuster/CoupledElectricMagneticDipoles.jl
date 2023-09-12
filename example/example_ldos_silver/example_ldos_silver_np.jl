@@ -32,11 +32,11 @@ a = 5
 lamb = [612, 354] 
 # dielectric constant of the particle
 eps=[-15.04 + im*1.02, -2.03 + im*0.6] 
-# distante between particle and dipole 
+# distance between particle and dipole 
 nz = 91 
 z = LinRange(10,100,nz)
 
-# variables to store the calcualtions
+# variables to store the calculations
 ldos_z = zeros(nz,2) 
 ldos_x = zeros(nz,2)
 ldos_z_analytic = zeros(nz,2) 
@@ -76,15 +76,15 @@ for i=1:2 # loop in wavelength
         global ldos_z[j,i] = PostProcessing.ldos_e(kr, alp_e_dl, Ainv, krd, dip = 3) # ldos z-axis
         global ldos_x[j,i] = PostProcessing.ldos_e(kr, alp_e_dl, Ainv, krd, dip = 1) # ldos x-axis
 
-        # analitic ldos at shortdistances for radiative and non radiative components
+        # analytic ldos for radiative and non radiative components
         global rad_ldos_z_analytic_shortdistance[j,i], rad_ldos_x_analytic_shortdistance[j,i] =  rad_ldos_analytic_shortdistance(kz, alp_e_dl)
         global nonrad_ldos_z_analytic_shortdistance[j,i], nonrad_ldos_x_analytic_shortdistance[j,i] =  nonrad_ldos_analytic_shortdistance(kz, alp_e_dl)
 
-        # numerical ldos at shortdistances for radiative and non radiative components
+        # numerical ldos at short distances for radiative and non radiative components
         dip_z = zeros(3)
         dip_z[3] = 1
         dipole_field = InputFields.point_dipole_e(kr, krd[:], dip_z) # field of the point dipole with dipole moment "dip_z"
-        phi_inc = DDACore.solve_DDA_e(kr,alp_e_dl;input_field=dipole_field)     # incident field at the silver partice 
+        phi_inc = DDACore.solve_DDA_e(kr,alp_e_dl;input_field=dipole_field)     # incident field at the silver particle 
         dipole_moment = PostProcessing.compute_dipole_moment(alp_e_dl,phi_inc) # dipole moment at the silver particle
         global rad_ldos_z[j,i] = PostProcessing.rad_ldos_e(kr,krd,dipole_moment,dip_z)          # radiative ldos z-axis
         global nonrad_ldos_z[j,i] = PostProcessing.nonrad_ldos_e(dipole_moment,phi_inc,dip_z)   # non-radiative ldos z-axis
@@ -92,7 +92,7 @@ for i=1:2 # loop in wavelength
         dip_x = zeros(3)
         dip_x[1] = 1
         dipole_field = InputFields.point_dipole_e(kr, krd[:], dip_x) # field of the point dipole with dipole moment "dip_x"
-        phi_inc = DDACore.solve_DDA_e(kr,alp_e_dl;input_field=dipole_field)     # incident field at the silver partice 
+        phi_inc = DDACore.solve_DDA_e(kr,alp_e_dl;input_field=dipole_field)     # incident field at the silver particle 
         dipole_moment = PostProcessing.compute_dipole_moment(alp_e_dl,phi_inc) # dipole moment at the silver particle
         global rad_ldos_x[j,i] = PostProcessing.rad_ldos_e(kr,krd,dipole_moment,dip_x)          # radiative ldos x-axis
         global nonrad_ldos_x[j,i] = PostProcessing.nonrad_ldos_e(dipole_moment,phi_inc,dip_x)   # non-radiative ldos x-axis
@@ -132,5 +132,4 @@ for ind_l = 1:2
     fig.tight_layout()
     axs.legend()
     plt.savefig("LDOSz"*string(Int(lamb[ind_l]))*".svg")
-
 end
