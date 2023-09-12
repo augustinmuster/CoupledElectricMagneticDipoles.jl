@@ -32,18 +32,18 @@ We then need to start modelizing our particle in water. For, this we start by de
 
 ```julia
 ##################### Parameters ########################################
-#radius of the sphere
-a=250e-9
+#radius (in nm)
+a=250
 #dielectric constant of the particle
 eps=(1.59)^2
 #dielectric constant of the medium
 eps_h=(1.33)^2
-#number of wavelengths to compute
+#number of wavelengths to compute (in nm)
 N_lambda=10
-lambda_min=1000e-9
-lambda_max=1100e-9
+lambda_min=1000
+lambda_max=1100
 #wavelengths to compute
-lambdas0=LinRange(1000e-9,1100e-9,N_lambda)
+lambdas0=LinRange(lambda_min,lambda_max,N_lambda)
 lambdas=lambdas0/sqrt(eps_h)
 ##########################################################################
 ```
@@ -65,6 +65,9 @@ Here for instance, the number of cubes in the discretized sphere is N=720.
 Now that the sphere is discretized, we need to assign to every cube a polarizability. This polarizability is wavelength dependant and then we nee to create an array to store teh results of the cross section cslculations for each wavelength. For this, we use:
 
 ```julia
+#getting number of cubes in the discretized sphere
+n=length(latt[:,1])
+#create an array to store results
 res=zeros(Float64,N_lambda,3)
 ```
 We can then open a loop and computes the polarizability of each cube as follows:
@@ -88,7 +91,7 @@ Here, we first compute the wavenumber in the medium and then, using the second l
 Before solving the DDA, problem, we need to choose an input field. We will take a x-polarized plane wave propagating along the positive z axis. For this, we use `inputFields.plane_wave_e`. This functions takes the dimensionless positions `kr` of the center of the cubes (i.e. the wavenumber times the coordinates array) and outputs a Nx3 array that represent the input field on each of the dipoles.
 
 ```julia
-    #computes input_field, a x-polarized plane-wave propagating along z
+    #computes input_field, an x-polarized plane-wave propagating along z
     input_field=InputFields.plane_wave_e(knorm*latt[:,1:3])
 ```
 
@@ -111,7 +114,7 @@ It is now possible to plot the normalized scattering cross section (``Q_{sca}=\s
 
 ```julia
 #scattering cross section from the Mie theory
-res_mie=MieCoeff.mie_scattering_cross_section.(2 .*pi./lambdas,a,eps,eps_h;cutoff=50)
+res_mie=MieCoeff.mie_scattering.(2 .*pi./lambdas*a,eps,eps_h;cutoff=50)
 
 #plotting the cross sections using matplotlib
 fig1,ax1=plt.subplots(2,sharex=true)
@@ -122,7 +125,7 @@ ax1[2].set_xlabel(L"\lambda_0/a")
 #plot
 cst=pi*a^2
 ax1[1].plot(lambdas0./a,res[:,3]./cst,color="black",label="DDA, N="*string(n),marker="o")
-ax1[1].plot(lambdas0./a,res_mie./cst,color="red",label="Mie",marker="o")
+ax1[1].plot(lambdas0./a,res_mie,color="red",label="Mie",marker="o")
 ax1[2].plot(lambdas0./a,(res[:,1].-res[:,2].-res[:,3])./res[:,1],color="black",marker="o")
 #legend and save
 ax1[1].legend()
@@ -149,7 +152,7 @@ for j=1:n
     global  alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
 end
 
-#computes input_field, a x-polarized plane-wave propagating along z
+#computes input_field, an x-polarized plane-wave propagating along z
 input_field=InputFields.plane_wave_e(knorm*latt[:,1:3])
 #solves DDA
 e_inc=DDACore.solve_DDA_e(knorm*latt[:,1:3],alpha,input_field=input_field,solver="CPU")
@@ -183,6 +186,7 @@ fig2=plt.figure()
 ax2 = fig2.add_subplot(projection="polar")
 ax2.set_title(L"log(d Q_{sca}/ d \Omega)")
 ax2.plot(thetas,log10.(res/pi/(a^2)),label="y-z plane")
+plt.tight_layout()
 fig2.savefig("diff_Q_sca.svg")
 ```
 ```@raw html
@@ -201,7 +205,7 @@ println(cs[3]," : ",csca_int)
 It outputs
 
 ```bash
-5.004200684958882e-14 : 5.0042006849097616e-14
+50042.00684959106 : 50042.00684909766
 
 ```
 showing, that they are the same.
@@ -215,7 +219,3 @@ As seen in the previous sections, the scattering cross section obtained with N=7
 <img src="../assets/test_conv.svg">
 ```
 What we see is that the error starts to be way smaller for numbers of dipoles bigger than 2295. The example of the PS sphere works quite well, but **be careful**, this doesn't mean that it will converge like that for every types of spheres. If you want to do that with another sphere made of another material or another object, **check the convergence!**. Recall also that DDA is not the best method to solve light scattering problems by a sphere. **If you don't really need it, prefer to use Mie Theory**.
-
-```julia
-
-```
