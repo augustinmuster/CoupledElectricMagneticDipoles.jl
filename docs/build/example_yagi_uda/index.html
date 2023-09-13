@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Yagi-Uda Antenna · CoupledElectricMagneticDipoles.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.svg" alt="CoupledElectricMagneticDipoles.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.svg" alt="CoupledElectricMagneticDipoles.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">CoupledElectricMagneticDipoles.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../ddacore/">DDACore</a></li><li><a class="tocitem" href="../alphas/">Alphas</a></li><li><a class="tocitem" href="../input_fields/">InputFields</a></li><li><a class="tocitem" href="../postprocessing/">PostProcessing</a></li><li><a class="tocitem" href="../forces/">Forces</a></li><li><a class="tocitem" href="../green/">GreenTensors</a></li><li><a class="tocitem" href="../miecoeff/">MieCoeff</a></li><li><a class="tocitem" href="../geometries/">Geometries</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_PS_sphere/">PS Sphere</a></li><li class="is-active"><a class="tocitem" href>Yagi-Uda Antenna</a><ul class="internal"><li class="toplevel"><a class="tocitem" href="#Setting-the-Structure"><span>Setting the Structure</span></a></li><li class="toplevel"><a class="tocitem" href="#Modelling-silicon-particles"><span>Modelling silicon particles</span></a></li><li class="toplevel"><a class="tocitem" href="#Computing-Emission-Pattern"><span>Computing Emission Pattern</span></a></li></ul></li><li><a class="tocitem" href="../example_ldos_silver_np/">LDOS Silver Particle</a></li><li><a class="tocitem" href="../example_force_gaussbeam_PS_sphere/">Optical Trap</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Yagi-Uda Antenna</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Yagi-Uda Antenna</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/augustinmuster/DDAjulia/blob/master/docs/src/example_yagi_uda.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Example:-Yagi-Uda-Antenna-Made-Out-of-Silicon-particles."><a class="docs-heading-anchor" href="#Example:-Yagi-Uda-Antenna-Made-Out-of-Silicon-particles.">Example: Yagi-Uda Antenna Made Out of Silicon particles.</a><a id="Example:-Yagi-Uda-Antenna-Made-Out-of-Silicon-particles.-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Yagi-Uda-Antenna-Made-Out-of-Silicon-particles." title="Permalink"></a></h1><p>In this example, we will simulate a Yagi-Uda antenna made out of small silicon spheres (like in Krasnok et al., Opt. Express <em>20</em>, 20599-20604 (2012), click <a href="https://opg.optica.org/oe/fulltext.cfm?uri=oe-20-18-20599&amp;id=240909">here</a> for more information). For this, we will create a linear structure of small as follows: </p><img src="../assets/YU_design.png"><p>At the origin, we place a silicon sphere of 230nm called the reflector. After a bigger spacing of 355nm + 1800nm in which we will place the emitter (an oscillating dipole source aligned along the y-axis), we align on the z-axis 10 silicon spheres with a radius of 200nm, (center to center spacing: 400nm). We will then compute the emission pattern, in order to investigate the directionality of this antenna.  </p><p>We suppose that you already know the example of the PS sphere. So if you haven&#39;t had a look to it before, read it first. If you want to know about the electric and magnetic DDA problem, have a look at the theory as well.</p><p>If you want to run this example, copy it or download it on GitHub (<code>example_yagi_uda.jl</code>) and run it using </p><pre><code class="language-bash hljs">julia example_yagi_uda.jl
+</code></pre><p>If you can, it is recommended to run it in parallel, using the <code>--threads</code> option. </p><h1 id="Setting-the-Structure"><a class="docs-heading-anchor" href="#Setting-the-Structure">Setting the Structure</a><a id="Setting-the-Structure-1"></a><a class="docs-heading-anchor-permalink" href="#Setting-the-Structure" title="Permalink"></a></h1><p>We will first start to model the structure of the antenna in an array &#39;r&#39; containing the position of each of its component. But first, we need to imports the libraries. </p><pre><code class="language-julia hljs">#imports
+using CoupledElectricMagneticDipoles
+using PyCall
+using LaTeXStrings
+using LinearAlgebra
+@pyimport matplotlib.pyplot as plt</code></pre><p>Then, we can set the parameters (size) of the antenna and build the structure.</p><pre><code class="language-julia hljs">##################### Parameters ########################################
+#radius of the sphere (in μm)
+a_refl=0.245 #reflector radius
+a_dir=0.200 #director radius
+N_dir=10 #number of directors
+#dielectric constant of the particle
+eps=12
+#wavelength (in μm) 
+lambda=1.550
+##########################################################################
+
+#setting the structure
+#creates an array to contain the positions
+r=zeros(N_dir+1,3)
+
+#spacing between reflector and first director
+spacing_ref_dir=a_refl+0.355+0.800+a_dir
+#spacing between directors
+spacing_dirs=4*a_dir
+
+#sets the position of the directors (reflector is at the origin)
+for i=2:N_dir+1
+    r[i,3]=spacing_ref_dir+(i-2)*spacing_dirs
+end
+
+#creates an array containing the radius of each sphere
+as=a_dir*ones(N_dir+1)
+as[1]=a_refl</code></pre><h1 id="Modelling-silicon-particles"><a class="docs-heading-anchor" href="#Modelling-silicon-particles">Modelling silicon particles</a><a id="Modelling-silicon-particles-1"></a><a class="docs-heading-anchor-permalink" href="#Modelling-silicon-particles" title="Permalink"></a></h1><p>Now that we set the position of each of the antenna&#39;s components, we need to model their optical behavior. To do this, let&#39;s open a small parenthesis and try to model a sphere with a radius of 0.230 μm using only one electric and magnetic dipole per particle (no discretization like in the PS sphere example). For this, we set the electric and magnetic polarizabilities of the particles to be proportional to the two first Mie coefficients <span>$a_1$</span> and <span>$b_1$</span>. For this, we use the MieCoeff module to get the Mie coefficient and to compare the scattering efficiency <span>$Q_sca$</span> of the sphere computed with only the first Mie coefficient and the truncated series (cut after 20 terms). </p><pre><code class="language-julia hljs">#------------------modelling silicon particles---------------
+#parameter
+lambdas=LinRange(1.200,1.600,100)
+knorms=2*pi./lambdas
+a=0.230
+ka = knorms*a
+eps=12
+#scattering cross sections
+mie_sca=MieCoeff.mie_scattering.(ka,eps,1,cutoff=20)
+dipole_sca=(6*pi)./knorms.^2 .*(abs2.(MieCoeff.mie_an.(ka, eps, 1, n=1)).+abs2.(MieCoeff.mie_bn.(ka, eps, 1, n=1)))
+#plotting
+fig1,ax1=plt.subplots()
+ax1.set_xlabel(L&quot;\lambda\ (\mu m)&quot;)
+ax1.set_ylabel(L&quot;Q_{sca}&quot;)
+ax1.plot(lambdas,mie_sca,color=&quot;black&quot;,label=&quot;Mie&quot;)
+ax1.plot(lambdas,dipole_sca./(pi*a^2),color=&quot;red&quot;,label=&quot;Dipoles&quot;)
+fig1.savefig(&quot;mie_dipole_qsca.svg&quot;)
+#------------------------------------------------------------</code></pre><p>If we plot it, we see that the scattering efficiency is well described by only the first Mie coefficients for wavelength bigger than 1.2 μm. From this, we conclude that later the polarizability of the components of the antenna can be computed using the <code>alpha_mie_renorm</code> function of the Alphas module.</p><img src="../assets/mie_dipole_qsca.svg"><h1 id="Computing-Emission-Pattern"><a class="docs-heading-anchor" href="#Computing-Emission-Pattern">Computing Emission Pattern</a><a id="Computing-Emission-Pattern-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-Emission-Pattern" title="Permalink"></a></h1><p>Now that we now how to model the particles, we can solve the DDA problem of the antenna as follow:</p><pre><code class="language-julia hljs">#computes the wavenumber
+knorm=2*pi/lambda
+#computes the polarizabilities using first mie coefficients
+alpha_e=zeros(ComplexF64,N_dir+1)
+alpha_m=zeros(ComplexF64,N_dir+1)
+for i=1:N_dir+1 
+    alpha_e[i],alpha_m[i]=Alphas.alpha_e_m_mie(knorm*as[i],eps,1)
+end
+#computes the input input_field
+input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0,0,0.355],2)
+
+#solves DDA electric and magnetic
+phi_inc=DDACore.solve_DDA_e_m(knorm*r,alpha_e,alpha_m,input_field=input_field,solver=&quot;CPU&quot;)</code></pre><p>And since we know the incident fields, we can compute the emission pattern of the antenna by sampling directions in the y-z plane and computing the differential emitted power in these directions. Note that here we renormalize it by the power of the source dipole <span>$P_0$</span> (or <code>power_0</code> in the code).</p><img src="../assets/diff_P.svg"><p>After plotting the emission pattern in polar axes, we see that the antenna has like expected a pronounced directionality in the z direction.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_PS_sphere/">« PS Sphere</a><a class="docs-footer-nextpage" href="../example_ldos_silver_np/">LDOS Silver Particle »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Wednesday 13 September 2023 16:11">Wednesday 13 September 2023</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

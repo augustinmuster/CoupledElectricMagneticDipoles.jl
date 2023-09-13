@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Optical Trap · CoupledElectricMagneticDipoles.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.svg" alt="CoupledElectricMagneticDipoles.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.svg" alt="CoupledElectricMagneticDipoles.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">CoupledElectricMagneticDipoles.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../ddacore/">DDACore</a></li><li><a class="tocitem" href="../alphas/">Alphas</a></li><li><a class="tocitem" href="../input_fields/">InputFields</a></li><li><a class="tocitem" href="../postprocessing/">PostProcessing</a></li><li><a class="tocitem" href="../forces/">Forces</a></li><li><a class="tocitem" href="../green/">GreenTensors</a></li><li><a class="tocitem" href="../miecoeff/">MieCoeff</a></li><li><a class="tocitem" href="../geometries/">Geometries</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_PS_sphere/">PS Sphere</a></li><li><a class="tocitem" href="../example_yagi_uda/">Yagi-Uda Antenna</a></li><li><a class="tocitem" href="../example_ldos_silver_np/">LDOS Silver Particle</a></li><li class="is-active"><a class="tocitem" href>Optical Trap</a><ul class="internal"><li><a class="tocitem" href="#Discretizing-the-Sphere-and-polarizability"><span>Discretizing the Sphere and polarizability</span></a></li><li><a class="tocitem" href="#Setting-incoming-field-and-particle-position"><span>Setting incoming field and particle position</span></a></li><li><a class="tocitem" href="#Calculating-the-forces"><span>Calculating the forces</span></a></li><li><a class="tocitem" href="#Expressing-forces-in-Newtons"><span>Expressing forces in Newtons</span></a></li><li><a class="tocitem" href="#Calculating-stiffnesses"><span>Calculating stiffnesses</span></a></li><li><a class="tocitem" href="#Plotting-forces"><span>Plotting forces</span></a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Optical Trap</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Optical Trap</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/augustinmuster/DDAjulia/blob/master/docs/src/example_force_gaussbeam_PS_sphere.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Electromagentic-forces-of-a-Gaussian-Beam-on-a-Polystyrene-Sphere"><a class="docs-heading-anchor" href="#Electromagentic-forces-of-a-Gaussian-Beam-on-a-Polystyrene-Sphere">Electromagentic forces of a Gaussian Beam on a Polystyrene Sphere</a><a id="Electromagentic-forces-of-a-Gaussian-Beam-on-a-Polystyrene-Sphere-1"></a><a class="docs-heading-anchor-permalink" href="#Electromagentic-forces-of-a-Gaussian-Beam-on-a-Polystyrene-Sphere" title="Permalink"></a></h1><p>This example aims to teach the user how to calculate optical forces, as well as to calculate the field and its derivatives of a tight-focused Gaussian beam. Note that the derivatives are implemented as adimensional. Thus, both the field and the derivatives would have the same units.</p><p>The forces will be calculated along the three axes, x-, y- and z-axis. For example, for the forces along the x-axis, we will take y = z = 0 (and the same for the other axis). Also, with the forces along a given axis, we mean that the input field is a Gaussian beam focus at the origin of coordinates, while the force is calculated as a function of the position of the center of the Polystyrene Sphere. Nonetheless, in order to avoid the recalculation of the DDA matrix, in the calculation the particle is fixed at the center of coordinates, while the focus of the Gaussian Beam is moving.</p><p>If you want to run this example, copy it or download it on the github (<code>example_force_gaussbeam_PS_sphere.jl</code>) and run it using </p><pre><code class="language-bash hljs">julia example_force_gaussbeam_PS_spher.jl
+</code></pre><p>If you can, it is recommended to run it in parallel, using the <code>--threads</code> option. </p><p>Let&#39;s start by importing CoupledElectricMagneticDipoles.jl. Note that we also use LaTeXStrings and PyCall, because we will use the python matplotlib library in order to plot the results. LinearAlgebra is used for....</p><pre><code class="language-julia hljs">#imports
+using CoupledElectricMagneticDipoles
+using PyCall
+using LaTeXStrings
+@pyimport matplotlib.pyplot as plt
+</code></pre><h2 id="Discretizing-the-Sphere-and-polarizability"><a class="docs-heading-anchor" href="#Discretizing-the-Sphere-and-polarizability">Discretizing the Sphere and polarizability</a><a id="Discretizing-the-Sphere-and-polarizability-1"></a><a class="docs-heading-anchor-permalink" href="#Discretizing-the-Sphere-and-polarizability" title="Permalink"></a></h2><p>We then need to start modeling our particle in water. The parameters are the same used for <code>example_PS_sphere.jl</code>. Thus, please visit this example for more details.</p><pre><code class="language-julia hljs">##################### Parameters ########################################
+#radius of the sphere
+a=0.25
+#dielectric constant of the particle
+eps=(1.59)^2
+#dielectric constant of the medium
+eps_h=(1.33)^2
+#number of wavelengths to compute
+N_lambda=10
+lambda_min=1
+lambda_max=1.1
+#wavelengths to compute
+lambdas0=LinRange(lambda_min,lambda_max,N_lambda)
+lambdas=lambdas0/sqrt(eps_h)
+##########################################################################
+
+#discretizes a sphere in small cubes
+latt,dx=Geometries.discretize_sphere(a,10)
+n=length(latt[:,1])
+
+# Parameters for the forces at lambda_0 = 1000 nm
+# wavelength
+lamb = lambdas[1]
+# wavevector
+knorm=2*pi/lamb
+# renormalized distance of the dipoles
+kr = knorm*latt[:,1:3]
+
+#computes polarizability for each dipoles using effective dielectric constant 
+alpha=zeros(ComplexF64,n,3,3)
+for j=1:n
+    eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
+    alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+end
+# calculation of the inverse DDA matrix
+Ainv = DDACore.solve_DDA_e(kr,alpha)</code></pre><p>Note that in this example <code>DDACore.solve_DDA_e</code> has no <code>input_field argument</code>. Then, the output is the inverse DDA matrix. </p><h2 id="Setting-incoming-field-and-particle-position"><a class="docs-heading-anchor" href="#Setting-incoming-field-and-particle-position">Setting incoming field and particle position</a><a id="Setting-incoming-field-and-particle-position-1"></a><a class="docs-heading-anchor-permalink" href="#Setting-incoming-field-and-particle-position" title="Permalink"></a></h2><p>As an incoming field, we will use a Gaussian Beam with beam waist radius <span>$bw_0 = \lambda/2$</span>, that in adimensional units is <span>$knorm*bw_0 = pi$</span>. Also, the forces will be calculated along the three axes, between [-2\lambda, 2\lambda], discretizing the space in 51 points. For convenience, it is better to use an odd number of points in order to take the 0.</p><pre><code class="language-julia hljs"># parameters of the Gaussian Beam
+# beam waist radius is set to lamb/2
+kbw0 = pi # (2*pi/lambda)*(lamb/2)
+
+# discretization of the position of the particle
+ndis = 51 # odd number in order to mesh the &quot;0&quot; position
+dis = LinRange(-2*lamb,2*lamb,ndis)
+# variable where the force will be stored
+force = zeros(ndis,3)</code></pre><p>For knowing what is the field distribution of this field, the file <code>example_plot_gauss_beam.jl</code> can be runned.</p><h2 id="Calculating-the-forces"><a class="docs-heading-anchor" href="#Calculating-the-forces">Calculating the forces</a><a id="Calculating-the-forces-1"></a><a class="docs-heading-anchor-permalink" href="#Calculating-the-forces" title="Permalink"></a></h2><p>Finally, we can then open a loop and computes the forces as follow:</p><pre><code class="language-julia hljs"># loop on distances 
+# note that, instead of moving the particle (and avoiding to recalculate the inverse DDA matrix), the position of the focus 
+# of the Gaussian beam is changed.
+for i=1:ndis 
+    # forces along the x-axis when the particle is moving along the same axis (with y = z = 0)
+    # evaluation of the Gaussian beam and its derivatives 
+    krf = (latt[:,1:3] .+ [dis[i] 0 0])*knorm
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
+    # calculation of forces 
+    fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
+    global force[i,1] = sum(fx)
+
+    # forces along the y-axis when the particle is moving along the same axis (with z = x = 0)
+    # evaluation of the Gaussian beam and its derivatives 
+    krf = (latt[:,1:3] .+ [0 dis[i] 0])*knorm
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
+    # calculation of forces 
+    fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
+    global force[i,2] = sum(fy)
+
+    # forces along the z-axis when the particle is moving along the same axis (with x = y = 0)
+    # evaluation of the Gaussian beam and its derivatives 
+    krf = (latt[:,1:3] .+ [0 0 dis[i]])*knorm
+    e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
+    dxe_0inc, dye_0inc, dze_0inc = InputFields.d_gaussian_beam_e(krf,kbw0)
+    # calculation of forces
+    fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
+    global force[i,3] = sum(fz)
+end</code></pre><p>As it is explained above, for the calculation the Polystyrene Sphere is keeped at the origin of coordinates, while the focus of the derivatives beam is changed. However, (for reciprocity) we interpret the results as the forces on the Polystyrene Sphere as it is moving out the focus. </p><p>To save the data, uncomment the last lines and include &quot;using DelimitedFiles&quot;.</p><h2 id="Expressing-forces-in-Newtons"><a class="docs-heading-anchor" href="#Expressing-forces-in-Newtons">Expressing forces in Newtons</a><a id="Expressing-forces-in-Newtons-1"></a><a class="docs-heading-anchor-permalink" href="#Expressing-forces-in-Newtons" title="Permalink"></a></h2><p>The output of the function for the forces is adimensional (or more explicitly, the same unit that the square of the external field). In order to express the forces in Newtons it is necessary to multiply by a factor <span>$\epsilon_0\epsilon_h 4 \pi /k^2$</span> (a factor <span>$4 \pi /k^3$</span> that accounts for the adimensionality of the polarizability and a factor <span>$k$</span> since the spatial derivatives of the Green function and of the external field are adimensional), where the field, <span>$\epsilon_0$</span> and <span>$k$</span> must be in SI units. Also, in the calculation of the Gaussian beam field we have set <span>$E_0 = 1$</span> (value by default), and the force must be scaled according to the intensity of the beam. Thus, assuming that our laser source has a power of <span>$P = 10 mW$</span>, we can proceed as follows.</p><p>First, for simplicity let&#39;s consider that the intensity distribution at the focus also follows a Gaussian distribution,  <span>$I(x,y,z=0) = I_0 e^{2\frac{x^2 + y^2}{bw_0^2}}$</span>,  with  <span>$I_0 = \dfrac{1}{2}c \epsilon_0\epsilon_h |E_0|^2$</span>, being <span>$c$</span> the speed of light in the medium. Under this approximation (not totally accurate since the beam is tight focused), the power of the beam can be calculated as the surface integral of the intensity at the focus plane <span>$P = I_0 \int_{z=0} e^{2\frac{x^2 + y^2}{bw^2}} = I_0 \pi \dfrac{bw_0^2}{2}$</span>. Thus, to convert the forces in unit of Newton, the calculated forces must be multiplied by  <span>$\epsilon_0\epsilon_h 4 \pi /k^2 |E_0|^2 = \dfrac{16 P}{c (kwb_0)^2}$</span>.</p><p>For the gaussian beams implemented in the library (gaussian, hermite and legendre beams), there is a function in the Force module called <code>Forces.force_factor_gaussianbeams</code> that calculates this proportionality factor. Thus, just write:</p><pre><code class="language-julia hljs"># converse forces in Newtons
+# laser intensity (10 mW)
+power = 10e-3
+factor = Forces.force_factor_gaussianbeams(kbw0,power,eps_h)
+# force in Newtons
+force = force*factor</code></pre><h2 id="Calculating-stiffnesses"><a class="docs-heading-anchor" href="#Calculating-stiffnesses">Calculating stiffnesses</a><a id="Calculating-stiffnesses-1"></a><a class="docs-heading-anchor-permalink" href="#Calculating-stiffnesses" title="Permalink"></a></h2><p>Since the tight-focused Gaussian beam is going to trap the particle, the forces around the equilibrium position can be approximated by a linear model. The depth of the trap can be characterized by the stiffnesses along the different axis, a simple spring model. To estimate the stiffnesses, a linear fit can be done.</p><pre><code class="language-julia hljs"># calculation of the stiffnesses of the trap by a linear fit around the zero force position
+# for kx and ky, we directly assume that the zero force position is at the minimum of the &quot;dis&quot; array (at dis = 0)
+# find the position of the minimum
+val, ind_min_xy = findmin(abs.(dis))
+# calculation of the stiffnesses along the x- and y-axis
+kx = -(force[ind_min_xy+1,1]-force[ind_min_xy-1,1])/(dis[ind_min_xy+1] - dis[ind_min_xy-1])
+ky = -(force[ind_min_xy+1,2]-force[ind_min_xy-1,2])/(dis[ind_min_xy+1] - dis[ind_min_xy-1])
+# for kz the minimum is found as the first minimum along the z-axis (the minimum is not at &quot;z=0&quot;)
+ind_min_z = ind_min_xy
+while abs(force[ind_min_z,3]) &gt; abs(force[ind_min_z+1,3])
+    min_z = ind_min_z + 1
+    global ind_min_z = min_z
+end
+# calculation of the stiffnesses along the z-axis
+kz = -(force[ind_min_z+1,3]-force[ind_min_z-1,3])/(dis[ind_min_z+1] - dis[ind_min_z-1])
+# linear calculation of for the position of the minimum
+zmin = dis[ind_min_z] + force[ind_min_z,3]/kz
+# shorter array for plotting the linear approximation of the forces
+dis_short = LinRange(-lamb/4,lamb/4,ndis)
+# linear approximation of the force around the zero
+fx_lin = -kx*dis_short
+fy_lin = -ky*dis_short
+fz_lin = -kz*(dis_short)
+# rounding the value of the stiffnesses for the legend
+kx = round(kx*1e6,sigdigits=3)
+ky = round(ky*1e6,sigdigits=3)
+kz = round(kz*1e6,sigdigits=3)</code></pre><h2 id="Plotting-forces"><a class="docs-heading-anchor" href="#Plotting-forces">Plotting forces</a><a id="Plotting-forces-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-forces" title="Permalink"></a></h2><p>Once the forces and the stiffnesses are calculated, they can be plotted using the next lines:</p><pre><code class="language-julia hljs"># plotting results
+fig, axs = plt.subplots()
+axs.set_title(L&quot;x-axis, \lambda_0 = 1000 nm, \lambda = \lambda_0/1.33, w0 = \lambda/ 2, I_0 = 25 GW/m^2&quot;)
+axs.plot(dis*1e9,force[:,1]*1e15,label=&quot;&quot;)
+axs.plot(dis_short*1e9,fx_lin*1e15,&quot;--&quot;,label=&quot;kx = &quot;*string(kx)*&quot; fN/nm&quot;)
+axs.set_xlabel(&quot;x (nm)&quot;)
+axs.set_ylabel(&quot;Fx (fN)&quot;)
+axs.legend()
+fig.savefig(&quot;fx.svg&quot;)
+
+fig, axs = plt.subplots()
+axs.set_title(L&quot;y-axis, \lambda_0 = 1000 nm, \lambda = \lambda_0/1.33, w0 = \lambda/ 2, I_0 = 25 GW/m^2&quot;)
+axs.plot(dis*1e9,force[:,2]*1e15)
+axs.plot(dis_short*1e9,fy_lin*1e15,&quot;--&quot;,label=&quot;ky = &quot;*string(ky)*&quot; fN/nm&quot;)
+axs.set_xlabel(&quot;y (nm)&quot;)
+axs.set_ylabel(&quot;Fy (fN)&quot;)
+axs.legend()
+fig.savefig(&quot;fy.svg&quot;)
+
+fig, axs = plt.subplots()
+axs.set_title(L&quot;z-axis, \lambda_0 = 1000 nm, \lambda = \lambda_0/1.33, w0 = \lambda/ 2, I_0 = 25 GW/m^2&quot;)
+axs.plot(dis*1e9,force[:,3]*1e15)
+axs.plot((dis_short .+ zmin)*1e9,fz_lin*1e15,&quot;--&quot;,label=&quot;kz = &quot;*string(kz)*&quot; fN/nm&quot;)
+axs.plot(dis*1e9,force[:,3]*0,&quot;k--&quot;)
+axs.set_xlabel(&quot;z (nm)&quot;)
+axs.set_ylabel(&quot;Fz (fN)&quot;)
+axs.legend()
+fig.savefig(&quot;fz.svg&quot;)</code></pre><img src="../assets/fx.svg"><img src="../assets/fy.svg"><img src="../assets/fz.svg"></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_ldos_silver_np/">« LDOS Silver Particle</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Wednesday 13 September 2023 16:11">Wednesday 13 September 2023</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
