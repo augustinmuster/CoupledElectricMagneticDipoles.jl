@@ -765,7 +765,7 @@ Computes local density of states (LDOS) of a system made out of electric and mag
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
+- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
@@ -890,7 +890,7 @@ It Computes local density of states (LDOS) of a system made out of electric dipo
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `dip`: integer defining the dipole moment (``dip = 1`` is an electric x-dipole, ``dip = 2`` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
+- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
@@ -955,7 +955,7 @@ Computes the radiative part of the LDOS of a system of electric dipoles with a p
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs
@@ -990,8 +990,8 @@ Computes the radiative part of the LDOS of a system of electric and magnetic dip
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
-- `m`: 2D complex array of size``Nd\times 3``containing the magnetic dipole moments of the dipoles.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
+- `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles.
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs
@@ -1025,7 +1025,7 @@ end
 Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
 
 # Arguments
-- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
@@ -1052,8 +1052,8 @@ end
 Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
 
 # Arguments
-- `p`: 2D complex array of size``Nd\times 3``containing the electric dipole moments of the dipoles.
-- `m`: 2D complex array of size``Nd\times 3``containing the magnetic dipole moments of the dipoles.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
+- `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles.
 - `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.

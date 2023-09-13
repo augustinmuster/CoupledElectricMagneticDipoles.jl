@@ -14,7 +14,7 @@ include("green_tensors_e_m.jl")
 
 @doc raw"""
     plane_wave_e(krf;khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization.
+Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization. The user is responsible for using physical inputs.
 `krf` is a ``N\times 3`` float array. 
 The output is a ``N\times 3`` complex array representing the electric field.
 """
@@ -31,7 +31,7 @@ end
 
 @doc raw"""
     plane_wave_e_m(krf;khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization.
+Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization.The user is responsible for using physical inputs.
 `krf` is a ``N\times 3`` float array. 
 The output is a ``N\times 6`` complex array representing the electric and magnetic fields.
 """
@@ -338,7 +338,7 @@ For another polarization just rotate the field in the xy-plane. Also, for a pola
 - `maxe`: maximum number of evaluations in the adaptive integral (see [Cubature.jl](https://github.com/JuliaMath/Cubature.jl) for more details).
 
 # Outputs
-- `eh_gauss`: 2D complex array of size ``N\times 6`` with the value of the field at each position.
+- `e_gauss`: 2D complex array of size ``N\times 3`` with the value of the field at each position.
 """
 function gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing
@@ -433,7 +433,7 @@ end
 @doc raw"""
     d_plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
 Computes the derivatives of an electromagnetic field generated with `plane_wave_e_m` (the arguments are the same).
-Outputs three 2D arrays of size ``N\times 6` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
+Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
     n=length(kr[:,1])
@@ -456,7 +456,7 @@ end
 @doc raw"""
     d_point_dipole_e_m(krf, krd, dip, e0=1)
 Computes the derivatives of an electromagnetic field generated with `point_dipole_e_m` (the arguments are the same).
-Outputs three 2D arrays of size ``N\times 6` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
+Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_point_dipole_e_m(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
@@ -532,7 +532,7 @@ end
 @doc raw"""
     d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
 Computes the derivatives of an electromagnetic field generated with `gaussian_beam_e_m` (the arguments are the same).
-Outputs three 2D arrays of size ``N\times 6` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
+Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
     if kmax===nothing

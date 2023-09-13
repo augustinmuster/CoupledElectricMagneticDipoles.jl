@@ -179,7 +179,7 @@ Computes the optical forces on a system made out of electric dipoles for determi
 electric field squared. To get unit of forces, it is necessary to multiply by a factor ``\epsilon_0\epsilon_r 4\pi/k^2``, taking care that the units of
 the field, the vacuum permittivity and the wavevector are in accordance.
 
-#Arguments
+# Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
@@ -187,7 +187,7 @@ the field, the vacuum permittivity and the wavevector are in accordance.
 - `dxe_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*x`` argument of the external input field.
 - `dye_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*y`` argument of the external input field.
 - `dze_0`: 2D complex array of size ``N\times 3`` containing the derivative respect the ``k*z`` argument of the external input field.
-#Outputs
+# Outputs
 - `real(fx)`: float array of Size ``N`` with the value of the force along the ``x``-axis at each dipole.
 - `real(fy)`: float array of Size ``N`` with the value of the force along the ``y``-axis at each dipole.
 - `real(fz)`: float array of Size ``N`` with the value of the force along the ``z``-axis at each dipole.

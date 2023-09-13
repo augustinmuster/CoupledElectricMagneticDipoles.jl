@@ -110,7 +110,7 @@ end
 Computes the extinction efficiency ``Q_{ext}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
 
 ```math
-Q_{ext} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
+Q_{ext} =\frac{2}{(ka)^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
 ```
 The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
 

@@ -50,7 +50,7 @@ end
 
 @doc raw"""
     alpha_radiative(alpha0,knorm)
-Applies the radiative correction to the polarizability tensor or scalar `alpha0`(with units of volume).
+Applies the radiative correction to the polarizability tensor or scalar `alpha0` (with units of volume).
 Outputs a (3x3) complex dimensionless scalar or tensor computed as follow:
 """
 function alpha_radiative(alpha0,knorm)

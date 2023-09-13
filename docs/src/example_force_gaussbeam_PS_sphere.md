@@ -136,7 +136,7 @@ being ``c`` the speed of light in the medium. Under this approximation (not tota
 Thus, to convert the forces in unit of Newton, the calculated forces must be multiplied by 
 ``\epsilon_0\epsilon_h 4 \pi /k^2 |E_0|^2 = \dfrac{16 P}{c (kwb_0)^2}``.
 
-For the gaussian beams implemented in the librarry (gaussian, hermite and legendre beams), there is a function in the "Force" module called "force_factor_gaussianbeams" that calculates this proportionality factor. Thus, just write:
+For the gaussian beams implemented in the library (gaussian, hermite and legendre beams), there is a function in the Force module called `Forces.force_factor_gaussianbeams` that calculates this proportionality factor. Thus, just write:
 
 ```julia
 # converse forces in Newtons

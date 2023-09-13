@@ -29,7 +29,7 @@ CoupledElectricMagneticDipoles.Alphas.alpha_radiative(alpha0,knorm)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.Alphas.alpha_e_m_mie(knorm,a,eps,eps_h)
+CoupledElectricMagneticDipoles.Alphas.alpha_e_m_mie(ka,eps,eps_h)
 ```
 
 ```@docs
