@@ -3,11 +3,13 @@ using Base
 using PyCall
 using LinearAlgebra
 using DelimitedFiles
-include("../../CoupledElectricMagneticDipoles/src/input_fields.jl")
+include("../../src/CoupledElectricMagneticDipoles.jl")
+using .CoupledElectricMagneticDipoles
 
 pushfirst!(pyimport("sys")."path", "")
 
-@pyimport numpy
+using PyCall
+#@pyimport numpy as np
 @pyimport matplotlib.pyplot as plt
 
 ##################### Parameters ########################################
@@ -45,7 +47,7 @@ ez = zeros(ComplexF64,nz,nz)
 for i=1:nz # loop in x
     for j=1:nz # loop in y
         krf = [kr[i],kr[j],0]'
-        e_0inc = InputFields.gauss_beam_e(krf,kbw0)
+        e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
         global ex[i,j] = e_0inc[1,1]
         global ez[i,j] = e_0inc[1,3]
     end
@@ -92,7 +94,7 @@ ez = zeros(ComplexF64,nz,nz)
 for i=1:nz # loop in y
     for j=1:nz # loop in z
         krf = [0,kr[i],kr[j]]'
-        e_0inc = InputFields.gauss_beam_e(krf,kbw0)
+        e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
         global ex[i,j] = e_0inc[1,1]
         global ez[i,j] = e_0inc[1,3]
     end
@@ -139,7 +141,7 @@ ez = zeros(ComplexF64,nz,nz)
 for i=1:nz # loop in z
     for j=1:nz # loop in x
         krf = [kr[j],0,kr[i]]'
-        e_0inc = InputFields.gauss_beam_e(krf,kbw0)
+        e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
         global ex[i,j] = e_0inc[1,1]
         global ez[i,j] = e_0inc[1,3]
     end
