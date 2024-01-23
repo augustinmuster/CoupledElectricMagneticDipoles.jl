@@ -1,419 +1,373 @@
-#imports
+include("../src/CoupledElectricMagneticDipoles.jl")
+using .CoupledElectricMagneticDipoles
 using Test
-using Base
 using LinearAlgebra
+using Lebedev
+#FLAGS
+#in order to skip a test group, set the appropriate falg to false
+TEST_GREENTENSORS=false
+TEST_DDACORE=false
+TEST_CS=false
+TEST_LDOS=false
+#parameters for the test
+N=10
+epsilon=1e-8
 
-#include the modules
-println("Importing the library...")
-include("../src/DDA.jl")
-include("../src/alpha.jl")
-include("../src/input_fields.jl")
-include("../src/processing.jl")
-include("../src/green_tensors_e_m.jl")
-#FLAGS FOR TESTING DIFFERENT MODULES
-TEST_GREENTENSORS=true
-TEST_DDACORE=true
+#useful constants
+const id3=[1 0 0;0 1 0;0 0 1]
 
-
+#testin green tensors
 if TEST_GREENTENSORS
-    ###########################
-    #TESTS
-    ###########################
+
+    ##########################
+    print("Testing x derivative of the magnetic green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[x,2,3]
+    x1bis=[x+h,2,3]
+    #
+    x2=[2,3,4]
+    #numerical one
+    num=(GreenTensors.G_m_renorm(x1bis,x2)-GreenTensors.G_m_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_m_renorm([x+2*h,2,3],x2)+8*GreenTensors.G_m_renorm([x+h,2,3],x2)-8*GreenTensors.G_m_renorm([x-h,2,3],x2)+GreenTensors.G_m_renorm([x-2*h,2,3],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dxG_m_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##############################
+
+    ##########################
+    print("Testing y derivative of the magnetic green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[1,x,3]
+    x1bis=[1,x+h,3]
+    #
+    x2=[7,8,9]
+
+    #numerical one
+    num=(GreenTensors.G_m_renorm(x1bis,x2)-GreenTensors.G_m_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_m_renorm([1,x+2*h,3],x2)+8*GreenTensors.G_m_renorm([1,x+h,3],x2)-8*GreenTensors.G_m_renorm([1,x-h,3],x2)+GreenTensors.G_m_renorm([1,x-2*h,3],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dyG_m_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##########################
+
+    ##########################
+    print("Testing z derivative of the magnetic green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[1,2,x]
+    x1bis=[1,2,x+h]
+    #
+    x2=[7,8,9]
+
+    #numerical one
+    num=(GreenTensors.G_m_renorm(x1bis,x2)-GreenTensors.G_m_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_m_renorm([1,2,x+2*h],x2)+8*GreenTensors.G_m_renorm([1,2,x+h],x2)-8*GreenTensors.G_m_renorm([1,2,x-h],x2)+GreenTensors.G_m_renorm([1,2,x-2*h],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dzG_m_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##########################
+
+    ##########################
+    print("Testing x derivative of the electric green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[x,2,3]
+    x1bis=[x+h,2,3]
+    #
+    x2=[2,3,4]
+    knorm=1e9
+    #numerical one
+    num=(GreenTensors.G_e_renorm(x1bis,x2)-GreenTensors.G_e_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_e_renorm([x+2*h,2,3],x2)+8*GreenTensors.G_e_renorm([x+h,2,3],x2)-8*GreenTensors.G_e_renorm([x-h,2,3],x2)+GreenTensors.G_e_renorm([x-2*h,2,3],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dxG_e_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##########################
+
+    ##########################
+    print("Testing x derivative of the electric green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[1,x,3]
+    x1bis=[1,x+h,3]
+    #
+    x2=[7,8,9]
+    knorm=1e9
+    #numerical one
+    num=(GreenTensors.G_e_renorm(x1bis,x2)-GreenTensors.G_e_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_e_renorm([1,x+2*h,3],x2)+8*GreenTensors.G_e_renorm([1,x+h,3],x2)-8*GreenTensors.G_e_renorm([1,x-h,3],x2)+GreenTensors.G_e_renorm([1,x-2*h,3],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dyG_e_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##########################
+
+    ##########################
+    print("Testing x derivative of the electric green tensor: ")
+    #small step
+    h=0.000001
+    #value of the component
+    x=4
+    #
+    x1=[1,2,x]
+    x1bis=[1,2,x+h]
+    #
+    x2=[7,8,9]
+    knorm=1e9
+    #numerical one
+    num=(GreenTensors.G_e_renorm(x1bis,x2)-GreenTensors.G_e_renorm(x1,x2))/(h)
+    #numerical highest order
+    num2=-GreenTensors.G_e_renorm([1,2,x+2*h],x2)+8*GreenTensors.G_e_renorm([1,2,x+h],x2)-8*GreenTensors.G_e_renorm([1,2,x-h],x2)+GreenTensors.G_e_renorm([1,2,x-2*h],x2)
+    num2=num2/12/h
+    #analytical one
+    func=GreenTensors.dzG_e_renorm(x1,x2)
+    #unit test
+    @test real((num2-func)[1,2])/real(num2[1,2])<epsilon
+    @test real((num2-func)[1,3])/real(num2[1,3])<epsilon
+    @test real((num2-func)[2,1])/real(num2[2,1])<epsilon
+    @test real((num2-func)[2,3])/real(num2[2,3])<epsilon
+    @test real((num2-func)[3,1])/real(num2[3,1])<epsilon
+    @test real((num2-func)[3,2])/real(num2[3,2])<epsilon
+    @test imag((num2-func)[1,2])/imag(num2[1,2])<epsilon
+    @test imag((num2-func)[1,3])/imag(num2[1,3])<epsilon
+    @test imag((num2-func)[2,1])/imag(num2[2,1])<epsilon
+    @test imag((num2-func)[2,3])/imag(num2[2,3])<epsilon
+    @test imag((num2-func)[3,1])/imag(num2[3,1])<epsilon
+    @test imag((num2-func)[3,2])/imag(num2[3,2])<epsilon
+    println("passed")
+    ##########################
     println("")
-    println("*************************")
-    println("Testing GreenTensors")
-    println("*************************")
-    println("")
-    #***********************
-    #TEST THE X DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[x,2,3]*1e-6
-    x1bis=[x+h,2,3]*1e-6
-    #
-    x2=[2,3,4]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_m([x+2*h,2,3]*1e-6,x2,knorm)+8*GreenTensors.G_m([x+h,2,3]*1e-6,x2,knorm)-8*GreenTensors.G_m([x-h,2,3]*1e-6,x2,knorm)+GreenTensors.G_m([x-2*h,2,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dxG_m(x1,x2,knorm)
-
-    print("testing the function for the x-derivative of the magnetic green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed ")
-
-
-
-    #***********************
-    #TEST THE Y DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,x,3]*1e-6
-    x1bis=[1,x+h,3]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_m([1,x+2*h,3]*1e-6,x2,knorm)+8*GreenTensors.G_m([1,x+h,3]*1e-6,x2,knorm)-8*GreenTensors.G_m([1,x-h,3]*1e-6,x2,knorm)+GreenTensors.G_m([1,x-2*h,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dyG_m(x1,x2,knorm)
-
-    print("testing the function for the y-derivative of the magnetic green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
-
-    #***********************
-    #TEST THE Z DERIVATIVE OF THE MAGNETIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,2,x]*1e-6
-    x1bis=[1,2,x+h]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_m(x1bis,x2,knorm)-GreenTensors.G_m(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_m([1,2,x+2*h]*1e-6,x2,knorm)+8*GreenTensors.G_m([1,2,x+h]*1e-6,x2,knorm)-8*GreenTensors.G_m([1,2,x-h]*1e-6,x2,knorm)+GreenTensors.G_m([1,2,x-2*h]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dzG_m(x1,x2,knorm)
-
-    print("testing the function for the z-derivative of the magnetic green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
-
-
-    #***********************
-    #TEST THE X DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[x,2,3]*1e-6
-    x1bis=[x+h,2,3]*1e-6
-    #
-    x2=[2,3,4]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_e([x+2*h,2,3]*1e-6,x2,knorm)+8*GreenTensors.G_e([x+h,2,3]*1e-6,x2,knorm)-8*GreenTensors.G_e([x-h,2,3]*1e-6,x2,knorm)+GreenTensors.G_e([x-2*h,2,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dxG_e(x1,x2,knorm)
-
-    print("testing the function for the x-derivative of the electric green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
-
-
-    #***********************
-    #TEST THE Y DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,x,3]*1e-6
-    x1bis=[1,x+h,3]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_e([1,x+2*h,3]*1e-6,x2,knorm)+8*GreenTensors.G_e([1,x+h,3]*1e-6,x2,knorm)-8*GreenTensors.G_e([1,x-h,3]*1e-6,x2,knorm)+GreenTensors.G_e([1,x-2*h,3]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dyG_e(x1,x2,knorm)
-
-    print("testing the function for the y-derivative of the electric green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
-
-    #***********************
-    #TEST THE Z DERIVATIVE OF THE ELECTRIC GREEN TENSOR
-    #***********************
-    #small step
-    h=0.000001
-    #value of the component
-    x=4
-    #
-    x1=[1,2,x]*1e-6
-    x1bis=[1,2,x+h]*1e-6
-    #
-    x2=[7,8,9]*1e-6
-    knorm=1e9
-    #numerical one
-    num=(GreenTensors.G_e(x1bis,x2,knorm)-GreenTensors.G_e(x1,x2,knorm))/(h*1e-6)
-    #numerical highest order
-    num2=-GreenTensors.G_e([1,2,x+2*h]*1e-6,x2,knorm)+8*GreenTensors.G_e([1,2,x+h]*1e-6,x2,knorm)-8*GreenTensors.G_e([1,2,x-h]*1e-6,x2,knorm)+GreenTensors.G_e([1,2,x-2*h]*1e-6,x2,knorm)
-    num2=num2/12/h/1e-6
-    #analytical one
-    func=GreenTensors.dzG_e(x1,x2,knorm)
-
-    print("testing the function for the z-derivative of the electric green tensor: ")
-    #unit test
-    @test real((num2-func)[1,2])/real(num2[1,2])<1e-6
-    @test real((num2-func)[1,3])/real(num2[1,3])<1e-6
-    @test real((num2-func)[2,1])/real(num2[2,1])<1e-6
-    @test real((num2-func)[2,3])/real(num2[2,3])<1e-6
-    @test real((num2-func)[3,1])/real(num2[3,1])<1e-6
-    @test real((num2-func)[3,2])/real(num2[3,2])<1e-6
-    @test imag((num2-func)[1,2])/imag(num2[1,2])<1e-6
-    @test imag((num2-func)[1,3])/imag(num2[1,3])<1e-6
-    @test imag((num2-func)[2,1])/imag(num2[2,1])<1e-6
-    @test imag((num2-func)[2,3])/imag(num2[2,3])<1e-6
-    @test imag((num2-func)[3,1])/imag(num2[3,1])<1e-6
-    @test imag((num2-func)[3,2])/imag(num2[3,2])<1e-6
-    println("passed")
 end
 
+#test DDACORE
 if TEST_DDACORE
-    ###########################
-    #TESTS
-    ###########################
-    println("")
-    println("*************************")
-    println("Testing DDACore")
-    println("*************************")
-    println("")
+    ##########################
+    print("Testing DDA solving e: ")
+    #params
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    input_field=rand(ComplexF64,N,3)
+    #solving
+    Ainv=DDACore.solve_DDA_e(kr,alpha_e,verbose=false)
+    e_inc=DDACore.solve_DDA_e(kr,alpha_e,input_field=input_field,verbose=false)
+    #test
+    @test sum(abs.(transpose(reshape(Ainv*reshape(transpose(input_field),3*N),3,N)).-e_inc).<epsilon)==3*N
+    println("passed")
+    ##############################
 
-
-    println("")
-    println("***")
-    println("Only electric DDA")
-    println("***")
-    println("")
-
-    #------Consevation of energy--------
-    #ŦEST: test if energy is conserved by the DDA process by comparing the cross sections
-    print("Testing conservation of energy: ")
-    #lattice parameter
-    d=1e-8
-    #position of one dipole
-    r=[0 0 0;0 0 d]
-    #dielectric constant
-    e=(3.5+im*0.01)^2
-    #wavelength
-    lambda=1000e-9
-    knorm=2*pi/lambda
-    #computing polarisabilitites
-    L=Alphas.depolarisation_tensor(d,d,d,d^3)
-
-    a0=zeros(ComplexF64,length(r[:,1]),3,3)
-    a=zeros(ComplexF64,length(r[:,1]),3,3)
-    for i=1:length(r[:,1])
-        a0[i,:,:]=Alphas.alpha_0(e,1,L,d^3)
-        a[i,:,:]=Alphas.alpha_radiative(a0[i,:,:],knorm)
+    ##########################
+    print("Testing DDA solving em: ")
+    #params
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    alpha_m=rand(ComplexF64,N)
+    input_field=rand(ComplexF64,N,6)
+    #solving
+    Ainv=DDACore.solve_DDA_e_m(kr,alpha_e,alpha_m,verbose=false)
+    e_inc=DDACore.solve_DDA_e_m(kr,alpha_e,alpha_m,input_field=input_field,verbose=false)
+    #test1
+    @test sum(abs.(transpose(reshape(Ainv*reshape(transpose(input_field),6*N),6,N)).-e_inc).<epsilon)==6*N
+    #6x6 pol input
+    alpha=zeros(ComplexF64,N,6,6)
+    for i=1:N
+        alpha[i,1:3,1:3]=alpha_e[i]*id3
+        alpha[i,4:6,4:6]=alpha_m[i]*id3
     end
-    #DDA solving--dimensional inputs
-    p,e_inc=DDACore.solve_DDA_e(knorm,r,a,InputFields.plane_wave,verbose=false)
-    #computing cross sections
-    res=PostProcessing.compute_cross_sections(knorm,r,p,e_inc,a0,verbose=false)
-    #testing
-    @test real(res[2])-real(res[3])-real(res[4])<10^(-10)
-    #DDA solving--Adimensional inputs
-    p,e_inc=DDACore.solve_DDA_e(knorm*r,a*knorm^3/4*pi,InputFields.plane_wave_renorm,verbose=false)
-    #computing cross sections
-    res=PostProcessing.compute_cross_sections(knorm,r,p,e_inc,a0,verbose=false)
-    #testing
-    @test real(res[2])-real(res[3])-real(res[4])<10^(-10)
+    Ainv2=DDACore.solve_DDA_e_m(kr,alpha,verbose=false)
+    #test2
+    @test norm(Ainv-Ainv2)<epsilon
     println("passed")
-
-    #------Alpha dynamic input--------
-    #ŦEST: test if alpha dynamic input is function
-    print("Testing dynamic input of alpha: ")
-    #scalar polarisability
-    a_scalar=a[:,1,1]
-
-    #DDA solving-tensor
-    p,e_inc=DDACore.solve_DDA_e(knorm,r,a,InputFields.plane_wave,verbose=false)
-    #DDA solving-tensor
-    p_scalar,e_inc_scalar=DDACore.solve_DDA_e(knorm,r,a_scalar,InputFields.plane_wave,verbose=false)
-    #testing
-    @test maximum(abs.(p).-abs.(p_scalar))<1e-10
-    @test maximum(abs.(e_inc).-abs.(e_inc_scalar))<1e-10
-    println("passed")
-
-    #------Dimentionless with or without input field get the same--------
-    #ŦEST: test if
-    print("Testing that dimensional and adimensional version gives the same: ")
-    #with input field
-    #DDA solving-tensor
-    p,e_inc=DDACore.solve_DDA_e(knorm,r,a,InputFields.plane_wave,verbose=false)
-    #DDA solving-tensor
-    p_dl,e_inc_dl=DDACore.solve_DDA_e(knorm*r,knorm^3/4/pi*a,InputFields.plane_wave_renorm,verbose=false)
-    #testing
-    @test maximum(abs.(knorm^3/4/pi*p).-abs.(p_dl))<1e-10
-    @test maximum(abs.(e_inc).-abs.(e_inc_dl))<1e-10
-    #without input field
-    #DDA solving-tensor
-    mat=DDACore.solve_DDA_e(knorm,r,a,verbose=false)
-    #DDA solving-tensor
-    mat_dl=DDACore.solve_DDA_e(knorm*r,knorm^3/4/pi*a,verbose=false)
-    #testing
-    @test maximum(abs.(mat).-abs.(mat_dl))<1e-10
-    println("passed")
-
-
-
+    ##############################
     println("")
-    println("***")
-    println("electric and magnetic DDA")
-    println("***")
-    println("")
-
-    #------Consevation of energy--------
-    #ŦEST: test if energy is conserved by the DDA process by comparing the cross sections
-    print("Testing conservation of energy: ")
-    #lattice parameter
-    d=1e-8
-    rad=230e-9
-    #position of one dipole
-    latt=[0 0 0;0 0 d]
-    #dielectric constant
-    e=(3.5+im*0.01)
-    #norm of the wave vector
-    knorm=2*pi/1500e-9
-    #generate polarisabilities
-    n=length(latt[:,1])
-    alpha_e=zeros(ComplexF64,n,3,3)
-    alpha_m=zeros(ComplexF64,n,3,3)
-    for j=1:n
-        ae,am=Alphas.alpha_e_m_mie_renorm(knorm,rad,sqrt(e),1)
-        alpha_e[j,:,:]=copy(ae*[1 0 0;0 1 0;0 0 1])
-        alpha_m[j,:,:]=copy(am*[1 0 0;0 1 0;0 0 1])
-    end
-    #computing polarisabilitite
-
-    #DDA solving--adimensional inputs
-    p,m,e_inc,h_inc,e_inp,h_inp=DDACore.solve_DDA_e_m(knorm*latt,alpha_e,alpha_m,InputFields.plane_wave_e_m_renorm,verbose=false)
-    #computing cross sections
-    res=PostProcessing.compute_cross_sections_e_m(knorm,latt[:,1:3],p,m,e_inc,h_inc,e_inp,h_inp,alpha_e,alpha_m,verbose=false)
-    #testing
-    @test real(res[2])-real(res[3])-real(res[4])<10^(-10)
-    println("passed")
-
-    #------Alpha dynamic input--------
-    #ŦEST: test if alpha dynamic input is function
-    print("Testing dynamic input of alpha: ")
-    #scalar polarisability
-    ae_scalar=alpha_e[:,1,1]
-    am_scalar=alpha_m[:,1,1]
-    #DDA solving-tensor
-    p,m,e_inc,h_inc,e_inp,h_inp=DDACore.solve_DDA_e_m(knorm*latt,alpha_e,alpha_m,InputFields.plane_wave_e_m_renorm,verbose=false)
-    #DDA solving-tensor
-    p_s,m_s,e_inc_s,h_inc_s,e_inp_s,h_inp_s=DDACore.solve_DDA_e_m(knorm*latt,ae_scalar,am_scalar,InputFields.plane_wave_e_m_renorm,verbose=false)
-    #testing
-    @test maximum(abs.(p).-abs.(p_s))<1e-10
-    @test maximum(abs.(e_inc).-abs.(e_inc_s))<1e-10
-    println("passed")
-
-    #------Dimentionless with or without input field get the same--------
-    #ŦEST: test if
-    print("Testing that dimensional and adimensional version gives the same: ")
-    #with input field
-    #DDA solving-tensor
-    p,m,e_inc,h_inc,e_inp,h_inp=DDACore.solve_DDA_e_m(knorm*latt,alpha_e,alpha_m,InputFields.plane_wave_e_m_renorm,verbose=false)
-    #DDA solving-tensor
-    p_dl,e_inc_dl=DDACore.solve_DDA_e(knorm*r,knorm^3/4/pi*a,InputFields.plane_wave_renorm,verbose=false)
-    #testing
-    @test maximum(abs.(knorm^3/4/pi*p).-abs.(p_dl))<1e-10
-    println(knorm^3/4/pi*p)
-    println(p_dl)
-    @test maximum(abs.(e_inc).-abs.(e_inc_dl))<1e-10
-    println(e_inc)
-    println(e_inc_dl)
-    #without input field
-    #DDA solving-tensor
-    mat=DDACore.solve_DDA_e(knorm,r,a,verbose=false)
-    #DDA solving-tensor
-    mat_dl=DDACore.solve_DDA_e(knorm*r,knorm^3/4/pi*a,verbose=false)
-    #testing
-    @test maximum(abs.(mat).-abs.(mat_dl))<1e-10
-    println("passed")
 end
-#--------------------------------
+
+#testing cross sections
+if TEST_CS
+    ##########################
+    print("Testing CS e: ")
+    #params
+    knorm=rand()
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    input_field=InputFields.plane_wave_e(kr)
+    #solve DDA
+    e_inc=DDACore.solve_DDA_e(kr,alpha_e,input_field=input_field,verbose=false)
+    #compute cross section
+    res=PostProcessing.compute_cross_sections_e(knorm,kr,e_inc,alpha_e,input_field;explicit_scattering=true,verbose=false)
+    #test optical theorem
+    @test (res[1]-res[2]-res[3])<epsilon
+    println("passed")
+    ###########################
+
+    ##########################
+    print("Testing diff CS e: ")
+    x,y,z,w = lebedev_by_order(13)
+    csca_int=4 * pi * dot(w,PostProcessing.diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e,input_field,[x y z],verbose=false))
+    @test abs(res[3]-csca_int)<epsilon
+    println("passed")
+    ###########################
+
+    ##########################
+    print("Testing CS em: ")
+    #params
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    alpha_m=rand(ComplexF64,N)
+    input_field=InputFields.plane_wave_e_m(kr)
+    #solve DDA
+    phi_inc=DDACore.solve_DDA_e_m(kr,alpha_e,alpha_m,input_field=input_field,verbose=false)
+    #compute cross section
+    res=PostProcessing.compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e,alpha_m,input_field;explicit_scattering=true,verbose=false)
+    #test optical theorem
+    @test (res[1]-res[2]-res[3])<epsilon
+    println("passed")
+    ###########################
+
+    ##########################
+    print("Testing diff CS em: ")
+    x,y,z,w = lebedev_by_order(13)
+    csca_int=4 * pi * dot(w,PostProcessing.diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e,alpha_m,input_field,[x y z],verbose=false))
+    @test abs(res[3]-csca_int)<epsilon
+    println("passed")
+    ###########################
+    println("")
+end 
+
+
+#testing LDOS
+if TEST_LDOS
+
+    ##########################
+    print("Testing LDOS e: ")
+    #system parameters
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    #compute LDOS
+    A_inv=DDACore.solve_DDA_e(kr,alpha_e,verbose=false)
+    krd=rand(1,3)
+    LDOS=PostProcessing.ldos_e(kr, alpha_e, A_inv, krd; dip=1,verbose=false)
+    #compute rad and nonrad LDOS
+    inp=InputFields.point_dipole_e(kr,krd[1,:],1)
+    e_inc=DDACore.solve_DDA_e(kr,alpha_e,input_field=inp,verbose=false)
+    p=PostProcessing.compute_dipole_moment(alpha_e,e_inc[:,1:3])
+    radLDOS=PostProcessing.rad_ldos_e(kr,krd,p,[1,0,0],verbose=false)
+    nonradLDOS=PostProcessing.nonrad_ldos_e(p,e_inc,[1,0,0],verbose=false)
+    #energy balance test
+    @test (LDOS-radLDOS-nonradLDOS)<epsilon
+    println("passed")
+    ##############################
+
+    ##########################
+    print("Testing LDOS em: ")
+    #system parameters
+    kr=rand(N,3)
+    alpha_e=rand(ComplexF64,N)
+    alpha_m=rand(ComplexF64,N)
+    #compute LDOS
+    A_inv=DDACore.solve_DDA_e_m(kr,alpha_e,alpha_m,verbose=false)
+    krd=rand(1,3)
+    LDOS=PostProcessing.ldos_e_m(kr, alpha_e, alpha_m, A_inv, krd; dip=1,verbose=false)
+    #compute rad and nonrad LDOS
+    inp=InputFields.point_dipole_e_m(kr,krd[1,:],1)
+    phi_inc=DDACore.solve_DDA_e_m(kr,alpha_e,alpha_m,input_field=inp,verbose=false)
+    p=PostProcessing.compute_dipole_moment(alpha_e,phi_inc[:,1:3])
+    m=PostProcessing.compute_dipole_moment(alpha_m,phi_inc[:,4:6])
+    radLDOS=PostProcessing.rad_ldos_e_m(kr,krd,p,m,[1,0,0,0,0,0],verbose=false)
+    nonradLDOS=PostProcessing.nonrad_ldos_e_m(p,m,phi_inc,[1,0,0,0,0,0],verbose=false)
+    #energy balance test
+    @test (LDOS-radLDOS-nonradLDOS)<epsilon
+    println("passed")
+    ##############################
+    println("")
+end

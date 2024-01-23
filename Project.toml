@@ -4,10 +4,7 @@ authors = ["augustinmuster <augustin@must-r.com>"]
 version = "0.1.0"
 
 [deps]
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
-IterativeSolvers = "42fd0dbc-a981-5370-80f2-aaf504508153"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Cubature = "667455a9-e2ce-5579-9412-b964f529a492"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
-LinearSolveCUDA = "0d26bed2-170e-468a-8415-1cfcbba6e180"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
