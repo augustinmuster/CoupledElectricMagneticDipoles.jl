@@ -441,7 +441,7 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
         println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
-    if lenght(dip)==3
+    if length(dip)==3
         P0=4*pi/3*norm(dip)^2
     else
         P0=4*pi/3
@@ -492,7 +492,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
         println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
-    if lenght(dip)==6
+    if length(dip)==6
         P0=4*pi/3*(norm(dip[1:3])^2+norm(dip[4:6])^2)
     else
         P0=4*pi/3
@@ -530,7 +530,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
         println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
-    if lenght(dip)==6
+    if length(dip)==6
         P0=4*pi/3*(norm(dip[1:3])^2+norm(dip[4:6])^2)
     else
         P0=4*pi/3
