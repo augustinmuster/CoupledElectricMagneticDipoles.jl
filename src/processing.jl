@@ -422,7 +422,7 @@ end
 
 @doc raw"""
     emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
-Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric dipoles in direction(s) of position(s) `krf`.
+Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
@@ -433,7 +433,7 @@ Computes the differential emitted power ``d \P/ d\Omega`` of a system made out o
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0``.
 """
 function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
     #logging
@@ -472,7 +472,7 @@ end
 
 @doc raw"""
     emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
-Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) of position(s) `krf`.
+Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
@@ -484,7 +484,7 @@ Computes the differential emitted power ``d \P/ d\Omega`` of a system made out o
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0``.
 """
 function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
     #logging
