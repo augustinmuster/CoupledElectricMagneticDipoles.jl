@@ -1,13 +1,13 @@
 # Example: Yagi-Uda Antenna Made Out of Silicon particles.
 
-In this example, we will simulate a Yagi-Uda antenna made out of small silicon spheres (like in Krasnok et al., Opt. Express *20*, 20599-20604 (2012), click [here](https://opg.optica.org/oe/fulltext.cfm?uri=oe-20-18-20599&id=240909) for more information). For this, we will create a linear structure of small as follows: 
+In this example, we will simulate a Yagi-Uda antenna made out of small silicon spheres (like in Krasnok et al., Opt. Express *20*, 20599-20604 (2012), click [here](https://opg.optica.org/oe/fulltext.cfm?uri=oe-20-18-20599&id=240909) for more information). For this, we will create a linear structure of small particles as follows: 
 
 
 ```@raw html
 <img src="../assets/YU_design.png">
 ```
 
-At the origin, we place a silicon sphere of 230nm called the reflector. After a bigger spacing of 355nm + 1800nm in which we will place the emitter (an oscillating dipole source aligned along the y-axis), we align on the z-axis 10 silicon spheres with a radius of 200nm, (center to center spacing: 400nm). We will then compute the emission pattern, in order to investigate the directionality of this antenna.  
+Note that the spacings described below have to be understood as center-to center spacing. At the origin, we place a silicon sphere with a radius of 245nm called the reflector. After a bigger spacing of 245nm + 355nm + 1800nm + 200nm = 2600 nm in which we will place the emitter (an oscillating dipole source aligned along the y-axis) at a distance of 600 nm from the origin, we align on the z-axis 10 silicon spheres called directors with a radius of 200nm, (center to center spacing: 400nm). We will then compute the emission pattern of this structure, in order to investigate the directionality of this antenna.  
 
 We suppose that you already know the example of the PS sphere. So if you haven't had a look to it before, read it first. If you want to know about the electric and magnetic DDA problem, have a look at the theory as well.
 
@@ -17,7 +17,6 @@ If you want to run this example, copy it or download it on GitHub (`example_yagi
 julia example_yagi_uda.jl
 
 ```
-If you can, it is recommended to run it in parallel, using the `--threads` option. 
 
 # Setting the Structure
 
@@ -113,7 +112,26 @@ input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0,0,0.355],2)
 phi_inc=DDACore.solve_DDA_e_m(knorm*r,alpha_e,alpha_m,input_field=input_field,solver="CPU")
 ```
 
-And since we know the incident fields, we can compute the emission pattern of the antenna by sampling directions in the y-z plane and computing the differential emitted power in these directions. Note that here we renormalize it by the power of the source dipole ``P_0`` (or `power_0` in the code).
+And since we know the incident fields, we can compute the emission pattern of the antenna by sampling directions in the y-z plane. Note that the output of the function is given in units of the total power emitted by the dipole ``P_0``.
+
+```julia
+#sample directions in the y-z plane
+thetas=LinRange(0,2*pi,200)
+krf=zeros(200,3)
+krf[:,3]=1000*knorm*cos.(thetas)
+krf[:,2]=1000*knorm*sin.(thetas)
+
+#emission pattern of the antenna
+res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,krf,krd,2)
+
+#plotting
+fig2=plt.figure()
+ax2 = fig2.add_subplot(projection="polar")
+ax2.set_title(L"d P/ d \Omega\ (P_0)")
+ax2.plot(thetas,res,label="y-z plane")
+ax2.legend()
+fig2.savefig("diff_P.svg")
+```
 
 ```@raw html
 <img src="../assets/diff_P.svg">

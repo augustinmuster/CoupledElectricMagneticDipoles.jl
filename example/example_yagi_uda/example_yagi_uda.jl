@@ -66,7 +66,8 @@ for i=1:N_dir+1
     alpha_e[i],alpha_m[i]=Alphas.alpha_e_m_mie(knorm*as[i],eps,1)
 end
 #computes the input input_field
-input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0,0,0.355],2)
+krd=knorm*[0,0,0.355+0.245] #position of the emitter
+input_field=InputFields.point_dipole_e_m(knorm*r,krd,2)
 
 #solves DDA electric and magnetic
 phi_inc=DDACore.solve_DDA_e_m(knorm*r,alpha_e,alpha_m,input_field=input_field,solver="CPU")
@@ -77,12 +78,8 @@ krf=zeros(200,3)
 krf[:,3]=1000*knorm*cos.(thetas)
 krf[:,2]=1000*knorm*sin.(thetas)
 
-phi_krf=InputFields.point_dipole_e_m(krf,knorm*[0,0,0.355],2)
-
-#power emittes by the source
-power_0=4*pi/3/knorm^2
-
-res=PostProcessing.diff_emitted_power_e_m(knorm,knorm*r,phi_inc,alpha_e,alpha_m,krf,phi_krf)./power_0
+#emission pattern of the antenna
+res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,krf,krd,2)
 
 #plotting
 fig2=plt.figure()
