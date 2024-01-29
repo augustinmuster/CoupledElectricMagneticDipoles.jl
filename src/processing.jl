@@ -435,7 +435,7 @@ Computes the differential emitted power ``d \P/ d\Omega`` of a system made out o
 # Outputs
 - an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter.
 """
-function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
+function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
