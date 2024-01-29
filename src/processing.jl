@@ -421,110 +421,142 @@ function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field
 end
 
 @doc raw"""
-    diff_emitted_power_e(knorm,kr,e_inc,alpha_e_dl,krf,phi_inp_krf;verbose=true)
+    emission_pattern_e(kkr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
 
 Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
-- `knorm`: wavenumber in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole.
-- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
-- `phi_inp_krf`: like `input_field`, but evaluated at the `krf` positions.
+- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more than 1 direction) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
+- `dip`: integer defining the dipole moment of the emitter (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in direction directions.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter.
 """
-function diff_emitted_power_e(knorm,kr,e_inc,alpha_e_dl,krf,phi_inp_krf;verbose=true)
+function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
     #logging
     if verbose
         println("computing differential emitted power...")
     end
+    #computation of the emitted power bxy the dipole source
+    if lenght(dip)==3
+        P0=4*pi/3*norm(dip)^2
+    else
+        P0=4*pi/3
+    end
     #if only one direction
     if ndims(krf)==1
-        poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf).+phi_inp_krf)
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        #poynting vector calculations
+        poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf).+input_field_krf)
         pow=real((norm(krf)/knorm)^2*dot(poynting,krf/norm(krf)))
-        return real(pow)
+        return real(pow/P0)
     #if more than one, i.e. 2D array
     else
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        #
         nur=length(krf[:,1])
         pow=zeros(nur)
         for i=1:nur
-            poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf[i,:]).+phi_inp_krf[i,:])
+            poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf[i,:]).+input_field_krf[i,:])
             pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
-        return real(pow)
+        return real(pow/P0)
     end
 end
 
 
 @doc raw"""
-    diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)
+    emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
 
 Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
-- `knorm`: wavenumber in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole.
 - `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
-- `phi_inp_krf`: like `input_field`, but evaluated at the `krf` positions.
+- `dip`: integer defining the dipole moment of the emitter (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in direction directions.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter.
 """
-function diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)
+function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing differential emitted power...")
     end
+    #computation of the emitted power bxy the dipole source
+    if lenght(dip)==6
+        P0=4*pi/3*(norm(dip[1:3])^2+norm(dip[4:6])^2)
+    else
+        P0=4*pi/3
+    end
     #if only one direction
     if ndims(krf)==1
-        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+phi_inp_krf)
-        pow=real((norm(krf)/knorm)^2*dot(poynting,krf/norm(krf)))
-        return real(pow)
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        #
+        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
+        pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
+        return real(pow/P0)
     #if more than one, i.e. 2D array
     else
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        #
         nur=length(krf[:,1])
         pow=zeros(nur)
         for i=1:nur
-            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf[i,:]).+phi_inp_krf[i,:])
-            pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
+            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf[i,:]).+input_field_krf[i,:])
+            pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
-        return real(pow)
+        return real(pow/P0)
     end
 end
 
 @doc raw"""
-    diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)
+    emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
 Same as `diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
 """
-function diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_dl,krf,phi_inp_krf;verbose=true)
+function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing differential emitted power...")
     end
+    #computation of the emitted power bxy the dipole source
+    if lenght(dip)==6
+        P0=4*pi/3*(norm(dip[1:3])^2+norm(dip[4:6])^2)
+    else
+        P0=4*pi/3
+    end
     #if only one direction
     if ndims(krf)==1
-        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf).+phi_inp_krf)
-        pow=real((norm(krf)/knorm)^2*dot(poynting,krf/norm(krf)))
-        return real(pow)
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        #
+        poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf).+input_field_krf)
+        pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
+        return real(pow/P0)
     #if more than one, i.e. 2D array
     else
+        #input field on the positions krf
+        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        #
         nur=length(krf[:,1])
         pow=zeros(nur)
         for i=1:nur
-            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf[i,:]).+phi_inp_krf[i,:])
-            pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
+            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf[i,:]).+input_field_krf[i,:])
+            pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
-        return real(pow)
+        return real(pow/P0)
     end
 end
 
