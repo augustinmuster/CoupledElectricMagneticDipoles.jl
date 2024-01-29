@@ -500,7 +500,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
     #if only one direction
     if ndims(krf)==1
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dip)
         #
         poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
         pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
@@ -508,7 +508,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
     #if more than one, i.e. 2D array
     else
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dip)
         #
         nur=length(krf[:,1])
         pow=zeros(nur)
@@ -538,7 +538,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     #if only one direction
     if ndims(krf)==1
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dip)
         #
         poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf).+input_field_krf)
         pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
@@ -546,7 +546,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     #if more than one, i.e. 2D array
     else
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dip)
         #
         nur=length(krf[:,1])
         pow=zeros(nur)
