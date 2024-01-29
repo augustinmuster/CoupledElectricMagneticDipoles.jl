@@ -439,7 +439,7 @@ Computes the differential emitted power ``d \P/ d\Omega`` of a system made out o
 function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
     #logging
     if verbose
-        println("computing differential emitted power...")
+        println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
     if lenght(dip)==3
@@ -491,7 +491,7 @@ Computes the differential emitted power ``d \P/ d\Omega`` of a system made out o
 function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
-        println("computing differential emitted power...")
+        println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
     if lenght(dip)==6
@@ -529,7 +529,7 @@ Same as `diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_i
 function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
-        println("computing differential emitted power...")
+        println("computing emission pattern...")
     end
     #computation of the emitted power bxy the dipole source
     if lenght(dip)==6
