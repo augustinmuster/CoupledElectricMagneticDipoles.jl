@@ -421,8 +421,7 @@ function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field
 end
 
 @doc raw"""
-    emission_pattern_e(kkr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
-
+    emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
 Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
@@ -473,7 +472,6 @@ end
 
 @doc raw"""
     emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
-
 Computes the differential emitted power ``d \P/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
