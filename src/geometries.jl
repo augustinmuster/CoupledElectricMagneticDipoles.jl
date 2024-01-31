@@ -14,7 +14,7 @@ using LinearAlgebra
 @doc raw"""
     discretize_sphere(a,N;N_sub=10)
 
-Discretizes the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the anti-aliasing accuracy of the discretisation. It is by default set to 10.
+Discretizes the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the anti-aliasing accuracy of the discretization. It is by default set to 10.
 If ``N_d`` is the obtained number of cubes, the output is an ``N_d \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction. Returns as well the size of the edge of the cubes `dx`.
 """
 function discretize_sphere(a,N;N_sub=10)

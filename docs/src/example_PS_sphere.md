@@ -1,8 +1,8 @@
 # Total and Differential Scattering Cross Sections of a Polystyrene Sphere
 
-This example aims to teach the user how to use CEMD.jl in only electric mode. For this we will compute the total and differential scattering cross section of a polystyrene (PS) sphere with a radius of 500nm in water. We will then compare it with mie theory.
+This example aims to teach the user how to use CEMD.jl in only electric mode. For this we will compute the total and differential scattering cross section of a polystyrene (PS) sphere with a radius of 500nm in water. We will then compare it with Mie theory.
 
-**Be careful:** using the electric DDA a for solving this type of problems is not optimal at all (way to slow and not accurate). The sizes and refractive indices used in this example make the problem converge reasonably well (see last section) and is then a nice figure of merit for this software. If you need to solve the light scattering of a sphere, it is better to use directly Mie theory. 
+**Be careful:** using the electric DDA for solving this type of problems is not optimal at all (way to slow and not accurate). The sizes and refractive indices used in this example make the problem converge reasonably well (see last section) and is then a nice figure of merit for this software. If you need to solve the light scattering problem of a sphere, it is better to use directly Mie theory. 
 
 If you don't now what a DDA problem is, please first have a look to the theory part.
 

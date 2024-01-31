@@ -2,7 +2,7 @@
 
 The PostProcessing module allows you to process the results of a CEMD calculation. Mostly for:
 
-- Computing cross sections and differential emitted power. 
+- Computing cross sections and emission pattern. 
 - Computing scattered fields.
 - Computing local density of states (LDOS).
 
@@ -35,15 +35,15 @@ CoupledElectricMagneticDipoles.PostProcessing.diff_scattering_cross_section_e_m(
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e(knorm,kr,e_inc,alpha_e_dl,krf,phi_inp_krf;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_dl,krf,phi_inp_krf;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
 ```
 ### Functions for Scattered Fields
 

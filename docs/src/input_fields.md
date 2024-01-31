@@ -14,7 +14,7 @@ CoupledElectricMagneticDipoles.InputFields.plane_wave_e
 CoupledElectricMagneticDipoles.InputFields.plane_wave_e_m
 ```
 
-### Point Dipoles Sources
+### Point Dipole Sources
 ```@docs
 CoupledElectricMagneticDipoles.InputFields.point_dipole_e
 ```

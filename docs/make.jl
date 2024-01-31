@@ -10,6 +10,7 @@ using Base
 
 mathengine = Documenter.MathJax3()
 makedocs(
+         checkdocs =:none,
          sitename = "CoupledElectricMagneticDipoles.jl",
          modules  = [CoupledElectricMagneticDipoles],
          pages=[
@@ -31,3 +32,4 @@ makedocs(
                     "Optical Trap"=> "example_force_gaussbeam_PS_sphere.md"
                 ]
                ])
+

@@ -56,7 +56,7 @@ Note that it should follow the optical theorem, i.e.
 ```
 
 # Arguments
-- `knorm`: wavenumber in the medium.
+- `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
@@ -65,7 +65,7 @@ Note that it should follow the optical theorem, i.e.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- a float array of length 3 containing in order: extinction, absorption and scattering cross section.
+- a float array of length 3 containing in order: extinction, absorption and scattering cross section. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
 """
 function compute_cross_sections_e(knorm,kr,e_inc,alpha_e_dl,input_field;explicit_scattering=true,verbose=true)
     if verbose
@@ -128,17 +128,17 @@ Note that it should follow the optical theorem, i.e.
 ```
 
 # Arguments 
-- `knorm`: wavenumber in the medium.
+- `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave**.
+- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\Phi}_0=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave**.
 - `explicit_scattering`: boolean that says whether to compute scttering cross section explicitely (`true`) or to deduce it from the optical theorem (`false`). By default set to `true`.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- a float array of length 3 containing in order: extinction, absorption and scattering cross section.
+- a float array of length 3 containing in order: extinction, absorption and scattering cross section. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
 """
 function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field;explicit_scattering=true,verbose=true)
     #redefine things
@@ -229,7 +229,7 @@ end
 @doc raw"""
     poynting_vector(phi)
 Computes the poynting vector of an electromagnetic field. Input is an electric and magnetic field `phi`(1D complex Array of length 6).
-Outputs a 1D float array of length 3.
+Outputs a 1D float array of length 3 in units of electriqc field squared.
 """
 function poynting_vector(phi)
     return 0.5*real(cross(phi[1:3],conj(phi[4:6])))
@@ -242,7 +242,7 @@ end
 Computes the differential scattering cross section ``d \sigma_{sca}/ d\Omega`` of a system made out of electric dipoles in direction(s) `ur`.
 
 # Arguments
-- `knorm`: wavenumber in the medium.
+- `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
@@ -251,7 +251,7 @@ Computes the differential scattering cross section ``d \sigma_{sca}/ d\Omega`` o
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential cross section in each direction.
+- an array containing the differential cross section in each direction. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
 """
 function diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,ur;verbose=true)
     #logging
@@ -308,17 +308,17 @@ end
 Computes the differential scattering cross section ``d \sigma_{sca}/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) `ur`.
 
 # Arguments 
-- `knorm`: wavenumber in the medium.
+- `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave.**
+- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\Phi}_0=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave.**
 - `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` where the diffrential scattering cross section is computed.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential cross section in each direction.
+- an array containing the differential cross section in each direction. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
 """
 function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur;verbose=true)
     #logging
@@ -370,7 +370,7 @@ end
 
 @doc raw"""
     diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field,ur;verbose=true)
-Same as `compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field;explicit_scattering=true,verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
+Same as `diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
 """
 function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field,ur;verbose=true)
     #logging
@@ -476,7 +476,7 @@ Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
@@ -566,7 +566,7 @@ Computes the scattered field from a system made out of electric and magnetic dip
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
@@ -708,7 +708,7 @@ Computes the scattered field from a system made out of electric and magnetic dip
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole. Note that these positions have to be far away from the dipoles positions.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
 
 # Outputs
@@ -799,7 +799,7 @@ Computes local density of states (LDOS) of a system made out of electric and mag
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- `LDOS`: float array with the LDOS.
+- `LDOS`: float array with the LDOS normalized by the LDOS in the host media without scatterers.
 """
 function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=true)
     #logging
@@ -924,7 +924,7 @@ It Computes local density of states (LDOS) of a system made out of electric dipo
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
-- `LDOS`: float array with the LDOS.
+- `LDOS`: float array with the LDOS normalized by the LDOS in the host media without scatterers.
 """
 function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
     #logging
@@ -989,7 +989,7 @@ Computes the radiative part of the LDOS of a system of electric dipoles with a p
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs
-- 1D float array containing the normalized radiative LDOS at everey position of `krd`.
+- 1D float array containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at everey position of `krd`.
 """
 function rad_ldos_e(kr,krd,p,dip;verbose=true)
     #adding the source to the list of dipoles
@@ -1025,7 +1025,7 @@ Computes the radiative part of the LDOS of a system of electric and magnetic dip
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs
-- 1D float array containing the normalized radiative LDOS at everey position of `krd`.
+- 1D float array containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at everey position of `krd`.
 """
 function rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
     #adding the source to the list of dipoles
@@ -1084,7 +1084,7 @@ Computes the non-radiative part of the LDOS of a system of electric dipoles with
 # Arguments
 - `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
 - `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs

@@ -14,7 +14,7 @@ include("green_tensors_e_m.jl")
 
 @doc raw"""
     plane_wave_e(krf;khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization. The user is responsible for using physical inputs.
+Computes a simple plane wave with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization. The user is responsible for using physical inputs.
 `krf` is a ``N\times 3`` float array. 
 The output is a ``N\times 3`` complex array representing the electric field.
 """
@@ -31,7 +31,7 @@ end
 
 @doc raw"""
     plane_wave_e_m(krf;khat=[0,0,1],e0=[1,0,0])
-Computes a simple plane with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization.The user is responsible for using physical inputs.
+Computes a simple plane wave  with dimensionless input evaluated at `krf`. `khat` is the direction of propagation and `e0` is the polarization. The user is responsible for using physical inputs.
 `krf` is a ``N\times 3`` float array. 
 The output is a ``N\times 6`` complex array representing the electric and magnetic fields.
 """
@@ -49,7 +49,7 @@ end
 @doc raw"""
     point_dipole_e_m(krf, krd, dip, e0=1)
 
-Computes the electric and magnetic fields emitted by a point dipole.
+Computes the electric and magnetic fields emitted by an electric and/or magnetic point dipole.
 
 # Arguments
 
@@ -86,7 +86,7 @@ end
 @doc raw"""
     point_dipole_e(krf, krd, dip, e0_const=1)
 
-Computes the electric field emitted by a point dipole.
+Computes the electric field emitted by an electric point dipole.
 
 # Arguments
 - `krf`: 2D float array of size ``N\times 3`` containing the dimensionless positions ``k\mathbf{r}`` where the field is computed.
@@ -95,7 +95,7 @@ Computes the electric field emitted by a point dipole.
 - `e0`: scalar with the modulus of the dipole moment. 
 
 # Outputs
-- `e_dipole`:2D ``N\times 3`` complex array with the electromagnetic field.
+- `e_dipole`: 2D ``N\times 3`` complex array with the electromagnetic field.
 """
 function point_dipole_e(krf, krd, dip; e0=1)
     n_r0 = length(krf[:,1])
@@ -411,7 +411,7 @@ end
 
 @doc raw"""
     d_plane_wave_e(kr;khat=[0,0,1],e0=[1,0,0])
-Computes the derivatives of an electric field generated with `plane_wave_e` (the arguments are the same).
+Computes the spatial derivatives of an electric field generated with `plane_wave_e` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 3`` containing the field derivatives with respect `k*x`, `k*y` and `k*z`.
 """
 function d_plane_wave_e(kr;khat=[0,0,1],e0=[1,0,0])
@@ -432,7 +432,7 @@ end
 
 @doc raw"""
     d_plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
-Computes the derivatives of an electromagnetic field generated with `plane_wave_e_m` (the arguments are the same).
+Computes the spatial derivatives of an electromagnetic field generated with `plane_wave_e_m` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_plane_wave_e_m(kr;khat=[0,0,1],e0=[1,0,0])
@@ -455,7 +455,7 @@ end
 
 @doc raw"""
     d_point_dipole_e_m(krf, krd, dip, e0=1)
-Computes the derivatives of an electromagnetic field generated with `point_dipole_e_m` (the arguments are the same).
+Computes the spatial derivatives of an electromagnetic field generated with `point_dipole_e_m` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_point_dipole_e_m(krf, krd, dip; e0=1)
@@ -493,7 +493,7 @@ end
 
 @doc raw"""
     d_point_dipole_e(krf, krd, dip, e0=1)
-Computes the derivatives of an electric field generated with `point_dipole_e` (the arguments are the same).
+Computes the spatial derivatives of an electric field generated with `point_dipole_e` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 3`` containing the field derivatives with respect `k*x`, `k*y` and `k*z`.
 """
 function d_point_dipole_e(krf, krd, dip; e0=1)
@@ -531,7 +531,7 @@ end
 
 @doc raw"""
     d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
-Computes the derivatives of an electromagnetic field generated with `gaussian_beam_e_m` (the arguments are the same).
+Computes the spatial derivatives of an electromagnetic field generated with `gaussian_beam_e_m` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 6`` containing the field derivatives with respect of `k*x`, `k*y` and `k*z`.
 """
 function d_gaussian_beam_e_m(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
@@ -645,7 +645,7 @@ end
 
 @doc raw"""
     d_gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))
-Computes the derivatives of an electric field generated with `gaussian_beam_e` (the arguments are the same).
+Computes the spatial derivatives of an electric field generated with `gaussian_beam_e` (the arguments are the same).
 Outputs three 2D arrays of size ``N\times 3`` containing the field derivatives with respect `k*x`, `k*y` and `k*z`.
 """
 function d_gaussian_beam_e(krf, kbw0; n = 0, m = 0, kind = "hermite", e0 = 1, kmax = nothing, maxe=Int(5e3))

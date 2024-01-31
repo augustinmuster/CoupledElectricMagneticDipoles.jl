@@ -237,15 +237,15 @@ Builds and solves the DDA equations with dimensionless inputs under a given inpu
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\phi}=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. It can also be a 3D array of size ``N_f\times N\times 3``, allowing to solve the problem for several input fields without re-inverting the matrix. This is a keyword argument. If `input_field=nothing` (default value), the output of the function will be the inverse of the DDA matrix.
+- `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\Phi}_0=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. It can also be a 3D array of size ``N_f\times N\times 3``, allowing to solve the problem for several input fields without re-inverting the matrix. This is a keyword argument. If `input_field=nothing` (default value), the output of the function will be the inverse of the DDA matrix.
 - `solver`:string that contains the name of the solver that need to be used. For this, check the `DDACore.solve_system` function documentation. By default set to "CPU".
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 
 # Outputs
 
 Depending on the value of `input field`, it can be:
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole, if `input_field` is a 2D array.
-- `phi_inc`: 3D complex array of size ``N_f\times N\times 6`` containing the incident electric and magnetic field ``\mathbf{\phi}=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole for each input field, if `input_field` is a 3D array.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_0=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole, if `input_field` is a 2D array.
+- `phi_inc`: 3D complex array of size ``N_f\times N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_0=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole for each input field, if `input_field` is a 3D array.
 - `Ainv`: complex matrix of size ``6N\times 6N``, if `input_field=nothing`.
 """
 function solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;input_field=nothing,solver="CPU",verbose=true)

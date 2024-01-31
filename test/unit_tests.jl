@@ -5,10 +5,10 @@ using LinearAlgebra
 using Lebedev
 #FLAGS
 #in order to skip a test group, set the appropriate falg to false
-TEST_GREENTENSORS=false
-TEST_DDACORE=false
-TEST_CS=false
-TEST_LDOS=false
+TEST_GREENTENSORS=true
+TEST_DDACORE=true
+TEST_CS=true
+TEST_LDOS=true
 #parameters for the test
 N=10
 epsilon=1e-8

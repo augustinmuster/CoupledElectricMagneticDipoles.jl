@@ -40,7 +40,7 @@ function alpha0_sphere(a,eps,eps_h)
 end
 
 @doc raw"""
-    alpha0_volume(a,eps,eps_h)
+    alpha0_volume(V,eps,eps_h)
 Computes the quasistatic polarizability of any object with volume `V` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
 Outputs a float with units of volume.
 """
@@ -50,8 +50,8 @@ end
 
 @doc raw"""
     alpha_radiative(alpha0,knorm)
-Applies the radiative correction to the polarizability tensor or scalar `alpha0` (with units of volume).
-Outputs a (3x3) complex dimensionless scalar or tensor computed as follow:
+Applies the radiative correction to the polarizability matrix or scalar `alpha0` (with units of volume).
+Outputs a (3x3) complex dimensionless scalar or matrix.
 """
 function alpha_radiative(alpha0,knorm)
     if ndims(alpha0)==0
@@ -64,7 +64,7 @@ end
 
 
 @doc raw"""
-    alpha_e_m_mie(vac_knorm,a,eps,eps_h)
+    alpha_e_m_mie(ka,eps,eps_h;mu=1,mu_h=1)
 Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
 Outputs two dimensionless scalars that are respectively the electric and the magnetic polarizability.
 """
@@ -77,7 +77,7 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i.
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i.
 
 # Arguments
 - `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
@@ -119,10 +119,10 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i
 
 # Arguments
-- `alpha_dl`: polarizability 6x6 tensor, see the Alphas module's documentation for the accepted formats.
+- `alpha_dl`: polarizability 6x6 complex matrix, see the Alphas module's documentation for the accepted formats.
 - `n_particles`: number of particles (integer)
 
 # Outputs
@@ -147,7 +147,7 @@ end
 
 @doc raw"""
     dispatch_e(alpha_e_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green function with the polarizability of a particle i.
+Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i.
 
 # Arguments
 - `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
@@ -181,7 +181,7 @@ end
 
 @doc raw"""
     renorm_alpha(knorm,alpha)
-Renormalizes any polarizability `alpha` with units of volume in a dimensionless polarizability by multiplying by ``k^3/4\pi``. `knorm` is the wavenumber in the medium.
+Renormalizes any polarizability `alpha` with units of volume in a dimensionless polarizability by multiplying by ``k^3/4\pi``. `knorm` is the wave number in the medium.
 """
 function renorm_alpha(knorm,alpha)
     return alpha.*(knorm^3/4/pi)
@@ -189,7 +189,7 @@ end
 
 @doc raw"""
     denorm_alpha(knorm,alpha)
-Denormalizes any dimensionless polarizability `alpha` in a polarizability with units of volume by multiplying by ``4\pi /k^3``. `knorm` is the wavenumber in the medium.
+Denormalizes any dimensionless polarizability `alpha` in a polarizability with units of volume by multiplying by ``4\pi /k^3``. `knorm` is the wave number in the medium.
 """
 function denorm_alpha(knorm,alpha)
     return alpha.*(4*pi/knorm^3)

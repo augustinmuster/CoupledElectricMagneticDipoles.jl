@@ -1,6 +1,6 @@
 # DDA Core Functionalities
 
-DDACore is the modules allowing to solve CEMD problems (see the "Theory" section for definition of the problem). The problems can be solved either on the CPU (in parrallel with LAPACK) or on the GPU (With CUDA). The list of functions and how to use them is in the next section. Note that ``N`` denotes the number of point dipoles in the problem.
+DDACore is the module allowing to solve CEMD problems (see the "Theory" section for definition of the problem). The problems can be solved either on the CPU (in parrallel with LAPACK) or on the GPU (With CUDA). The list of functions and how to use them is in the next section. Note that ``N`` denotes the number of point dipoles in the problem.
 
 ## Functions List and Documentation
 
