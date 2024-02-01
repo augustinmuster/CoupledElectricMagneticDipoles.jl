@@ -271,7 +271,7 @@ By default, the factor is calculated for a Gaussian Beam in the paraxial approxi
 - `int_size`: size of the integration area in units of ``kbw0``. For high-order beams this parameter should be adjusted.
 
 # Outputs
-- `int_amplitude`: integral of the field amplitude (|E|^2) in the area defined by int_size (x = [-kbw0*int_size, kbw0*int_size], y = [-kbw0*int_size, kbw0*int_size]).
+- `force_factor`: proportionality factor to get the forces in units of Newtons. 
 """
 function force_factor_gaussianbeams(kbw0,power,eps_h;n=0,m=0,kind="hermite", e0 = 1, paraxial=true, kmax = nothing, maxe=Int(1e4), int_size = 5)
     c_const = 3e8/sqrt(eps_h)/e0^2
