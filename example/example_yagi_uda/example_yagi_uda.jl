@@ -74,12 +74,12 @@ phi_inc=DDACore.solve_DDA_e_m(knorm*r,alpha_e,alpha_m,input_field=input_field,so
 
 #sample directions in the y-z plane
 thetas=LinRange(0,2*pi,200)
-krf=zeros(200,3)
-krf[:,3]=1000*knorm*cos.(thetas)
-krf[:,2]=1000*knorm*sin.(thetas)
+ur=zeros(200,3)
+ur[:,3]=knorm*cos.(thetas)
+ur[:,2]=knorm*sin.(thetas)
 
 #emission pattern of the antenna
-res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,krf,krd,2)
+res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,ur,krd,2)
 
 #plotting
 fig2=plt.figure()

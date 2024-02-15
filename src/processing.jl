@@ -551,12 +551,12 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbos
                 max_norm=norm(kr[i,:])
             end
         end
-        krf=knorm*ur*100*max_norm
+        krf=transpose(ur*100*max_norm)
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
+        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dipole)
         #
         poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
-        pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
+        pow=real((norm(krf))^2*dot(poynting,ur))
         return real(pow/P0)
     #if more than one, i.e. 2D array
     else
@@ -577,12 +577,12 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbos
         #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
-            krf=ur[i,:]*100*max_norm
+            krf=transpose(ur[i,:]*100*max_norm)
             #input field on the positions krf
-            input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
+            input_field_krf=InputFields.point_dipole_e_m(krf,krd,dipole)
             #
             poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
-            pow[i]=real(norm((krf))^2*dot(poynting,krf/norm(krf)))
+            pow[i]=real(norm((krf))^2*dot(poynting,ur[i,:]))
         end
         return real(pow/P0)
     end
@@ -783,11 +783,11 @@ function far_field_sca_e(kr,e_inc,alpha_e_dl,krf)
         return res
     #if more than 1, i.e. 2D array
     else
-        nf=length(krf[i,:])
+        nf=length(ComplexF64,krf[:,1])
         res=zeros(nf,6)
         for j=1:nf
             for i=1:n
-                Ge,Gm=GreenTesors.G_em_far_field_renorm(krf[j,:],kr[i,:])
+                Ge,Gm=GreenTensors.G_em_far_field_renorm(krf[j,:],kr[i,:])
                 res[j,1:3]=res[j,1:3]+Ge*alpha_e_dl[i]*e_inc[i,:]
                 res[j,4:6]=res[j,4:6]-im*Gm*alpha_e_dl[i]*e_inc[i,:]
             end
@@ -827,13 +827,13 @@ function far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf)
         return res
     #if more than 1, i.e. 2D array
     else
-        nf=length(krf[i,:])
-        res=zeros(nf,6)
+        nf=length(krf[:,1])
+        res=zeros(ComplexF64,nf,6)
         for j=1:nf
             for i=1:n
-                Ge,Gm=GreenTesors.G_em_far_field_renorm(krf[j,:],kr[i,:])
+                Ge,Gm=GreenTensors.G_em_far_field_renorm(krf[j,:],kr[i,:])
                 res[j,1:3]=res[j,1:3]+Ge*alpha_e_dl[i]*phi_inc[i,1:3]+im*Gm*alpha_m_dl[i]*phi_inc[i,4:6]
-                res[j,4:6]=res[j,4:6]-im*Gm*alpha_e_dl[i]*e_inc[i,1:3]+Ge*alpha_m_dl[i]*phi_inc[i,4:6]
+                res[j,4:6]=res[j,4:6]-im*Gm*alpha_e_dl[i]*phi_inc[i,1:3]+Ge*alpha_m_dl[i]*phi_inc[i,4:6]
             end
         end
         return res
@@ -864,11 +864,11 @@ function far_field_sca_e_m(kr,phi_inc,alpha_dl,krf)
         return res
     #if more than 1, i.e. 2D array
     else
-        nf=length(krf[i,:])
-        res=zeros(nf,6)
+        nf=length(krf[:,1])
+        res=zeros(ComplexF64,nf,6)
         for j=1:nf
             for i=1:n
-                Ge,Gm=GreenTesors.G_em_far_field_renorm(krf[j,:],kr[i,:])
+                Ge,Gm=GreenTensors.G_em_far_field_renorm(krf[j,:],kr[i,:])
                 big_g=zeros(6,6)
                 big_g[1:3,1:3]=Ge
                 big_g[1:3,4:6]=im*Gm

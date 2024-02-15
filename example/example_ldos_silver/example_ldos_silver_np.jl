@@ -1,8 +1,7 @@
 using Base
 using DelimitedFiles
-#using LinearAlgebra
-include("../../src/CoupledElectricMagneticDipoles.jl")
-using .CoupledElectricMagneticDipoles
+using LinearAlgebra
+using CoupledElectricMagneticDipoles
 
 using PyCall
 #@pyimport numpy
