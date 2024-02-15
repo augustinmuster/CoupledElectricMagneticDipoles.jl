@@ -13,7 +13,7 @@ using ..MieCoeff
 
 @doc raw"""
     alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
-Computes the quasistatic polarizability tensor of a parallelepiped of dimensions `lx,ly,lz` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
+Computes the quasistatic polarizability tensor of a parallelepiped of dimensions `lx,ly,lz` and permittivity `eps` in a host medium with permittivity `eps_h`. 
 Outputs a ``3\times 3`` float matrix with units of volume.
 """
 function alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
@@ -31,7 +31,7 @@ end
 
 @doc raw"""
     alpha0_sphere(a,eps,eps_h)
-Computes the quasistatic polarizability of a sphere of radius `a` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
+Computes the quasistatic polarizability of a sphere of radius `a` and permittivity `eps` in a host medium with permittivity `eps_h`. 
 Outputs a float with units of volume.
 """
 function alpha0_sphere(a,eps,eps_h)
@@ -41,7 +41,7 @@ end
 
 @doc raw"""
     alpha0_volume(V,eps,eps_h)
-Computes the quasistatic polarizability of any object with volume `V` and dielectric constant `eps` in a medium with dielectric constant `eps_h`. 
+Computes the quasistatic polarizability of any isotropic object with volume `V` and permittivity `eps` in a host medium with permittivity `eps_h`. 
 Outputs a float with units of volume.
 """
 function alpha0_volume(V,eps,eps_h)
@@ -51,7 +51,7 @@ end
 @doc raw"""
     alpha_radiative(alpha0,knorm)
 Applies the radiative correction to the polarizability matrix or scalar `alpha0` (with units of volume).
-Outputs a (3x3) complex dimensionless scalar or matrix.
+Outputs a complex dimensionless scalar or a (3x3) complex dimensionless matrix.
 """
 function alpha_radiative(alpha0,knorm)
     if ndims(alpha0)==0
@@ -64,12 +64,12 @@ end
 
 
 @doc raw"""
-    alpha_e_m_mie(ka,eps,eps_h;mu=1,mu_h=1)
-Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
+    alpha_e_m_mie(ka,eps,eps_h)
+Computes the electric and magnetic polarizabilities from the mie coefficients ``a_1`` and  ``b_1`` of a particle with size parameter `ka` (wave number times radius), and permittivity `eps`, in a host medium with permittivity `eps_h`.
 Outputs two dimensionless scalars that are respectively the electric and the magnetic polarizability.
 """
-function alpha_e_m_mie(ka,eps,eps_h;mu=1,mu_h=1)
-    a1,b1=MieCoeff.mie_ab1(ka, eps, eps_h; mu, mu_h)
+function alpha_e_m_mie(ka,eps,eps_h)
+    a1,b1=MieCoeff.mie_ab1(ka, eps, eps_h; mu= 1.,mu_h=1.)
     alpha_e=im*1.5*a1
     alpha_m=im*1.5*b1
     return alpha_e,alpha_m
@@ -77,7 +77,7 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_e_dl,alpha_m_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i.
+Creates an iterable with the polarizability of all particles in order to facilitate the syntax for multuplying a Green's tensor by the polarizability of a particle.
 
 # Arguments
 - `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
@@ -119,7 +119,7 @@ end
 
 @doc raw"""
     dispatch_e_m(alpha_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i
+Creates an iterable with the polarizability of all particles in order to facilitate the syntax for multuplying a Green's tensor by the polarizability of a particle.
 
 # Arguments
 - `alpha_dl`: polarizability 6x6 complex matrix, see the Alphas module's documentation for the accepted formats.
@@ -147,7 +147,7 @@ end
 
 @doc raw"""
     dispatch_e(alpha_e_dl,n_particles)
-Creates an iterable with the polarizability of all particles in order to facilitate the syntaxis for multuplying a Green's function with the polarizability of a particle i.
+Creates an iterable with the polarizability of all particles in order to facilitate the syntax for multuplying a Green's tensor by polarizability of a particle.
 
 # Arguments
 - `alpha_e_dl`: electric polarizability, see the Alphas module's documentation for the accepted formats.
