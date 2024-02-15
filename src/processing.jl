@@ -492,7 +492,7 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
         #compute emission pattern
         pow=zeros(nur)
         for i=1:nur
-            krf=knorm*ur[i,:]*100*max_norm
+            krf=ur[i,:]*100*max_norm
             #input field on the positions krf
             input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dipole)
             #
@@ -577,7 +577,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbos
         #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
-            krf=knorm*ur[i,:]*100*max_norm
+            krf=ur[i,:]*100*max_norm
             #input field on the positions krf
             input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
             #
@@ -643,7 +643,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,ur,krd,dip;verbose=true)
         #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
-            krf=knorm*ur[i,:]*100*max_norm
+            krf=ur[i,:]*100*max_norm
             #input field on the positions krf
             input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
             #
