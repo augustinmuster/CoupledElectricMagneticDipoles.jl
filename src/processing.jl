@@ -1088,17 +1088,29 @@ function rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
 end
 
 @doc raw"""
-    nonrad_ldos_e(p,e_inc;verbose=true)
+    nonrad_ldos_e(p,e_inc,dip;verbose=true)
 Computes the non-radiative part of the LDOS of a system of electric point dipoles scatterers normalized by the LDOS in the host medium without scatterers. Note that the scattering problem has to be solved previously using a point dipole source as input field.
 
 # Arguments
 - `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions and `compute_dipole_moment`.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole. It has to be previously computed by one of the DDACore functions, setting the input field to be a point dipole source.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively) 
+or complex array of size 3 with the components for the electric dipole moment.  
 - `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 # Outputs
 - float array containing the normalized non-radiative LDOS at everey position of `krd`.
 """
-function nonrad_ldos_e(p,e_inc;verbose=true)
+function nonrad_ldos_e(p,e_inc,dip;verbose=true)
+    #dipole moment
+    if ndims(dip) == 0  && dip < 4 && dip > 0
+        dipole = zeros(3)
+        dipole[dip] = 1
+    elseif length(dip) == 3
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
+    else
+        dipole = zeros(3)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
+    end
     #logging
     if verbose
         println("computing non-radiative LDOS...")
@@ -1110,22 +1122,34 @@ function nonrad_ldos_e(p,e_inc;verbose=true)
     for i=1:n
         sum_abs=sum_abs+(imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))
     end
-    return 1.5*real(sum_abs)/norm(dip)^2
+    return 1.5*real(sum_abs)/norm(dipole)^2
 end
 
 @doc raw"""
-    nonrad_ldos_e_m(p,m,phi_inc;verbose=true)
+    nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
 Computes the non-radiative part of the LDOS of a system of electric and magnetic point dipoles scatterers normalized by the LDOS in the host medium without scatterers. Note that the scattering problem has to be solved previously using a point dipole source as input field.
 
 # Arguments
 - `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions and `compute_dipole_moment`.
 - `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions, setting the input field to be a point dipole source.
 - `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively and `dip = 4,5,6` is a magnetic dipole along x,y,z respectively) 
+or complex array of size 6 with the first 3 components for the electric dipole moment and the last 3 components for the magnetic dipole moment.  
 - `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 # Outputs
 - 1D float array containing the normalized non-radiative LDOS at everey position of `krd`.
 """
-function nonrad_ldos_e_m(p,m,phi_inc;verbose=true)
+function nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
+    #dipole moment dispatch
+    if ndims(dip) == 0  && dip < 7 && dip > 0
+        dipole = zeros(6)
+        dipole[dip] = 1
+    elseif length(dip) == 6
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
+    else
+        dipole = zeros(6)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
+    end
     #logging
     if verbose
         println("computing non-radiative LDOS...")
@@ -1140,7 +1164,7 @@ function nonrad_ldos_e_m(p,m,phi_inc;verbose=true)
     for i=1:n
         sum_abs=sum_abs+(imag(dot(e_inc[i,:],p[i,:])) -2/3*dot(p[i,:],p[i,:]))+imag(dot(h_inc[i,:],m[i,:]))-2/3*dot(m[i,:],m[i,:])
     end
-    return 1.5*real(sum_abs)/(norm(dip[1:3])^2+norm(dip[4:6])^2)
+    return 1.5*real(sum_abs)/(norm(dipole[1:3])^2+norm(dipole[4:6])^2)
 end
 
 end
