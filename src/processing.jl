@@ -49,7 +49,7 @@ end
 @doc raw"""
     compute_cross_sections_e(knorm,kr,e_inc,alpha_e_dl,input_field;explicit_scattering=true,verbose=true)
 
-Computes the extinction, absorbtion and scattering cross section ``\sigma_{ext}``, ``\sigma_{abs}``, ``\sigma_{sca}`` of a system made out of electric dipoles, in a plane wave input field.
+Computes the extinction, absorbtion and scattering cross section ``\sigma_{ext}``, ``\sigma_{abs}``, ``\sigma_{sca}`` of a system made out of electric dipoles, illuminated by a plane wave.
 Note that it should follow the optical theorem, i.e.
 ```math
 \sigma_{ext}=\sigma_{abs}+\sigma_{sca}
@@ -58,14 +58,14 @@ Note that it should follow the optical theorem, i.e.
 # Arguments
 - `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `input_field`: 2D complex array of size ``N\times 3`` containing the input field ``\mathbf{E}_0(\mathbf{r}_i)`` at the position of each dipole. Note that **it must be a plane wave.**
 - `explicit_scattering`: boolean that says whether to compute scttering cross section explicitely (`true`) or to deduce it from the optical theorem (`false`). By default set to `true`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- a float array of length 3 containing in order: extinction, absorption and scattering cross section. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
+- a float array of length 3 containing in order: extinction, absorption and scattering cross section. Cross sections are given in units of `knorm``^{-2}``.
 """
 function compute_cross_sections_e(knorm,kr,e_inc,alpha_e_dl,input_field;explicit_scattering=true,verbose=true)
     if verbose
@@ -121,7 +121,7 @@ end
 @doc raw"""
     compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field;explicit_scattering=true,verbose=true)
 
-Computes the extinction, absorbtion and scattering cross section ``\sigma_{ext}``, ``\sigma_{abs}``, ``\sigma_{sca}`` of a system made out of electric and magnetic dipoles, in a plane wave input field.
+Computes the extinction, absorbtion and scattering cross section ``\sigma_{ext}``, ``\sigma_{abs}``, ``\sigma_{sca}`` of a system made out of electric and magnetic dipoles, illuminated by a plane wave.
 Note that it should follow the optical theorem, i.e.
 ```math
 \sigma_{ext}=\sigma_{abs}+\sigma_{sca}
@@ -130,15 +130,15 @@ Note that it should follow the optical theorem, i.e.
 # Arguments 
 - `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\Phi}_0=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave**.
 - `explicit_scattering`: boolean that says whether to compute scttering cross section explicitely (`true`) or to deduce it from the optical theorem (`false`). By default set to `true`.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- a float array of length 3 containing in order: extinction, absorption and scattering cross section. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
+- a float array of length 3 containing in order: extinction, absorption and scattering cross section. Cross sections are given in units of `knorm``^{-2}``.
 """
 function compute_cross_sections_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field;explicit_scattering=true,verbose=true)
     #redefine things
@@ -244,14 +244,14 @@ Computes the differential scattering cross section ``d \sigma_{sca}/ d\Omega`` o
 # Arguments
 - `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `input_field`: 2D complex array of size ``N\times 3`` containing the electric input field ``\mathbf{E}_0(\mathbf{r}_i)`` at the position of each dipole. Note that **it should be a plane wave**
-- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` where the diffrential scattering cross section is computed.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the directions ``\mathbf{u_r}`` where the diffrential scattering cross section is computed. Note that these directions vectors are normalized to 1 in the function.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential cross section in each direction. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
+- an array containing the differential cross section in each direction. Cross sections are given in units of `knorm``^{-2}``.
 """
 function diff_scattering_cross_section_e(knorm,kr,e_inc,alpha_e_dl,input_field,ur;verbose=true)
     #logging
@@ -310,15 +310,15 @@ Computes the differential scattering cross section ``d \sigma_{sca}/ d\Omega`` o
 # Arguments 
 - `knorm`: wave number in the medium.
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `input_field`: 2D complex array of size ``N\times 6`` containing the electric and magnetic input field ``\mathbf{\Phi}_0=(\mathbf{E}_0(\mathbf{r}_i),\mathbf{H}_0(\mathbf{r}_i))`` at the position of each dipole. Note that **it should be a plane wave.**
-- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` where the diffrential scattering cross section is computed.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``\mathbf{u_r}`` where the diffrential scattering cross section is computed. Note that these directions vectors are normalized to 1 in the function.
+- `verbose`: whether to output pieces of information to the standard output during at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential cross section in each direction. The units of the cross sections are given by the use, depending on the units of the vawe number `knorm`.
+- an array containing the differential cross section in each direction. Cross sections are given in units of `knorm``^{-2}``.
 """
 function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,input_field,ur;verbose=true)
     #logging
@@ -422,34 +422,42 @@ end
 
 @doc raw"""
     emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
-Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric dipoles in direction(s) of position(s) `krf`.
+Computes the emission pattern ``d P/ d\Omega`` (differential power emitted in a given direction) of a system made out of electric dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole. The user is required to first solve the DDA problem for `e_inc` in the presence of a point dipole source placed at `krd`.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more than 1 direction) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
-- `dip`: integer defining the dipole moment of the emitter (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `krd` : float vector of length 3 containing the dimensionless position of the point electric dipole source.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively) 
+or complex array of size 3 with the components for the electric dipole moment.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0``.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0`` without any scatterers.
 """
-function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
+function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
     end
-    #computation of the emitted power bxy the dipole source
-    if length(dip)==3
-        P0=4*pi/3*norm(dip)^2
+    #dipole moment definition
+    if ndims(dip) == 0  && dip < 4 && dip > 0
+        dipole = zeros(3)
+        dipole[dip] = 1
+    elseif length(dip) == 3
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
     else
-        P0=4*pi/3
+        dipole = zeros(3)
+        println("dip should be an integer (between 1 and 3) or a vector of length 3")
     end
+    #computation of the emitted power bxy the dipole source
+    P0=4*pi/3*norm(dipole)^2
     #if only one direction
     if ndims(krf)==1
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dip)
+        input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dipole)
         #poynting vector calculations
         poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf).+input_field_krf)
         pow=real((norm(krf)/knorm)^2*dot(poynting,krf/norm(krf)))
@@ -457,7 +465,7 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
     #if more than one, i.e. 2D array
     else
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(krf,krd,dip)
+        input_field_krf=InputFields.point_dipole_e(krf,krd,dipole)
         #
         nur=length(krf[:,1])
         pow=zeros(nur)
@@ -476,31 +484,39 @@ Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
-- `dip`: integer defining the dipole moment of the emitter (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more than 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
+- `krd` : float vector of length 3 containing the dimensionless position of the point electric and/or magnetic dipole source.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively and `dip = 4,5,6` is a magnetic dipole along x,y,z respectively) 
+or complex array of size 6 with the first 3 components for the electric dipole moment and the last 3 components for the magnetic dipole moment.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0``.
+- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0`` without any scatterers.
 """
 function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
     end
-    #computation of the emitted power bxy the dipole source
-    if length(dip)==6
-        P0=4*pi/3*(norm(dip[1:3])^2+norm(dip[4:6])^2)
+    #dipole moment definition
+    if ndims(dip) == 0  && dip < 7 && dip > 0
+        dipole = zeros(6)
+        dipole[dip] = 1
+    elseif length(dip) == 6
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
     else
-        P0=4*pi/3
+        dipole = zeros(6)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
     end
+    #computation of the emitted power bxy the dipole source
+    P0=4*pi/3*(norm(dipole[1:3])^2+norm(dipole[4:6])^2)
     #if only one direction
     if ndims(krf)==1
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
         #
         poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
         pow=real((norm(krf))^2*dot(poynting,krf/norm(krf)))
@@ -508,7 +524,7 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
     #if more than one, i.e. 2D array
     else
         #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dip)
+        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dipole)
         #
         nur=length(krf[:,1])
         pow=zeros(nur)
@@ -522,7 +538,7 @@ end
 
 @doc raw"""
     emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
-Same as `diff_emitted_power_e_m(knorm,kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,phi_inp_krf;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
+Same as `emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
 """
 function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     #logging
@@ -566,12 +582,12 @@ Computes the scattered field from a system made out of electric and magnetic dip
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``.
+- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered electric and magnetic fields by the dipoles at every ``k\mathbf{r_f}``.
 """
 function field_sca_e_m(kr, alpha_e_dl, alpha_m_dl, phi_inc, krf; verbose=true)
     #logging
@@ -623,17 +639,17 @@ end
 
 @doc raw"""
     function field_sca_e(kr, alpha_e_dl, e_inc, krf)
-Computes the scattered field from a system made out of electric dipoles.
+Computes the scattered field from a system made out of electric dipoles. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole.
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``.
+- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered electric and magnetic fields by the dipoles at every ``k\mathbf{r_f}``. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 """
 function field_sca_e(kr, alpha_e_dl, e_inc, krf; verbose=true)
     #logging
@@ -659,7 +675,7 @@ end
 
 @doc raw"""
     function far_field_sca_e(kr,e_inc,alpha_e_dl,krf)
-Computes the scattered field from a system made out of electric dipoles in the far field approximation.
+Computes the scattered field from a system made out of electric dipoles in the far field approximation. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole. Note that these positions have to be far away from the dipoles positions.
@@ -668,7 +684,7 @@ Computes the scattered field from a system made out of electric dipoles in the f
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
 
 # Outputs
-- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``.
+- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 
 """
 function far_field_sca_e(kr,e_inc,alpha_e_dl,krf)
@@ -702,7 +718,7 @@ end
 
 @doc raw"""
     function far_field_sca_e_m(kr,e_inc,alpha_e_dl,alpha_m_dl,krf)
-Computes the scattered field from a system made out of electric and magnetic dipoles in the far field approximation.
+Computes the scattered field from a system made out of electric and magnetic dipoles in the far field approximation. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole. Note that these positions have to be far away from the dipoles positions.
@@ -712,7 +728,7 @@ Computes the scattered field from a system made out of electric and magnetic dip
 - `krf`: 1D float vector of length 3 (only one position) or 2D float array of size ``Nu\times 3`` (more thant 1 position) containing the dimensionless positions ``k\mathbf{r}_f`` at which the scattered field is computed.
 
 # Outputs
-- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``.
+- `field_r`: 2D complex array of size ``Nf\times 6`` containing the scattered field by the dipoles at every ``k\mathbf{r_f}``. Note that the term ``e^{ikr}/kr`` is retained, so `krf` has to be finite.
 
 """
 function far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf)
@@ -787,19 +803,20 @@ end
 
 @doc raw"""
     ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=true)
-Computes local density of states (LDOS) of a system made out of electric and magnetic dipoles by taking the imaginary part of the returning field.
+Computes local density of states (LDOS) of a system made out of electric and magnetic dipoles normalized by the LDOS in the host medium without scatterers. 
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `Ainv`: (inverse) DDA matrix.
+- `Ainv`: (inverse) CEMD matrix.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 6 with the desired dipole moment of the dipole.  
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively and `dip = 4,5,6` is a magnetic dipole along x,y,z respectively) 
+or complex array of size 6 with the first 3 components for the electric dipole moment and the last 3 components for the magnetic dipole moment. 
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- `LDOS`: float array with the LDOS normalized by the LDOS in the host media without scatterers.
+- `LDOS`: float array with the LDOS normalized by the LDOS in the host medium without scatterers.
 """
 function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=true)
     #logging
@@ -828,14 +845,13 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
         end
     else
         LDOS = zeros(n_dpos)
-        if length(dip) == 1  && dip < 7 && dip > 0
-            dip_o = dip
-            dip = zeros(6)
-            dip[dip_o] = 1
+        if ndims(dip) == 0  && dip < 7 && dip > 0
+            dipole = zeros(6)
+            dip[dip] = 1
         elseif length(dip) == 6
-            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+            dipole = dip/norm(dip) # Ensure that its modulus is equal to one
         else
-            dip = zeros(6)
+            dipole = zeros(6)
             println("dip should be an integer (between 1 and 6) or a vector of length 6")
         end
         for j=1:n_dpos
@@ -844,8 +860,8 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
                 G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge*alp_e[i] -im*Gm*alp_m[i]; im*Gm*alp_e[i] Ge*alp_m[i]]
             end
-            field_r = G_tensor_fr*Ainv*G_tensor*dip
-            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+            field_r = G_tensor_fr*Ainv*G_tensor*dipole
+            LDOS[j] = 1 + imag(transpose(dipole)*field_r)/(2/3)
         end
     end
     if length(LDOS) == 1
@@ -885,14 +901,13 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing, verbose=true)
         end
     else
         LDOS = zeros(n_dpos)
-        if length(dip) == 1  && dip < 7 && dip > 0
-            dip_o = dip
-            dip = zeros(6)
-            dip[dip_o] = 1
+        if ndims(dip) == 0  && dip < 7 && dip > 0
+            dipole = zeros(6)
+            dipole[dip] = 1
         elseif length(dip) == 6
-            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+            dipole = dip/norm(dip) # Ensure that its modulus is equal to one
         else
-            dip = zeros(6)
+            dipole = zeros(6)
             println("dip should be an integer (between 1 and 6) or a vector of length 6")
         end
         for j=1:n_dpos
@@ -901,8 +916,8 @@ function ldos_e_m(kr, alpha_dl, Ainv, krd; dip=nothing, verbose=true)
                 G_tensor[6 * (i-1) + 1:6 * (i-1) + 6 , :] = [Ge im*Gm; -im*Gm Ge]
                 G_tensor_fr[:, 6 * (i-1) + 1:6 * (i-1) + 6] = [Ge -im*Gm; im*Gm Ge]*alp[i]
             end
-            field_r = G_tensor_fr*Ainv*G_tensor*dip
-            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+            field_r = G_tensor_fr*Ainv*G_tensor*dipole
+            LDOS[j] = 1 + imag(transpose(dipole)*field_r)/(2/3)
         end
     end
     if length(LDOS) == 1
@@ -913,18 +928,19 @@ end
 
 @doc raw"""
     ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
-It Computes local density of states (LDOS) of a system made out of electric dipoles by the imaginary part of the returning field.
+It Computes local density of states (LDOS) of a system made out of electric dipoles normalized by the LDOS in the host medium without scatterers. 
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `Ainv`: (inverse) DDA matrix.
 - `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
-- `dip`: integer defining the dipole moment (`dip = 1` is an electric x-dipole, `dip = 2` an elctric y-dipole...) or float array of size 3 with the desired dipole moment of the dipole.  
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively) 
+or complex array of size 3 with the components for the electric dipole moment.  
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- `LDOS`: float array with the LDOS normalized by the LDOS in the host media without scatterers.
+- `LDOS`: float array with the LDOS normalized by the LDOS in the host medium without scatterers.
 """
 function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
     #logging
@@ -951,14 +967,13 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
             LDOS[j] = 1 + 1/3*imag(tr(G_ldos))/(2/3)
         end
     else
-        if length(dip) == 1 && dip < 4 && dip > 0
-            dip_o = dip
-            dip = zeros(3)
-            dip[dip_o] = 1
+        if ndims(dip) == 0 && dip < 4 && dip > 0
+            dipole = zeros(3)
+            dipole[dip] = 1
         elseif length(dip) == 3
-            dip = dip/norm(dip) # Ensure that its modulus is equal to one
+            dipole = dip/norm(dip) # Ensure that its modulus is equal to one
         else
-            dip = zeros(3)
+            dipole = zeros(3)
             println("dip should be an integer (between 1 and 3) or a vector of length 3")
         end
         for j=1:n_dpos
@@ -967,8 +982,8 @@ function ldos_e(kr, alpha_e_dl, Ainv, krd; dip=nothing, verbose=true)
                 G_tensor[3 * (i-1) + 1:3 * (i-1) + 3 , :] = Ge
                 G_tensor_fr[:, 3 * (i-1) + 1:3 * (i-1) + 3] = Ge*alp_e[i] 
             end
-            field_r = G_tensor_fr*Ainv*G_tensor*dip
-            LDOS[j] = 1 + imag(transpose(dip)*field_r)/(2/3)
+            field_r = G_tensor_fr*Ainv*G_tensor*dipole
+            LDOS[j] = 1 + imag(transpose(dipole)*field_r)/(2/3)
         end
     end
     if length(LDOS) == 1
@@ -980,20 +995,31 @@ end
 
 @doc raw"""
     rad_ldos_e(kr,krd,p,dip;verbose=true)
-Computes the radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+Computes the radiative part of the LDOS of a system of electric point dipoles scatterers normalized by the LDOS in the host medium without scatterers. 
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
+- `krd`: float array of size 3 containing the dimentionless position ``k\mathbf{r_d}`` where the radiative part of the LDOS is calculated.
 - `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
-- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively) 
+or complex array of size 3 with the components for the electric dipole moment.  
 - `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
 # Outputs
-- 1D float array containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at everey position of `krd`.
+- float containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at the position `krd`.
 """
 function rad_ldos_e(kr,krd,p,dip;verbose=true)
+    #dipole moment
+    if ndims(dip) == 0  && dip < 4 && dip > 0
+        dipole = zeros(3)
+        dipole[dip] = 1
+    elseif length(dip) == 3
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
+    else
+        dipole = zeros(3)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
+    end
     #adding the source to the list of dipoles
-    p=vcat(p,transpose(dip))
+    p=vcat(p,transpose(dipole))
     kr=vcat(kr,krd)
     #logging
     if verbose
@@ -1009,28 +1035,39 @@ function rad_ldos_e(kr,krd,p,dip;verbose=true)
             sum_sca=sum_sca+3*real(transpose(p[j,:])*(imag(GreenTensors.G_e_renorm(kr[j,:],kr[i,:]))*conj(p[i,:])))
         end
     end
-    return real(sum_sca)/norm(dip)
+    return real(sum_sca)/norm(dipole)
 end
 
 
 @doc raw"""
     rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
-Computes the radiative part of the LDOS of a system of electric and magnetic dipoles with a point dipole source.
+Computes the radiative part of the LDOS of a system of electric and magnetic point dipoles scatterers normalized by the LDOS in the host medium without scatterers. 
 
 # Arguments
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
-- `krd`: 2D float array of size ``Nd\times 3`` containing the dimentionless positions ``k\mathbf{r_d}`` where the LDOS is calculated.
+- `krd`: float array of size 3 containing the dimentionless position ``k\mathbf{r_d}`` where the LDOS is calculated.
 - `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
 - `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles.
-- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively and `dip = 4,5,6` is a magnetic dipole along x,y,z respectively) 
+or complex array of size 6 with the first 3 components for the electric dipole moment and the last 3 components for the magnetic dipole moment.  
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 # Outputs
-- 1D float array containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at everey position of `krd`.
+- float containing the normalized (by the LDOS in the host medium without scatterers) radiative LDOS at the position `krd`.
 """
 function rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
+    #dipole moment dispatch
+    if ndims(dip) == 0  && dip < 7 && dip > 0
+        dipole = zeros(6)
+        dipole[dip] = 1
+    elseif length(dip) == 6
+        dipole = dip/norm(dip) # Ensure that its modulus is equal to one
+    else
+        dipole = zeros(6)
+        println("dip should be an integer (between 1 and 6) or a vector of length 6")
+    end
     #adding the source to the list of dipoles
-    p=vcat(p,reshape(dip[1:3],1,3))
-    m=vcat(m,reshape(dip[4:6],1,3))
+    p=vcat(p,reshape(dipole[1:3],1,3))
+    m=vcat(m,reshape(dipole[4:6],1,3))
     kr=vcat(kr,krd)
     #logging
     if verbose
@@ -1047,22 +1084,21 @@ function rad_ldos_e_m(kr,krd,p,m,dip;verbose=true)
             sum_sca=sum_sca+3*(imag(-transpose(conj(p[i,:]))*imag(GreenTensors.G_m_renorm(kr[i,:],kr[j,:]))*m[j,:]    +   transpose(conj(p[j,:]))*imag(GreenTensors.G_m_renorm(kr[i,:],kr[j,:]))*m[i,:]))
         end
     end
-    return real(sum_sca)/(norm(dip[1:3])^2+norm(dip[4:6])^2)
+    return real(sum_sca)/(norm(dipole[1:3])^2+norm(dipole[4:6])^2)
 end
 
 @doc raw"""
-    nonrad_ldos_e(p,e_inc,dip;verbose=true)
-Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+    nonrad_ldos_e(p,e_inc;verbose=true)
+Computes the non-radiative part of the LDOS of a system of electric point dipoles scatterers normalized by the LDOS in the host medium without scatterers. Note that the scattering problem has to be solved previously using a point dipole source as input field.
 
 # Arguments
-- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
-- `e_inc`: 2D complex array of size ``N\times 3`` containing the incident electric field ``\mathbf{E}_{i}`` on each dipole.
-- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions and `compute_dipole_moment`.
+- `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole. It has to be previously computed by one of the DDACore functions, setting the input field to be a point dipole source.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 # Outputs
-- 1D float array containing the normalized non-radiative LDOS at everey position of `krd`.
+- float array containing the normalized non-radiative LDOS at everey position of `krd`.
 """
-function nonrad_ldos_e(p,e_inc,dip;verbose=true)
+function nonrad_ldos_e(p,e_inc;verbose=true)
     #logging
     if verbose
         println("computing non-radiative LDOS...")
@@ -1078,19 +1114,18 @@ function nonrad_ldos_e(p,e_inc,dip;verbose=true)
 end
 
 @doc raw"""
-    nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
-Computes the non-radiative part of the LDOS of a system of electric dipoles with a point dipole source.
+    nonrad_ldos_e_m(p,m,phi_inc;verbose=true)
+Computes the non-radiative part of the LDOS of a system of electric and magnetic point dipoles scatterers normalized by the LDOS in the host medium without scatterers. Note that the scattering problem has to be solved previously using a point dipole source as input field.
 
 # Arguments
-- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles.
-- `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles.
-- `phi_inc`: 2D complex array of size ``N\times 6`` containing the incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
-- `dip`: 1D complex vector of size 3 containing the dipole moment of the source dipole.
-- `verbose`: whether to output pieces of information to the standard output during running or not. By default set to `true`.
+- `p`: 2D complex array of size``Nd\times 3`` containing the electric dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions and `compute_dipole_moment`.
+- `m`: 2D complex array of size``Nd\times 3`` containing the magnetic dipole moments of the dipoles. It has to be previously computed by one of the DDACore functions, setting the input field to be a point dipole source.
+- `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
+- `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 # Outputs
 - 1D float array containing the normalized non-radiative LDOS at everey position of `krd`.
 """
-function nonrad_ldos_e_m(p,m,phi_inc,dip;verbose=true)
+function nonrad_ldos_e_m(p,m,phi_inc;verbose=true)
     #logging
     if verbose
         println("computing non-radiative LDOS...")
