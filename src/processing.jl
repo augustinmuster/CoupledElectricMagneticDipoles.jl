@@ -455,7 +455,7 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
     #computation of the emitted power bxy the dipole source
     P0=4*pi/3*norm(dipole)^2
     #if only one direction
-    if ndims(krf)==1
+    if ndims(ur)==1
         if norm(ur)!=1.
             ur=ur/norm(ur)
         end
@@ -475,8 +475,6 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
         return real(pow/P0)
     #if more than one, i.e. 2D array
     else
-        #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e(krf,krd,dipole)
         #directions
         nur=length(ur[:,1])
         for i=1:nur
@@ -491,12 +489,15 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
                 max_norm=norm(kr[i,:])
             end
         end
-        #compute differential cross section
+        #compute emission pattern
         pow=zeros(nur)
         for i=1:nur
             krf=knorm*ur[i,:]*100*max_norm
-            poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf[i,:]).+input_field_krf[i,:])
-            pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
+            #input field on the positions krf
+            input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dipole)
+            #
+            poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf).+input_field_krf)
+            pow[i]=real(norm((krf)/knorm)^2*dot(poynting,krf/norm(krf)))
         end
         return real(pow/P0)
     end
@@ -559,8 +560,6 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbos
         return real(pow/P0)
     #if more than one, i.e. 2D array
     else
-        #input field on the positions krf
-        input_field_krf=InputFields.point_dipole_e_m(krf,krd,dipole)
         #directions
         nur=length(ur[:,1])
         for i=1:nur
@@ -579,8 +578,11 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbos
         pow=zeros(nur)
         for i=1:nur
             krf=knorm*ur[i,:]*100*max_norm
-            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf[i,:]).+input_field_krf[i,:])
-            pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
+            #input field on the positions krf
+            input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
+            #
+            poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf).+input_field_krf)
+            pow[i]=real(norm((krf))^2*dot(poynting,krf/norm(krf)))
         end
         return real(pow/P0)
     end
@@ -642,6 +644,9 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,ur,krd,dip;verbose=true)
         pow=zeros(nur)
         for i=1:nur
             krf=knorm*ur[i,:]*100*max_norm
+            #input field on the positions krf
+            input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
+            #
             poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf[i,:]).+input_field_krf[i,:])
             pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
