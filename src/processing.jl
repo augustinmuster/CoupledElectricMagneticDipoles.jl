@@ -421,23 +421,23 @@ function diff_scattering_cross_section_e_m(knorm,kr,phi_inc,alpha_dl,input_field
 end
 
 @doc raw"""
-    emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd; dip=nothing;verbose=true)
+    emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
 Computes the emission pattern ``d P/ d\Omega`` (differential power emitted in a given direction) of a system made out of electric dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
 - `kr`: 2D float array of size ``N\times 3`` containing the dimensionless position ``k\mathbf{r}`` of each dipole.
 - `e_inc`: 2D complex array of size ``N\times 3`` containing the total incident electric field ``\mathbf{E}_{i}`` on each dipole. The user is required to first solve the DDA problem for `e_inc` in the presence of a point dipole source placed at `krd`.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more than 1 direction) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
+- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``\mathbf{u_r}`` where the diffrential scattering cross section is computed. Note that these directions vectors are normalized to 1 in the function.
 - `krd` : float vector of length 3 containing the dimensionless position of the point electric dipole source.
 - `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively) 
 or complex array of size 3 with the components for the electric dipole moment.
 - `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0`` without any scatterers.
+- an array containing the differential emitted power in directions `ur` in units of the power emitted by the emitter ``P_0`` without any scatterers.
 """
-function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd,dip;verbose=true)
+function emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
@@ -456,6 +456,17 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd,dip;verbose=true)
     P0=4*pi/3*norm(dipole)^2
     #if only one direction
     if ndims(krf)==1
+        if norm(ur)!=1.
+            ur=ur/norm(ur)
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        krf=knorm*ur*100*max_norm
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e(transpose(krf),krd,dipole)
         #poynting vector calculations
@@ -466,10 +477,24 @@ function emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd,dip;verbose=true)
     else
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e(krf,krd,dipole)
-        #
-        nur=length(krf[:,1])
+        #directions
+        nur=length(ur[:,1])
+        for i=1:nur
+            if norm(ur[i,:])!=1.
+                ur[i,:]=ur[i,:]/norm(ur[i,:])
+            end
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
+            krf=knorm*ur[i,:]*100*max_norm
             poynting=poynting_vector(far_field_sca_e(kr,e_inc,alpha_e_dl,krf[i,:]).+input_field_krf[i,:])
             pow[i]=real(norm((krf[i,:])/knorm)^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
@@ -479,7 +504,7 @@ end
 
 
 @doc raw"""
-    emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
+    emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbose=true)
 Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric and magnetic dipoles in direction(s) of position(s) `krf`.
 
 # Arguments 
@@ -487,16 +512,16 @@ Computes the emission pattern ``d \P/ d\Omega`` of a system made out of electric
 - `phi_inc`: 2D complex array of size ``N\times 6`` containing the total incident electric and magnetic field ``\mathbf{\Phi}_i=(\mathbf{E}_i,\mathbf{H}_i)`` on each dipole.
 - `alpha_e_dl`: complex dimensionless electric polarizability of each dipole. See the Alphas module documentation for accepted formats.
 - `alpha_m_dl`: complex dimensionless magnetic polarizability of each dipole. See the Alphas module documentation for accepted formats.
-- `krf`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more than 1 directions) containing the dimensionless positions ``k\mathbf{u_r}`` in which direction the diffrential emitted power is computed. **Note that the magnitude of these position must be way bigger than the dipoles positions.**
+- `ur`: 1D float vector of length 3 (only one direction) or 2D float array of size ``Nu\times 3`` (more thant 1 directions) containing the dimensionless positions ``\mathbf{u_r}`` where the diffrential scattering cross section is computed. Note that these directions vectors are normalized to 1 in the function.
 - `krd` : float vector of length 3 containing the dimensionless position of the point electric and/or magnetic dipole source.
 - `dip`: integer defining the dipole moment (`dip = 1,2,3` is an electric dipole along x,y,z respectively and `dip = 4,5,6` is a magnetic dipole along x,y,z respectively) 
 or complex array of size 6 with the first 3 components for the electric dipole moment and the last 3 components for the magnetic dipole moment.
 - `verbose`: whether to output pieces of information to the standard output at runtime or not. By default set to `true`.
 
 # Outputs
-- an array containing the differential emitted power in directions `krf` in units of the power emitted by the emitter ``P_0`` without any scatterers.
+- an array containing the differential emitted power in directions `ur` in units of the power emitted by the emitter ``P_0`` without any scatterers.
 """
-function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
+function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
@@ -514,7 +539,18 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
     #computation of the emitted power bxy the dipole source
     P0=4*pi/3*(norm(dipole[1:3])^2+norm(dipole[4:6])^2)
     #if only one direction
-    if ndims(krf)==1
+    if ndims(ur)==1
+        if norm(ur)!=1.
+            ur=ur/norm(ur)
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        krf=knorm*ur*100*max_norm
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dipole)
         #
@@ -525,10 +561,24 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
     else
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e_m(krf,krd,dipole)
-        #
-        nur=length(krf[:,1])
+        #directions
+        nur=length(ur[:,1])
+        for i=1:nur
+            if norm(ur[i,:])!=1.
+                ur[i,:]=ur[i,:]/norm(ur[i,:])
+            end
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
+            krf=knorm*ur[i,:]*100*max_norm
             poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf[i,:]).+input_field_krf[i,:])
             pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
@@ -537,10 +587,10 @@ function emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbo
 end
 
 @doc raw"""
-    emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
-Same as `emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
+    emission_pattern_e_m(kr,phi_inc,alpha_dl,ur,krd,dip;verbose=true)
+Same as `emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbose=true)`, but the electric and magnetic polarizabilities of each dipole are given by a single 6x6 complex matrix.  See the Alphas module documentation for accepted formats.
 """
-function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
+function emission_pattern_e_m(kr,phi_inc,alpha_dl,ur,krd,dip;verbose=true)
     #logging
     if verbose
         println("computing emission pattern...")
@@ -552,7 +602,18 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
         P0=4*pi/3
     end
     #if only one direction
-    if ndims(krf)==1
+    if ndims(ur)==1
+        if norm(ur)!=1.
+            ur=ur/norm(ur)
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        krf=knorm*ur*100*max_norm
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e_m(transpose(krf),krd,dip)
         #
@@ -563,10 +624,24 @@ function emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
     else
         #input field on the positions krf
         input_field_krf=InputFields.point_dipole_e_m(krf,krd,dip)
-        #
-        nur=length(krf[:,1])
+        #directions
+        nur=length(ur[:,1])
+        for i=1:nur
+            if norm(ur[i,:])!=1.
+                ur[i,:]=ur[i,:]/norm(ur[i,:])
+            end
+        end
+        n=length(kr[:,1])
+        max_norm=0
+        for i=1:n
+            if norm(kr[i,:])>max_norm
+                max_norm=norm(kr[i,:])
+            end
+        end
+        #compute differential cross section
         pow=zeros(nur)
         for i=1:nur
+            krf=knorm*ur[i,:]*100*max_norm
             poynting=poynting_vector(far_field_sca_e_m(kr,phi_inc,alpha_dl,krf[i,:]).+input_field_krf[i,:])
             pow[i]=real(norm((krf[i,:]))^2*dot(poynting,krf[i,:]/norm(krf[i,:])))
         end
