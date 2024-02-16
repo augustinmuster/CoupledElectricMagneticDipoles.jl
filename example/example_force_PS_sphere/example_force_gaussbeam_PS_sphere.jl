@@ -1,6 +1,5 @@
 using LaTeXStrings
-include("../../src/CoupledElectricMagneticDipoles.jl")
-using .CoupledElectricMagneticDipoles
+using CoupledElectricMagneticDipoles
 
 using PyCall
 @pyimport matplotlib.pyplot as plt
