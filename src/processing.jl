@@ -927,7 +927,7 @@ function ldos_e_m(kr, alpha_e_dl, alpha_m_dl, Ainv, krd; dip=nothing, verbose=tr
         LDOS = zeros(n_dpos)
         if ndims(dip) == 0  && dip < 7 && dip > 0
             dipole = zeros(6)
-            dip[dip] = 1
+            dipole[dip] = 1
         elseif length(dip) == 6
             dipole = dip/norm(dip) # Ensure that its modulus is equal to one
         else
