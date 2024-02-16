@@ -14,8 +14,8 @@ using LinearAlgebra
 @doc raw"""
     discretize_sphere(a,N;N_sub=10)
 
-Discretizes the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the anti-aliasing accuracy of the discretization. It is by default set to 10.
-If ``N_d`` is the obtained number of cubes, the output is an ``N_d \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction. Returns as well the size of the edge of the cubes `dx`.
+Discretizes the volume of a sphere of radius `a` in small cubes of edge `dx=2*a/N`. `N_sub` is a parameter to set the super sampling anti-aliasing accuracy of the discretization. It is by default set to 10.
+Let ``N_d`` be the obtained number of cubes, the output is a tuple with an ``N_d \times 4`` array containing the 3D position of the centers of the cubes (first three entries) and their filling fraction (fourth entry), as well as the size of the edge of the cubes `dx`.
 """
 function discretize_sphere(a,N;N_sub=10)
     #lattice parameter
@@ -57,16 +57,6 @@ function discretize_sphere(a,N;N_sub=10)
 
     latt=transpose(reshape(latt,(5,:)))
     return latt, dx
-    #=
-    fig = plt.figure(figsize=(12, 12))
-    ax = fig.add_subplot(projection="3d")
-    n=length(latt[:,1])
-    color=zeros(n,4)
-    color[:,3].=1
-    color[:,4]=latt[:,4]
-    ax.voxels(latt[:,1],latt[:,2],latt[:,3],ones(n,n,n),facecolor=color,edgecolor="grey")
-    plt.show()
-    =#
 end
 
 
@@ -74,7 +64,7 @@ end
     discretize_cube(L,N)
 
 Discretizes the volume of a cube of edge `L` in small cubes of edge `dx=L/N`.
-If ``N_d`` is the obtained number of cubes, the output is an ``N_d \times 4`` array containing the 3D position of the centers of the cubes and their filling fraction (i.e. 1). Returns as well the size of the edge of the cubes `dx`.
+Let ``N_d`` be the obtained number of cubes, the output is a tuple with an ``N_d \times 4`` array containing the 3D position of the centers of the cubes (first three entries) and their filling fraction (fourth entry), as well as the size of the edge of the cubes `dx`.
 """
 function discretize_cube(L,N)
      #lattice parameter
@@ -93,12 +83,6 @@ function discretize_cube(L,N)
          end
      end
      latt=transpose(reshape(latt,(4,:)))
-     #=
-     fig = plt.figure(figsize=(12, 12))
-     ax = fig.add_subplot(projection="3d")
-     ax.scatter(latt[:,1],latt[:,2],latt[:,3])
-     plt.show()
-     =#
      return latt,dx
 end
 end

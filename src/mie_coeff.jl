@@ -40,7 +40,7 @@ end
 @doc raw"""
     mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 
-Computes the `n`-th mie coefficient ``a_n`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
+Computes the `n`-th mie coefficient ``a_n`` of a sphere with size parameter `ka`,  dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`.
 Returns a complex scalar.
 """
 function mie_an(ka, eps, eps_h; mu=1, mu_h=1, n=1)
@@ -53,7 +53,7 @@ end
 @doc raw"""
     mie_bn(ka, eps, eps_h; mu=1, mu_h=1, n=1)
 
-Computes the `n`-th mie coefficient ``b_n`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
+Computes the `n`-th mie coefficient ``b_n`` of a sphere with size parameter `ka`,  dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`.
 Returns a complex scalar. 
 """
 function mie_bn(ka, eps, eps_h; mu=1, mu_h=1, n=1)
@@ -66,7 +66,7 @@ end
 @doc raw"""
     mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
 
-Computes the first mie coefficient ``a_1`` and ``b_1`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`.
+Computes the first mie coefficient ``a_1`` and ``b_1`` of a sphere with size parameter `ka`,  dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`.
 Returns a tuple with two complex scalar, ``a_1`` and ``b_1``, respectively. 
 """
 function mie_ab1(ka, eps, eps_h; mu=1, mu_h=1)
@@ -85,13 +85,12 @@ end
 @doc raw"""
     mie_scattering(ka,eps,eps_h;mu=1, mu_h=1, cutoff=20)
 
-Computes the scattering efficiency ``Q_{sca}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
-
+Computes the scattering efficiency ``Q_{sca}`` of a sphere with size parameter `ka`, dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`. For this, we use the finite sum:
 ```math
-Q_{sca} =\frac{2}{ka^2}\sum^{\infty}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2\right)
+Q_{sca} =\frac{2}{ka^2}\sum^{\text{cutoff}}_{n=1}\left(2n+1\right)\left(|a_n|^2+|b_n|^2\right)
 ```
 
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
+where `cutoff` is set to 20 by default.
 
 Returns a float.
 
@@ -107,12 +106,12 @@ end
 @doc raw"""
     mie_extinction(ka,eps,eps_h;cutoff=20)
 
-Computes the extinction efficiency ``Q_{ext}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
+Computes the extinction efficiency ``Q_{ext}`` of a sphere with size parameter `ka`, dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`. For this, we use the finite sum:
 
 ```math
-Q_{ext} =\frac{2}{(ka)^2}\sum^{\infty}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
+Q_{ext} =\frac{2}{(ka)^2}\sum^{\text{cutoff}}_{n=1}\left(2n+1\right)Re\left(a_n+b_n\right)
 ```
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
+where `cutoff` is set to 20 by default.
 
 Returns a float.
 
@@ -129,12 +128,12 @@ end
 @doc raw"""
     mie_absorption(ka,eps,eps_h;mu=1,mu_h=1,cutoff=20)
 
-Computes the extinction efficiency ``Q_{abs}`` of a sphere with dimensionless radius `ka`, and of dielectric permittivity and magnetic permeability `eps` and `mu`, in a host medium with dielectric permittivity and magnetic permeability `eps_h` and `mu_h`. For this, we use:
+Computes the extinction efficiency ``Q_{abs}`` of a sphere with size parameter `ka`, dielectric permittivity `eps` and magnetic permeability `mu`, in a host medium with dielectric permittivity `eps_h` and magnetic permeability `mu_h`. For this, we use:
 
 ```math
 Q_{abs} =Q_{ext}-Q_{sca}
 ```
-The infinite sum is computed only for terms under the `cutoff` variable (by default set to 20).
+where corresponding sums are cut to `cutoff` which is set to 20 by default.
 
 Returns a float.
 

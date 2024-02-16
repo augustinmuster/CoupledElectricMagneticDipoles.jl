@@ -1,6 +1,6 @@
 # Local density of states for a metallic nanoparticle
 
-This example aims to teach the user how to use other advanced utilities such as the local density of states (LDOS) by reproducing the results of R. Carminati et. al., Opt. Comm. 261, 368 (2006). The system under study is a silver particle of radius 5 nm around its plasmon-resonance frequency (lambda = 354 nm) and at out-of-resonance (lambda = 612 nm). The numerical projected LDOS is then compared with the analytical results derived in the manuscript.  
+This example aims to show how to use other utilities such as the local density of states (LDOS) by reproducing the results of R. Carminati et. al., Opt. Comm. 261, 368 (2006). The system under study is a silver particle of radius 5 nm around its plasmon-resonance frequency (wavelength ``\lambda`` = 354 nm) and at out-of-resonance (``\lambda`` = 612 nm). The numerical projected LDOS (see the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) is then compared with the analytical results derived in the that manuscript.  
 
 If you want to run this example, copy it or download it on the github (`example_ldos_silver_np.jl`) and run it using 
 
@@ -19,7 +19,7 @@ using PyCall
 ```
 ## Defining analytical solutions from R. Carminati et. al., Opt. Comm. 261, 368 (2006)
 
-Let first define the analytical solution of the LDOS, that it takes as inputs the dimensionless distance `kz` and polarizability `alp_dl`, and the outputs are the projected LDOS along the z- and x-axis. By definition, the silver nanoparticle will be placed at the origin of the coordinate system, and the LDOS is measured along the z-axis.
+Let us first define the analytical solution of the LDOS, that takes as inputs the dimensionless distance `kz` and polarizability `alp_dl`, and the outputs are the projected LDOS along the z- and x-axis. By definition, the silver nanoparticle will be placed at the origin of the coordinate system, and the LDOS is measured along the z-axis.
 
 ```julia
 # analytic solution R. Carminati et. al., Opt. Comm. 261, 368 (2006)
@@ -42,7 +42,7 @@ end
 
 ## Setting physical properties
 
-Now let's set the parameters of the system, as well as the variables where the LDOS will be stored.
+Now let us set the parameters of the system, as well as the variables in which the LDOS will be stored.
 
 ```julia
 # physical properties
@@ -70,11 +70,11 @@ nonrad_ldos_x = zeros(nz,2)
 nonrad_ldos_z_analytic_shortdistance = zeros(nz,2) 
 nonrad_ldos_x_analytic_shortdistance = zeros(nz,2)
 ```
-The values of the permittivity is taken directly from the manuscript, that correspond with the permittivity at the specific wavelengths, as can be checked in E.W. Palik, Handbook of Optical Constants of Solids, Academic Press, San Diego, 1985 for bulk silver. 
+The values of the permittivity are taken directly from Carminati et al. manuscript, that correspond with the permittivity at the specific wavelengths, as can be checked in E.W. Palik, Handbook of Optical Constants of Solids, Academic Press, San Diego, 1985 for bulk silver. 
 
 ## Computing the LDOS
 
-We can then open a loop and computes the LDOS as follows:
+We can loop through distances and wavelenghts to compute the LDOS as follows:
 
 ```julia
 # ldos calculation at both wavelengths and all distances
@@ -86,14 +86,14 @@ for i=1:2 # loop in wavelength
     # calculation of the polarizability
     alp_0 = Alphas.alpha0_sphere(a,eps_i,1) # static polarizability
     alp_e_dl = Alphas.alpha_radiative(alp_0,knorm) # dimensionless polarizability with radiative corrections
-    for j=1:nz # loop in distance
+    for j=1:nz # distances loop
         # distance
         z_j = z[j] 
-        # renormalized distance
+        # normalized distance
         kz = knorm*z_j
-        # renormalized position of the particle (at the origin of coordinates) 
+        # normalized position of the particle (at the origin of coordinates) 
         kr = zeros(1,3) 
-        # renormalized position of the diple (z-component at kz)
+        # normalized position of the diple (z-component at kz)
         krd = zeros(1,3) 
         krd[3] = kz
         # analytic ldos
@@ -134,9 +134,9 @@ dip_vec = zeros(3)
 dip_vec[3] = 1 
 global ldos_z[j,i] = PostProcessing.ldos_e(kr, alp_e_dl, Ainv, krd, dip = dip_vec) # ldos z-axis
 ```
-This way of calculating the projection along the z-axis would lead to the same result. Also, `dip` could be any three (of six for electric and magnetic dipoles) dimensional vectors.
+This way of calculating the projection along the z-axis would lead to the same result. Also, `dip` could be any three (or six for electric and magnetic dipoles) dimensional vector.
 
-It is now possible to plot the LDOS, comparing the numerical and analytical calculations. The plot is made using the python library matplotlib called in julia by the intermediate of the PyCall library, but you can plot it with any software of your choice.
+It is now possible to plot the LDOS, comparing the numerical and analytical calculations. The plot is made using the python library matplotlib called in julia by the intermediate of the PyCall library.
 
 ```julia
 # plot ldos
@@ -173,7 +173,7 @@ for ind_l = 1:2
     plt.savefig("LDOSz"*string(Int(lamb[ind_l]))*".svg")
 end
 ```
-This is what we get:
+In the following figures, we compare the analytical results with the numerical ones. There is a very good agreement among them.
 
 ```@raw html
 <img src="../assets/LDOSx354.svg">

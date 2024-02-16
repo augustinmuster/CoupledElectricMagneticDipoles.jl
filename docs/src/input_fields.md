@@ -1,8 +1,8 @@
 # Input Fields
 
-This module allows to compute input fields. It also implements derivatives of some of the beams.
+This module allows to compute input fields. It also implements derivatives of some of them.
 
-See the theory part to know more about the expression used to compute the input fields. In general ``N`` represents the number of input positions. 
+See the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) to know more about the expression used to compute the input fields. In general ``N`` represents the number of input positions. 
 
 ## Functions Documentation
 

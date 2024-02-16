@@ -58,14 +58,14 @@ for i=1:2 # loop in wavelength
     # calculation of the polarizability
     alp_0 = Alphas.alpha0_sphere(a,eps_i,1) # static polarizability
     alp_e_dl = Alphas.alpha_radiative(alp_0,knorm) # dimensionless polarizability with radiative corrections
-    for j=1:nz # loop in distance
+    for j=1:nz # distances loop
         # distance
         z_j = z[j] 
-        # renormalized distance
+        # normalized distance
         kz = knorm*z_j
-        # renormalized position of the particle (at the origin of coordinates) 
+        # normalized position of the particle (at the origin of coordinates) 
         kr = zeros(1,3) 
-        # renormalized position of the diple (z-component at kz)
+        # normalized position of the diple (z-component at kz)
         krd = zeros(1,3) 
         krd[3] = kz
         # analytic ldos

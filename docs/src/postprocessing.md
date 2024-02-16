@@ -1,8 +1,8 @@
 # Post Processing
 
-The PostProcessing module allows you to process the results of a CEMD calculation. Mostly for:
+The PostProcessing module allows you to process the results of a DDA/CEMD calculation. Mostly for:
 
-- Computing cross sections and emission pattern. 
+- Computing cross sections and emission patterns. 
 - Computing scattered fields.
 - Computing local density of states (LDOS).
 
@@ -10,7 +10,7 @@ The list of functions and a description of how to use them is given in the follo
 
 ## Functions List and Documentation
 
-### Functions for Cross Sections and Differential Emitted Power
+### Functions for Cross Sections and Emission Patterns
 
 ```@docs
 CoupledElectricMagneticDipoles.PostProcessing.compute_cross_sections_e(knorm,kr,e_inc,alpha,input_field;explicit_scattering=true,verbose=true)
@@ -35,15 +35,15 @@ CoupledElectricMagneticDipoles.PostProcessing.diff_scattering_cross_section_e_m(
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e(kr,e_inc,alpha_e_dl,krf,krd;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e(kr,e_inc,alpha_e_dl,ur,krd,dip;verbose=true)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,krf,krd,dip;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_e_dl,alpha_m_dl,ur,krd,dip;verbose=true)
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_dl,krf,krd,dip;verbose=true)
+CoupledElectricMagneticDipoles.PostProcessing.emission_pattern_e_m(kr,phi_inc,alpha_dl,ur,krd,dip;verbose=true)
 ```
 ### Functions for Scattered Fields
 

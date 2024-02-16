@@ -11,8 +11,8 @@ using LinearAlgebra
 
 @doc raw"""
     G_em_renorm(kr1,kr2)
-Computes the renormalized electric and magnetic Green's tensors between two position `r1` and `r2`, where the inputs are the positions multiplied by the wave number `kr1` and `kr2`.
-The outputs are two dimensionless 3x3 complex matrix.
+Computes the renormalized (dimensionless) electric and magnetic Green's tensors between two positions `r1` and `r2`, where the inputs are the positions multiplied by the host medium wave number `kr1` and `kr2`.
+The outputs are two dimensionless 3x3 complex matrix (electric and magnetic Green's tensor respectively).
 """
 function G_em_renorm(kr1,kr2)
 
@@ -37,8 +37,8 @@ end
 
 @doc raw"""
     G_em_far_field_renorm(kr1,kr2)
-Computes the renormalized electric and magnetic Green's tensors in the far field approximation between two dimensionless position `kr1` and `kr2`. Note that is is only valid for ``kr_1>>kr_2`` and ``kr_1>>1``
-The outputs are two dimensionless 3x3 complex matrix.
+Computes the renormalized (dimensionless) electric and magnetic Green's in the far field approximation tensors between two positions `r1` and `r2`, where the inputs are the positions multiplied by the host medium wave number `kr1` and `kr2`.Note that is is only valid for ``kr_1>>kr_2`` and ``kr_1>>1``.
+The outputs are two dimensionless 3x3 complex matrix (electric and magnetic Green's tensor respectively).
 """
 function G_em_far_field_renorm(kr1,kr2)
     kr1_norm=norm(kr1)
@@ -51,7 +51,7 @@ end
 
 @doc raw"""
     G_m_renorm(kr1,kr2)
-Computes the renormalized magnetic Green's tensor between two position `r1` and `r2`, where the inputs are the positions multiplied by the wave number `kr1` and `kr2`.
+Computes the renormalized (dimensionless) magnetic Green's tensor between two position `r1` and `r2`, where the inputs are the positions multiplied by the host medium wave number `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function G_m_renorm(kr1,kr2)
@@ -70,7 +70,7 @@ end
 
 @doc raw"""
     G_e_renorm(kr1,kr2)
-Computes the renormalized electric Green's tensor between two position `r1` and `r2`, where the inputs are the positions multiplied by the wave number `kr1` and `kr2`.
+Computes the renormalized (dimensionless) electric Green's tensor between two positions `r1` and `r2`, where the inputs are the positions multiplied by the host medium wave number `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function G_e_renorm(kr1,kr2)
@@ -90,7 +90,7 @@ end
 
 @doc raw"""
     dxG_e_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric Green's tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `kx` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) electric Green's tensor  with respect to the `kx` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dxG_e_renorm(kr1,kr2)
@@ -119,7 +119,7 @@ end
 
 @doc raw"""
     dyG_e_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric Green's tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `ky` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) electric Green's tensor  with respect to the `ky` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dyG_e_renorm(kr1,kr2)
@@ -148,7 +148,7 @@ end
 
 @doc raw"""
     dzG_e_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric Green's tensor (defined in `G_e_renorm(kr1,kr2)`) regarding the `kz` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) electric Green's tensor  with respect to the `kz` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dzG_e_renorm(kr1,kr2)
@@ -178,7 +178,7 @@ end
 
 @doc raw"""
     dxG_m_renorm(kr1,kr2)
-Computes the derivative of the renormalized magnetic Green's tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `kx` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) magnetic Green's tensor  with respect to the `kx` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dxG_m_renorm(kr1,kr2)
@@ -202,7 +202,7 @@ end
 
 @doc raw"""
     dyG_m_renorm(kr1,kr2)
-Computes the derivative of the renormalized magnetic Green's tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `ky` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) magnetic Green's tensor  with respect to the `ky` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dyG_m_renorm(kr1,kr2)
@@ -227,7 +227,7 @@ end
 
 @doc raw"""
     dzG_m_renorm(kr1,kr2)
-Computes the derivative of the renormalized magnetic Green's tensor (defined in `G_m_renorm(kr1,kr2)`) regarding the `kz` component of `kr1` between two position  `kr1` and `kr2`.
+Computes the derivative of the renormalized (dimensionless) magnetic Green's tensor  with respect to the `kz` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
 The output is a dimensionless 3x3 complex matrix.
 """
 function dzG_m_renorm(kr1,kr2)
@@ -250,8 +250,8 @@ end
 
 @doc raw"""
     dxG_em_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric and magnetic Green's tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `kx` component of `kr1` between two position  `kr1` and `kr2`.
-The outputs are two dimensionless 3x3 complex matrix.
+    Computes the derivative of the renormalized (dimensionless) electric and magnetic Green's tensors with respect to the `kx` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
+    The output is a dimensionless 3x3 complex matrix (electric and magnetic Green's tensor respectively).
 """
 function dxG_em_renorm(kr1,kr2)
 
@@ -282,8 +282,8 @@ end
 
 @doc raw"""
     dyG_em_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric and magnetic Green's tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `ky` component of `kr1` between two position  `kr1` and `kr2`.
-The outputs are two dimensionless 3x3 complex matrix.
+Computes the derivative of the renormalized (dimensionless) electric and magnetic Green's tensors with respect to the `ky` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix (electric and magnetic Green's tensor respectively).
 """
 function dyG_em_renorm(kr1,kr2)
 
@@ -314,8 +314,8 @@ end
 
 @doc raw"""
     dzG_em_renorm(kr1,kr2)
-Computes the derivative of the renormalized electric and magnetic Green's tensors (defined in `G_e_renorm(kr1,kr2)` and `G_m_renorm(kr1,kr2)`) regarding the `kz` component of `kr1` between two position  `kr1` and `kr2`.
-The outputs are two dimensionless 3x3 complex matrix.
+Computes the derivative of the renormalized (dimensionless) electric and magnetic Green's tensors with respect to the `kz` component of `kr1` between two positions (multiplied by the host medium wavenumber)  `kr1` and `kr2`.
+The output is a dimensionless 3x3 complex matrix (electric and magnetic Green's tensor respectively).
 """
 function dzG_em_renorm(kr1,kr2)
 
@@ -346,7 +346,7 @@ end
 
 @doc raw"""
     denormalize_G_e(Ge,knorm)
-Passes from a dimensionless electric Green's tensor `Ge` to a Green's tensor with units of length⁻¹. `knorm` is the wavenumber into the medium.
+Passes from a dimensionless electric Green's tensor `Ge` to a Green's tensor with units of length⁻¹ by multiplying by a factor ``k/(4\pi)``. `knorm` is the wavenumber in the host medium ``k``.
 """
 function denormalize_G_e(Ge,knorm)
     return (knorm/4/pi).*Ge
@@ -354,7 +354,7 @@ end
 
 @doc raw"""
     denormalize_G_m(Gm,knorm)
-Passes from a dimensionless magnetic Green's tensor `Gm` to a Green's tensor with units of length⁻². `knorm` is the wavenumber into the medium.
+Passes from a dimensionless magnetic Green's tensor `Gm` to a Green's tensor with units of length⁻² by multiplying by a factor ``k^2/(4\pi)``. `knorm` is the wavenumber in the host medium ``k``.
 """
 function denormalize_G_m(Gm,knorm)
     return (knorm^2/4/pi).*Gm

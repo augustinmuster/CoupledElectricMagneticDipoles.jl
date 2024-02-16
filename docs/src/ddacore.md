@@ -1,6 +1,6 @@
 # DDA Core Functionalities
 
-DDACore is the module allowing to solve CEMD problems (see the "Theory" section for definition of the problem). The problems can be solved either on the CPU (in parrallel with LAPACK) or on the GPU (With CUDA). The list of functions and how to use them is in the next section. Note that ``N`` denotes the number of point dipoles in the problem.
+DDACore is the module allowing to solve DDA/CEMD problems (see the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) for definition of these problems). The problems can be solved either on the CPU (in parrallel with LAPACK) or on the GPU (With CUDA). The list of functions and how to use them is in the next section. Note that ``N`` denotes the number of point dipoles in the problem.
 
 ## Functions List and Documentation
 
@@ -16,7 +16,7 @@ CoupledElectricMagneticDipoles.DDACore.solve_DDA_e_m(kr,alpha_e_dl,alpha_m_dl;in
 ```@docs
 CoupledElectricMagneticDipoles.DDACore.solve_DDA_e_m(kr,alpha_dl;input_field=nothing,solver="CPU",verbose=true)
 ```
-### Utilities Functions
+### Utility Functions
 ```@docs
 CoupledElectricMagneticDipoles.DDACore.solve_system(A,b,solver,verbose)
 ```
@@ -30,5 +30,5 @@ CoupledElectricMagneticDipoles.DDACore.load_dda_matrix_e_m(kr,alpha_e_dl,alpha_m
 ```
 
 ```@docs
-CoupledElectricMagneticDipoles.DDACore.load_dda_matrix_e_m(kr,alpha_tensor,verbose)
+CoupledElectricMagneticDipoles.DDACore.load_dda_matrix_e_m(kr,alpha_dl,verbose)
 ```

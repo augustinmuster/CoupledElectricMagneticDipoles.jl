@@ -6,31 +6,23 @@ using PyCall
 @pyimport matplotlib.pyplot as plt
 
 ##################### Parameters ########################################
-#radius of the sphere
+#radius of the sphere (in this example, we work in microns)
 a=0.250
 #dielectric constant of the particle
 eps=(1.59)^2
 #dielectric constant of the medium
 eps_h=(1.33)^2
-#number of wavelengths to compute
-N_lambda=10
-lambda_min=1
-lambda_max=1.1
-#wavelengths to compute
-lambdas0=LinRange(lambda_min,lambda_max,N_lambda)
-lambdas=lambdas0/sqrt(eps_h)
 ##########################################################################
 
 #discretizes a sphere in small cubes
 latt,dx=Geometries.discretize_sphere(a,10)
 n=length(latt[:,1])
 
-# Parameters for the forces at lambda_0 = 1000 nm
-# wavelength
-lamb = lambdas[1]
+# wavelength in the host medium (1 micron in vacuum)
+lamb = 1/sqrt(eps_h)
 # wavevector
 knorm=2*pi/lamb
-# renormalized distance of the dipoles
+# normalized position of the dipoles
 kr = knorm*latt[:,1:3]
 
 #computes polarizability for each dipoles using effective dielectric constant 
@@ -52,11 +44,11 @@ dis = LinRange(-2*lamb,2*lamb,ndis)
 # variable where the force will be stored
 force = zeros(ndis,3)
 
-# loop on distances 
+# loop on positions 
 # note that, instead of moving the particle (and avoiding to recalculate the inverse DDA matrix), the position of the focus 
 # of the Gaussian beam is changed.
 for i=1:ndis 
-    # forces along the x-axis when the particle is moving along the same axis (with y = z = 0)
+    # forces along the x-axis 
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [dis[i] 0 0])*knorm
     e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
@@ -65,7 +57,7 @@ for i=1:ndis
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,1] = sum(fx)
 
-    # forces along the y-axis when the particle is moving along the same axis (with z = x = 0)
+    # forces along the y-axis 
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 dis[i] 0])*knorm
     e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
@@ -74,7 +66,7 @@ for i=1:ndis
     fx, fy, fz = Forces.force_e(kr,alpha, Ainv, e_0inc, dxe_0inc, dye_0inc, dze_0inc)
     global force[i,2] = sum(fy)
 
-    # forces along the z-axis when the particle is moving along the same axis (with x = y = 0)
+    # forces along the z-axis
     # evaluation of the Gaussian beam and its derivatives 
     krf = (latt[:,1:3] .+ [0 0 dis[i]])*knorm
     e_0inc = InputFields.gaussian_beam_e(krf,kbw0)
@@ -84,18 +76,18 @@ for i=1:ndis
     global force[i,3] = sum(fz)
 end
 
-# converse forces in Newtons
-# laser intensity in SI (10 mW)
+# converts forces in Newtons
+# laser power in SI (10 mW)
 power = 10e-3
 factor = Forces.force_factor_gaussianbeams(kbw0,power,eps_h)
 # force in Newtons
 force = force*factor
 
-# calculation of the stiffnesses of the trap by a linear fit around the zero force position
+# calculation of the stiffness of the trap by a linear fit around the zero force position
 # for kx and ky, we directly assume that the zero force position is at the minimum of the "dis" array (at dis = 0)
 # find the position of the minimum
 val, ind_min_xy = findmin(abs.(dis))
-# calculation of the stiffnesses along the x- and y-axis (N/um)
+# calculation of the stiffness along the x- and y-axis (N/um)
 kx = -(force[ind_min_xy+1,1]-force[ind_min_xy-1,1])/(dis[ind_min_xy+1] - dis[ind_min_xy-1])
 ky = -(force[ind_min_xy+1,2]-force[ind_min_xy-1,2])/(dis[ind_min_xy+1] - dis[ind_min_xy-1])
 # for kz the minimum is found as the first minimum along the z-axis (the minimum is not at "z=0")
@@ -104,7 +96,7 @@ while abs(force[ind_min_z,3]) > abs(force[ind_min_z+1,3])
     min_z = ind_min_z + 1
     global ind_min_z = min_z
 end
-# calculation of the stiffnesses along the z-axis
+# calculation of the stiffness along the z-axis
 kz = -(force[ind_min_z+1,3]-force[ind_min_z-1,3])/(dis[ind_min_z+1] - dis[ind_min_z-1])
 # linear calculation of for the position of the minimum
 zmin = dis[ind_min_z] + force[ind_min_z,3]/kz
@@ -114,7 +106,7 @@ dis_short = LinRange(-lamb/4,lamb/4,ndis)
 fx_lin = -kx*dis_short
 fy_lin = -ky*dis_short
 fz_lin = -kz*(dis_short)
-# rounding the value of the stiffnesses for the legend
+# rounding the value of the stiffness for the legend
 kx = round(kx*1e12,sigdigits=3)
 ky = round(ky*1e12,sigdigits=3)
 kz = round(kz*1e12,sigdigits=3)

@@ -33,6 +33,11 @@ To install the library, type the following command in the Julia REPL:
 ```bash
 ] add CoupledElectricMagneticDipoles
 ```
+If you want to install the package from local files (after downloading the files form the GitHub repository), extract the files from the zip file and set the parent directory as working directory. Then, you can install the library using
+
+```bash
+] add ./CoupledElectricMagneticDipoles
+```
 With this, the package will be precompiled and the dependencies are going to be installed. Then, you will be able to import the library using
 
 ```julia
@@ -44,8 +49,8 @@ Since the library is installed and activated, we strongly recommend you try to r
 
 Computers deal with numbers without units. Therefore, most of the inputs in the functions are dimensionless. For this, some renormalization may be needed. You will find all the details about units renormalization in the theory pdf, but the most used are for:
 
-- Positions ``\mathbf{r}`` (units of L) are multiplied by the wave number ``k`` (units of L⁻¹), to get dimensionless positions `kr`.
-- Polarizabilities have units of volume (L³). We renormalize it by a factor ``k^3/4\pi`` (units of L⁻³) to get dimensionless polarizabilities.
+- Positions ``\mathbf{r}`` (units of length L) are multiplied by the wave number ``k`` (units of L⁻¹), to get dimensionless positions `kr`.
+- Polarizabilities have units of volume (units of length cube L³). We renormalize it by a factor ``k^3/4\pi`` (units of L⁻³) to get dimensionless polarizabilities.
 - Magnetic field is multiplied by the impedance ``Z`` in the medium. We then get a magnetic field that has the same units as the electric field. (E, H) becomes (E, ZH). 
 
 Some functions do not use only dimensionless inputs. In all cases, **this is the user's responsibility to send inputs that are coherent in terms of units**. For example, it is important to input physical magnitudes with units of length all in the same units (don't put meter and micrometers together). It is recommended to look at the examples where the good practices are applied.
@@ -54,9 +59,9 @@ Some functions do not use only dimensionless inputs. In all cases, **this is the
 Solving the DDA system of equations can be done with two different parallel methods:
 
 - With LAPACK LU decomposition on multiple CPUs (the number of BLAS threads is set to be equal to the number of Julia threads).
-- With LU decomposition on the GPU (CUDA), by offloading the system on equations in the GPU memory.
+- With LU decomposition on the GPU (CUDA), by offloading the system of equations to the GPU memory.
 
-In order to know how to choose the solver, please have a look to the DDACore module documentation.
+In order to know how to choose the solver, please have a look to the [DDACore](https://augustinmuster.github.io/ddacore/) module documentation.
 
 In case you use the parallel CPU solver, just set the number of julia threads to use when you run the julia script, i.e. in this way:
 
@@ -66,12 +71,38 @@ julia --threads=8 foo.jl
 
 ## Importing the Package in Python
 
-It is possible to run the package from Python. See the [PyJulia package](https://pyjulia.readthedocs.io/en/latest/usage.html). Note that the example of the PS sphere has also been worked out in Python. The associated Python script can be found in the examples folder.
+It is possible to run the package from Python. See the [PyJulia package](https://pyjulia.readthedocs.io/en/latest/usage.html). Note that the example of the PS sphere has also been worked out in Python. The associated Python script can be found in the [example folder](https://github.com/augustinmuster/CoupledElectricMagneticDipoles.jl/tree/main/example/example_PS_sphere).
 
-## Contact
+## Citing
 
-To cite this software, please use: CoupledElectricMagneticDipoles.jl - Julia modules for coupled electric and magnetic dipoles method for light scattering, and optical forces in three dimensions
+To cite this software, please use: CoupledElectricMagneticDipoles.jl - Julia modules for coupled electric and magnetic dipoles method for light scattering, and optical forces in three dimensions.
 
 Authors: Augustin Muster, Diego Romero Abujetas, Frank Scheffold, Luis S. Froufe-Pérez.
 
-We are open to any comments, ideas, or questions about this software. Don't hesitate to write us, but please be aware that we are not guaranteeing support.
+Journal: To be added upon publication.
+
+## Contact
+
+To contact us, please do it through the [GitHub repository](https://github.com/augustinmuster/CoupledElectricMagneticDipoles.jl).
+
+## License
+
+Copyright (c) 2024 Augustin Muster, Diego R. Abujetas, Frank Scheffold and Luis Froufe-Pérez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

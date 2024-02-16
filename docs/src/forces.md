@@ -1,6 +1,6 @@
  # Optical Forces
 
-The Forces module allows to computes optical forces on electric and magnetic dipoles with deterministic input fields. The list of functions is given below. Note that `N` is the number of dipoles in the system. 
+The Forces module allows to compute optical forces on electric and magnetic point dipoles with deterministic input fields. The list of functions is given below. Note that `N` is the number of dipoles in the system. 
  
  ## Functions Documentation
 

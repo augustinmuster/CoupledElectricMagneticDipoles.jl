@@ -7,11 +7,11 @@ In this example, we will simulate a Yagi-Uda antenna made out of small silicon s
 <img src="../assets/YU_design.png">
 ```
 
-Note that the spacings described below have to be understood as center-to center spacing. At the origin, we place a silicon sphere with a radius of 245nm called the reflector. After a bigger spacing of 245nm + 355nm + 1800nm + 200nm = 2600 nm in which we will place the emitter (an oscillating dipole source aligned along the y-axis) at a distance of 600 nm from the origin, we align on the z-axis 10 silicon spheres called directors with a radius of 200nm, (center to center spacing: 400nm). We will then compute the emission pattern of this structure, in order to investigate the directionality of this antenna.  
+Note that the spacings described below have to be understood as center-to center spacing. At the origin, we place a silicon sphere with a radius of 245nm called the reflector. After a bigger spacing of 245nm + 355nm + 800nm + 200nm = 2600 nm within which we will place the emitter (an oscillating dipole source aligned along the y-axis) at a distance of 600 nm from the origin, we align 10 silicon spheres, called directors, on the z-axis and with a radius of 200nm, (center to center spacing: 800nm). We will then compute the emission pattern of this structure, in order to investigate the directionality of this antenna.  
 
-We suppose that you already know the example of the PS sphere. So if you haven't had a look to it before, read it first. If you want to know about the electric and magnetic DDA problem, have a look at the theory as well.
+We suppose that you already know the example of the PS sphere. So if you haven't had a look to it before, read it first. If you want to know about the electric and magnetic CEMD problem, have a look at the theory as well.
 
-If you want to run this example, copy it or download it on GitHub (`example_yagi_uda.jl`) and run it using 
+If you want to run this example, copy it or download it from the GitHub repository (`example_yagi_uda.jl`) and run it using 
 
 ```bash
 julia example_yagi_uda.jl
@@ -20,7 +20,7 @@ julia example_yagi_uda.jl
 
 # Setting the Structure
 
-We will first start to model the structure of the antenna in an array 'r' containing the position of each of its component. But first, we need to imports the libraries. 
+We will first start to model the structure of the antenna in an array 'r' containing the positions of each of its components. But first, we need to import some libraries. 
 
 ```julia
 #imports
@@ -30,7 +30,7 @@ using LaTeXStrings
 using LinearAlgebra
 @pyimport matplotlib.pyplot as plt
 ```
-Then, we can set the parameters (size) of the antenna and build the structure.
+Then, we can set the parameters (sizes) of the antenna and build the structure.
 
 ```julia
 ##################### Parameters ########################################
@@ -65,7 +65,7 @@ as[1]=a_refl
 
 # Modelling silicon particles
 
-Now that we set the position of each of the antenna's components, we need to model their optical behavior. To do this, let's open a small parenthesis and try to model a sphere with a radius of 0.230 μm using only one electric and magnetic dipole per particle (no discretization like in the PS sphere example). For this, we set the electric and magnetic polarizabilities of the particles to be proportional to the two first Mie coefficients ``a_1`` and ``b_1``. For this, we use the MieCoeff module to get the Mie coefficient and to compare the scattering efficiency ``Q_sca`` of the sphere computed with only the first Mie coefficient and the truncated series (cut after 20 terms). 
+Now that we set the position of each of the antenna's components, we need to model their optical response. To do this, let's open a small parenthesis and try to model a sphere with a radius of 0.230 μm using only one electric and magnetic dipole per particle (no discretization like in the PS sphere example). For this, we set the electric and magnetic polarizabilities of the particles to be proportional to the two first Mie coefficients ``a_1`` and ``b_1``. For this, we use the `MieCoeff` module to get the Mie coefficients and to compare the scattering efficiency ``Q_sca`` of the sphere computed with only the first Mie coefficient and the truncated series (cut after 20 terms). 
 
 ```julia
 #------------------modelling silicon particles---------------
@@ -87,14 +87,14 @@ ax1.plot(lambdas,dipole_sca./(pi*a^2),color="red",label="Dipoles")
 fig1.savefig("mie_dipole_qsca.svg")
 #------------------------------------------------------------
 ```
-If we plot it, we see that the scattering efficiency is well described by only the first Mie coefficients for wavelength bigger than 1.2 μm. From this, we conclude that later the polarizability of the components of the antenna can be computed using the `alpha_mie_renorm` function of the Alphas module.
+If we plot the scattering efficiency (in red for the dipoles and in black for the Mie theory), we see that the scattering efficiency is reasonably described by only the first two Mie coefficients for any wavelength bigger than 1.2 μm. From this, we conclude that the electric and magnetic dipole excitations are enough to describe the optical response of these spheres. Therefore, the polarizabilities of the components of the antenna can be computed using `Alphas.alpha_mie_renorm`.
 
 ```@raw html
 <img src="../assets/mie_dipole_qsca.svg">
 ```
 # Computing Emission Pattern
 
-Now that we now how to model the particles, we can solve the DDA problem of the antenna as follow:
+Now that we know how to model the particles, we can solve the DDA problem of the antenna as follow:
 
 ```julia
 #computes the wavenumber
@@ -112,17 +112,17 @@ input_field=InputFields.point_dipole_e_m(knorm*r,knorm*[0,0,0.355],2)
 phi_inc=DDACore.solve_DDA_e_m(knorm*r,alpha_e,alpha_m,input_field=input_field,solver="CPU")
 ```
 
-And since we know the incident fields, we can compute the emission pattern of the antenna by sampling directions in the y-z plane. Note that the output of the function is given in units of the total power emitted by the dipole ``P_0``.
+And, since we know the incident fields, we can compute the emission pattern of the antenna by sampling directions in the y-z plane. Note that the output of the function is given in units of the total power emitted by the dipole ``P_0``.
 
 ```julia
 #sample directions in the y-z plane
 thetas=LinRange(0,2*pi,200)
-krf=zeros(200,3)
-krf[:,3]=1000*knorm*cos.(thetas)
-krf[:,2]=1000*knorm*sin.(thetas)
+ur=zeros(200,3)
+ur[:,3]=knorm*cos.(thetas)
+ur[:,2]=knorm*sin.(thetas)
 
 #emission pattern of the antenna
-res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,krf,krd,2)
+res=PostProcessing.emission_pattern_e_m(knorm*r,phi_inc,alpha_e,alpha_m,ur,krd,2)
 
 #plotting
 fig2=plt.figure()
@@ -136,4 +136,4 @@ fig2.savefig("diff_P.svg")
 ```@raw html
 <img src="../assets/diff_P.svg">
 ```
-After plotting the emission pattern in polar axes, we see that the antenna has like expected a pronounced directionality in the z direction.
+After plotting the emission pattern in polar coordinates, we see that the antenna has, as expected, a pronounced directionality in the z direction.

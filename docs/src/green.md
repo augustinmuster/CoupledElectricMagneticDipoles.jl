@@ -1,6 +1,6 @@
 # Green's Tensors
 
-GreenTensors is a module aimed to compute the renormalized electric and magnetic Green's tensors. To learn more about the renormalization and the expressions that are used, please see the theory part.
+GreenTensors is a module aimed to compute the renormalized (dimensionless) electric and magnetic Green's tensors. To learn more about the renormalization and the expressions that are used, please see the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf).
 
 ## Functions Documentation
 
@@ -45,7 +45,7 @@ CoupledElectricMagneticDipoles.GreenTensors.dyG_em_renorm
 ```@docs
 CoupledElectricMagneticDipoles.GreenTensors.dzG_em_renorm
 ```
-### Utilities Functions
+### Utility Functions
 ```@docs
 CoupledElectricMagneticDipoles.GreenTensors.denormalize_G_e
 ```
