@@ -5,4 +5,4 @@ Welcome in the repository for CoupledElectricMagneticDipoles.jl, a Julia package
 - Full documentation: https://augustinmuster.github.io/
 - Additional informations: "CoupledElectricMagneticDipoles.jl - Julia modules for coupled electric
 and magnetic dipoles method for light scattering, and optical forces
-in three dimensions", Augustin Muster, Diego Romero Abujetas, Luis S. Froufe-Pérez.
+in three dimensions", Augustin Muster, Diego Romero Abujetas, Frank Scheffold and Luis S. Froufe-Pérez.
