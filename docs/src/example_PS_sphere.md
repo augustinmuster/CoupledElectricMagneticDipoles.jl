@@ -219,3 +219,7 @@ As seen in the previous sections, the scattering cross section obtained with N=7
 <img src="../assets/test_conv.svg">
 ```
 What we see is that the error starts to be much smaller for numbers of dipoles bigger than 2295. The example of the PS sphere works quite well, but **be careful**, this doesn't mean that it will converge like that for every type of spheres. If you want to do that with different types of material or object, **check the convergence!**. Recall also that DDA is not the best method to solve light scattering problems by a sphere. **If you don't really need it, perhaps you prefer to use Mie Theory**.
+
+## Generalization to Other Geometries
+
+The code described above can be easily modiefied to deal with another geometry. For instance, the examples folder (in the same folder as the exemple exposed above) contains an example of the scattering of a plane wave (x-polarized and propagating along the z-axis) by a cube of dielectric constant ε = (1.6 + 0.01i) placed in vacuum. The dimensionless length of the edge of the cube is kD = 0.1, being the same as the cubes studied in (Yurkin, M. A. and Kahnert, M., “Light scattering by a cube: Accuracy limits of the discrete dipole approximation and the T-matrix method”, Journal of Quantitative Spectroscopy and Radiative Transfer, vol. 123, pp. 176–183, 2013). Even if the cube is discretized in 1000 dipoles, i.e. more than 20’000 less than the number of dipoles used in the paper cited above, we retrieve the same scattering efficiency with a relative error smaller than 0.02 percents.
