@@ -1,6 +1,6 @@
 module Alphas
 
-export alpha0_parallelepiped,alpha0_sphere,alpha0_volume,alpha_e_m_mie,alpha_radiative,renorm_alpha,denorm_alpha,dispatch_e,dispatch_e_m
+export alpha0_cube,alpha0_sphere,alpha0_volume,alpha_e_m_mie,alpha_radiative,renorm_alpha,denorm_alpha,dispatch_e,dispatch_e_m
 ###########################
 # IMPORTS
 ###########################
