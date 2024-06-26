@@ -41,7 +41,7 @@ for i in range(N_lambda):
     alpha=np.zeros((n,3,3),complex)
     for j in range(n):
         eps_eff=latt[j,3]*eps+(1-latt[j,3])*eps_h
-        alpha[j,:,:]=np.array(CEMD.Alphas.alpha_radiative(CEMD.Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm))
+        alpha[j,:,:]=np.array(CEMD.Alphas.alpha_radiative(CEMD.Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm))
 
     #computes input_field, an x-polarized plane-wave propagating along z
     input_field=np.array(CEMD.InputFields.plane_wave_e(knorm*latt[:,0:3]))

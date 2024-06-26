@@ -14,7 +14,7 @@ The functions of the DDACore and PostProcessing modules come with an automatic d
 ## Functions Documentation
 
 ```@docs
-CoupledElectricMagneticDipoles.Alphas.alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
+CoupledElectricMagneticDipoles.Alphas.alpha0_cube(L,eps,eps_h)
 ```
 ```@docs
 CoupledElectricMagneticDipoles.Alphas.alpha0_sphere(a,eps,eps_h)

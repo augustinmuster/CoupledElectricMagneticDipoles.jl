@@ -34,7 +34,7 @@ knorm=2*pi/lambda
 alpha=zeros(ComplexF64,n,3,3)
 for j=1:n
     eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-    alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+    alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
 end
 #computes input_field, an x-polarized plane-wave propagating along z
 input_field=InputFields.plane_wave_e(knorm*latt[:,1:3])

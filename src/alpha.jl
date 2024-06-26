@@ -12,41 +12,32 @@ using ..MieCoeff
 ###########################
 
 @doc raw"""
-    alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
-Computes the quasistatic polarizability tensor of a parallelepiped of dimensions `lx,ly,lz` and permittivity `eps` in a host medium with permittivity `eps_h`. 
+    alpha0_volume(V,eps,eps_h)
+Computes the quasistatic polarizability of any isotropic object with volume `V` and permittivity `eps` in a host medium with permittivity `eps_h`. Permittivities can be scalars or ``3\times 3`` tensors. 
+Outputs a float with units of volume.
+"""
+function alpha0_volume(V,eps,eps_h)
+    return 3*V*(eps-eps_h)*inv(eps+2*eps_h)
+end
+
+@doc raw"""
+    alpha0_cube(L,eps,eps_h)
+Computes the quasistatic polarizability tensor of a cube of side `L` and permittivity `eps` in a host medium with permittivity `eps_h`. Permittivities can be scalars or ``3\times 3`` tensors. 
 Outputs a ``3\times 3`` float matrix with units of volume.
 """
-function alpha0_parallelepiped(lx,ly,lz,eps,eps_h)
-    #depolarization tensor
-    Vn=lx*ly*lz
-    xx=2/pi*atan(1/lx^2*Vn/sqrt(lx^2+ly^2+lz^2))
-    yy=2/pi*atan(1/ly^2*Vn/sqrt(lx^2+ly^2+lz^2))
-    zz=2/pi*atan(1/lz^2*Vn/sqrt(lx^2+ly^2+lz^2))
-    Ln=[xx 0 0;0 yy 0;0 0 zz]
-    #quasistatic polarizability
-    id=[1 0 0;0 1 0;0 0 1]
-    Lni=inv(Ln)
-    return (eps*id-eps_h*id)*inv((eps*id-eps_h*id)+Lni*eps_h)*Lni*Vn
+function alpha0_cube(L,eps,eps_h)
+    return alpha0_volume(L^3,eps,eps_h)
 end
 
 @doc raw"""
     alpha0_sphere(a,eps,eps_h)
-Computes the quasistatic polarizability of a sphere of radius `a` and permittivity `eps` in a host medium with permittivity `eps_h`. 
+Computes the quasistatic polarizability of a sphere of radius `a` and permittivity `eps` in a host medium with permittivity `eps_h`.  Permittivities can be scalars or ``3\times 3`` tensors.
 Outputs a float with units of volume.
 """
 function alpha0_sphere(a,eps,eps_h)
-    V=4/3*pi*a^3
-    return 3*V*(eps-eps_h)/(eps+2*eps_h)
+    return alpha0_volume(4/3*pi*a^3,eps,eps_h)
 end
 
-@doc raw"""
-    alpha0_volume(V,eps,eps_h)
-Computes the quasistatic polarizability of any isotropic object with volume `V` and permittivity `eps` in a host medium with permittivity `eps_h`. 
-Outputs a float with units of volume.
-"""
-function alpha0_volume(V,eps,eps_h)
-    return 3*V*(eps-eps_h)/(eps+2*eps_h)
-end
 
 @doc raw"""
     alpha_radiative(alpha0,knorm)
