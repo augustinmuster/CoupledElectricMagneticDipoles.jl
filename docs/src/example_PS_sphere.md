@@ -81,10 +81,10 @@ for i=1:N_lambda
     alpha=zeros(ComplexF64,n,3,3)
     for j=1:n
         eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-        alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+        alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
     end
 ```
-Here, we first compute the wavenumber in the medium and then, using the second loop, assign a polarizability to each cube. `Alphas.alpha0_parallelepiped` computes the quasistatic polarizability tensor (a 3x3 complex matrix with units of volume) of a cube. Here, we use `eps_eff`, which is the filling fraction-ponderated mean between the dielectric constant inside and outside the medium. Then, we need to apply the radiative correction to the polarizability using `Alphas.alpha_radiative`. This last function also renormalizes the polarizability from units of volume to a dimensionless quantity. We need this because the functions to solve the DDA problem requires dimensionless inputs. See the home page and the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) for more information.
+Here, we first compute the wavenumber in the medium and then, using the second loop, assign a polarizability to each cube. `Alphas.alpha0_cube` computes the quasistatic polarizability of a cube. Here, we use `eps_eff`, which is the filling fraction-ponderated mean between the dielectric constant inside and outside the medium. Then, we need to apply the radiative correction to the polarizability using `Alphas.alpha_radiative`. This last function also renormalizes the polarizability from units of volume to a dimensionless quantity. We need this because the functions to solve the DDA problem requires dimensionless inputs. See the home page and the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) for more information.
 
 ## Solving the DDA Problem and Computing the Total Scattering Cross Sections
 
@@ -149,7 +149,7 @@ knorm=2*pi/lambdas[1]
 alpha=zeros(ComplexF64,n,3,3)
 for j=1:n
     eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-    global  alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+    global  alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
 end
 
 #computes input_field, an x-polarized plane-wave propagating along z
