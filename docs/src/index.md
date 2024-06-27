@@ -1,4 +1,4 @@
-# CoupledElectricMagneticDipoles.jl
+# CoupledElectricMagneticDipoles.jl v0.2.0
 
 Welcome to the documentation website for the coupled electric and magnetic dipoles (CEMD), or discrete dipoles approximation (DDA) method implementation in Julia! On this website, you will find all the descriptions of the functions implemented in this library. Please, read carefully the next sections to be ready to code with CoupledElectricMagneticDipoles.jl!
 
