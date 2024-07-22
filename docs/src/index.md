@@ -23,7 +23,7 @@ Finally, the example tab gives four examples of the use of this library.
 Please read carefully the theory if you don't know about the CEMD (DDA) method. This pdf also provides you all the detailed expressions that are use to implement the library.
 
 ```@raw html
-<p>You can download the theory document here: <a href="assets/CoupledElectricMagneticDipoles_0_1_0.pdf">Download PDF</a>.</p>
+<p>You can download the theory document here: <a href="assets/supplementary_v_0_2_0.pdf">Download PDF</a>.</p>
 ```
 
 ## Installing the Library
