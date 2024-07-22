@@ -50,7 +50,7 @@ kr = knorm*latt[:,1:3]
 alpha=zeros(ComplexF64,n,3,3)
 for j=1:n
     eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-    alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+    alpha[j]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
 end
 # calculation of the inverse DDA matrix
 Ainv = DDACore.solve_DDA_e(kr,alpha)

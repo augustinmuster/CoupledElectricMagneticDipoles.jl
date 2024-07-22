@@ -78,13 +78,13 @@ for i=1:N_lambda
     #wavenumber in medium
     knorm=2*pi/lambdas[i]
     #computes polarizability for each dipoles using effective dielectric constant 
-    alpha=zeros(ComplexF64,n,3,3)
+    alpha=zeros(ComplexF64,n)
     for j=1:n
         eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-        alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+        alpha[j]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
     end
 ```
-Here, we first compute the wavenumber in the medium and then, using the second loop, assign a polarizability to each cube. `Alphas.alpha0_parallelepiped` computes the quasistatic polarizability tensor (a 3x3 complex matrix with units of volume) of a cube. Here, we use `eps_eff`, which is the filling fraction-ponderated mean between the dielectric constant inside and outside the medium. Then, we need to apply the radiative correction to the polarizability using `Alphas.alpha_radiative`. This last function also renormalizes the polarizability from units of volume to a dimensionless quantity. We need this because the functions to solve the DDA problem requires dimensionless inputs. See the home page and the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) for more information.
+Here, we first compute the wavenumber in the medium and then, using the second loop, assign a polarizability to each cube. `Alphas.alpha0_cube` computes the quasistatic polarizability of a cube. Here, we use `eps_eff`, which is the filling fraction-ponderated mean between the dielectric constant inside and outside the medium. Then, we need to apply the radiative correction to the polarizability using `Alphas.alpha_radiative`. This last function also renormalizes the polarizability from units of volume to a dimensionless quantity. We need this because the functions to solve the DDA problem requires dimensionless inputs. See the home page and the [Theory pdf](https://augustinmuster.github.io/assets/CoupledElectricMagneticDipoles_0_1_0.pdf) for more information.
 
 ## Solving the DDA Problem and Computing the Total Scattering Cross Sections
 
@@ -146,10 +146,10 @@ In this part of the example, we want to compute the differential scattering cros
 ```julia
 #computes polarizability for each dipoles using effective dielectric constant 
 knorm=2*pi/lambdas[1]
-alpha=zeros(ComplexF64,n,3,3)
+alpha=zeros(ComplexF64,n)
 for j=1:n
     eps_eff=latt[j,4]*eps+(1-latt[j,4])*eps_h
-    global  alpha[j,:,:]=Alphas.alpha_radiative(Alphas.alpha0_parallelepiped(dx,dx,dx,eps_eff,eps_h),knorm)
+    global  alpha[j]=Alphas.alpha_radiative(Alphas.alpha0_cube(dx,eps_eff,eps_h),knorm)
 end
 
 #computes input_field, an x-polarized plane-wave propagating along z
@@ -219,3 +219,8 @@ As seen in the previous sections, the scattering cross section obtained with N=7
 <img src="../assets/test_conv.svg">
 ```
 What we see is that the error starts to be much smaller for numbers of dipoles bigger than 2295. The example of the PS sphere works quite well, but **be careful**, this doesn't mean that it will converge like that for every type of spheres. If you want to do that with different types of material or object, **check the convergence!**. Recall also that DDA is not the best method to solve light scattering problems by a sphere. **If you don't really need it, perhaps you prefer to use Mie Theory**.
+
+## Generalization to Other Geometries
+
+The code described above can be easily modified to deal with another geometry. For instance, the examples folder (in the same folder as the example exposed above) contains an example of the scattering of a plane wave (x-polarized and propagating along the z-axis) by a cube of dielectric constant ε = (1.6 + 0.01i) placed in vacuum. The dimensionless edge length of the
+cube is kD = 0.1, the same as the one presented in *Yurkin, M. A. and Kahnert, M., “Light scattering by a cube: Accuracy limits of the discrete dipole approximation and the T-matrix method”, Journal of Quantitative Spectroscopy and Radiative Transfer, vol. 123, pp. 176–183, 2013*. We found that the scattering efficiency retrieved from our code has a precision within 0.02% of the value given in the paper cited above.

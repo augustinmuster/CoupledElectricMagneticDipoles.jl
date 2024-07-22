@@ -1,7 +1,7 @@
 name = "CoupledElectricMagneticDipoles"
 uuid = "f3c9a48b-9994-415a-a861-0bea7d656b27"
 authors = ["augustinmuster <augustin@must-r.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
